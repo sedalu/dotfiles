@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Run mise doctor (soft warning)"
 #MISE description="Run mise doctor (soft warning)"
-#MISE depends=[dotfiles:doctor:tools]
+#MISE depends=["dotfiles:doctor:tools"]
 #MISE hide=true
 set -euo pipefail
 

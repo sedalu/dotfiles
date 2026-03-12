@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Check zsh plugins are installed (soft warning)"
 #MISE description="Check zsh plugins are installed (soft warning)"
-#MISE depends=[dotfiles:doctor:dirs]
+#MISE depends=["dotfiles:doctor:dirs"]
 #MISE hide=true
 set -euo pipefail
 

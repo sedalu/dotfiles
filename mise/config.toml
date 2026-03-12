@@ -13,11 +13,11 @@ package_manager = "bun"
 # [plugins]
 # fnox-env = "https://github.com/jdx/mise-env-fnox"
 
-[shell_aliases]
+[shell_alias]
 # eza -> ls
-ls  = "eza --all --icons=always --group-directories-first --git"
-ll  = "eza --all --icons=always --group-directories-first --git --long"
-lt  = "eza --all --icons=always --group-directories-first --git --tree --level=1"
+ls = "eza --all --icons=always --group-directories-first --git"
+ll = "eza --all --icons=always --group-directories-first --git --long"
+lt = "eza --all --icons=always --group-directories-first --git --tree --level=1"
 llt = "eza --all --icons=always --group-directories-first --git --long --tree --level=1"
 
 # bat -> cat
@@ -58,14 +58,14 @@ zoxide = "latest"
 "npm:typescript-language-server" = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 
-[tools."aqua:tamasfe/taplo"] 
+[tools."aqua:tamasfe/taplo"]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
 
 [tools."github:ryanoasis/nerd-fonts"]
 version = "latest"
 asset_pattern = "JetBrainsMono.tar.xz"
-postinstall = "$DOTDILES_DIR/mise/hooks/install-fonts"
+postinstall = "$DOTFILES_DIR/mise/hooks/install-fonts"
 
 [tools."go:github.com/ardanlabs/kronk/cmd/kronk"]
 version = "latest"

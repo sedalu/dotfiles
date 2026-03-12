@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Check dotfiles bare repo is configured correctly"
 #MISE description="Check dotfiles bare repo is configured correctly"
-#MISE depends=[dotfiles:doctor:tools]
+#MISE depends=["dotfiles:doctor:tools"]
 #MISE hide=true
 set -euo pipefail
 

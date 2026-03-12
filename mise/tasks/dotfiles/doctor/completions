@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Spot-check shell completions for key tools (soft warning)"
 #MISE description="Spot-check shell completions for key tools (soft warning)"
-#MISE depends=[dotfiles:doctor:dirs]
+#MISE depends=["dotfiles:doctor:dirs"]
 #MISE hide=true
 set -euo pipefail
 

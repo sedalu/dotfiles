@@ -33,6 +33,7 @@ failed=0
 for pair in "${symlinks[@]}"; do
     link="${pair%%:*}"
     target="${pair#*:}"
+    target="${target/#\~/$HOME}"
     name="${link##*/}"
 
     mkdir -p "${link%/*}"

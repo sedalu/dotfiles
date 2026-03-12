@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Check symlinks point to correct targets"
 #MISE description="Check symlinks point to correct targets"
-#MISE depends=[dotfiles:doctor:repo]
+#MISE depends=["dotfiles:doctor:repo"]
 #MISE hide=true
 set -euo pipefail
 

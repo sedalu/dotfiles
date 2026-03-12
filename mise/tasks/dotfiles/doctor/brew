@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Check Brewfile packages are installed"
 #MISE description="Check Brewfile packages are installed"
-#MISE depends=[dotfiles:doctor:tools]
+#MISE depends=["dotfiles:doctor:tools"]
 #MISE hide=true
 set -euo pipefail
 
