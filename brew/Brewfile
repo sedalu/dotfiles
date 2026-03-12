@@ -1,0 +1,7 @@
+brew "bash"
+brew "git"
+brew "zsh"
+
+# cask "font-jetbrains-mono-nerd-font"
+# cask "ghostty"
+cask "obsidian"

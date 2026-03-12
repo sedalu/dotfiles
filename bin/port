@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#USAGE complete "List processes listening on TCP ports."
+#USAGE arg "[port]" "Port number to filter by. Lists all listening ports if omitted."
+
+set -euo pipefail
+
+# --- config --------------------------------
+
+# Port number to filter by (optional).
+port="${1:-}"
+
+# --- list ----------------------------------
+
+if [[ -z "$port" ]]; then
+    lsof -iTCP -sTCP:LISTEN -nP
+else
+    lsof -iTCP:"$port" -sTCP:LISTEN -nP
+fi

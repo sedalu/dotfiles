@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#USAGE complete "Configure Go environment variables via go env -w."
+#MISE description="Configure Go environment variables via go env -w."
+#MISE hide=true
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Go module workspace root.
+gopath="$XDG_DATA_HOME/go"
+# Downloaded module cache.
+gomodcache="$XDG_CACHE_HOME/go/mod"
+# Build output cache.
+gocache="$XDG_CACHE_HOME/go-build"
+
+# --- install ----------------------------
+
+if ! command -v go &>/dev/null; then
+    echo "⏭️ go not found on PATH, skipping"
+    exit 0
+fi
+
+echo ""
+echo "⚙️ Configuring Go environment..."
+echo "→ GOPATH=$gopath"
+echo "→ GOMODCACHE=$gomodcache"
+echo "→ GOCACHE=$gocache"
+
+# Ensure the directory for $GOENV exists before go env -w writes to it.
+mkdir -p "$(dirname "$GOENV")"
+
+go env -w \
+    GOPATH="$gopath" \
+    GOMODCACHE="$gomodcache" \
+    GOCACHE="$gocache"
+
+echo "✅ Done."
+echo ""
+echo "🎉 Go environment configured"

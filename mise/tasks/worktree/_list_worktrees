@@ -1,0 +1,12 @@
+# Emits one non-bare worktree path per line.
+# Sets: BARE, ROOT (via _bare_root)
+# Sourced by worktree:sync and worktree:status — not a standalone task.
+
+source "$(dirname "$0")/_bare_root"
+
+git -C "$BARE" worktree list --porcelain | awk '
+  /^worktree / { wt=$2 }
+  /^bare$/     { wt="" }
+  /^$/         { if (wt != "") print wt; wt="" }
+  END          { if (wt != "") print wt }
+'

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#USAGE complete "Update mise managed tools"
+#MISE description="Update mise managed tools"
+#MISE depends=["dotfiles:update:brew"]
+#MISE hide=true
+
+set -euo pipefail
+
+# --- update -----------------------------
+
+echo ""
+echo "🔄 Updating mise..."
+
+mise self-update --yes
+mise plugins update --yes
+mise upgrade --bump --yes
+
+# --- environment ------------------------
+
+echo ""
+echo "📦 Updating mise completions..."
+
+"$DOTFILES_DIR/mise/hooks/completions" --tool mise completions {}
+
+echo ""
+echo "🎉 mise updated."

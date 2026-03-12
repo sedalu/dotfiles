@@ -1,0 +1,15 @@
+# ~/.bash_login -> $DOTFILES_DIR/shell/bash/.bash_login
+#
+# Bash login shell load order:
+#   /etc/profile          system
+#   ~/.bash_profile       user      first found (skipped — .bash_login only read if .bash_profile absent)
+# > ~/.bash_login         user      first found
+#   ~/.profile            user      first found (skipped — .bash_login exists)
+#   ~/.bash_logout        user      on exit
+#
+# Bash interactive non-login load order:
+#   /etc/bash.bashrc      system    Linux only
+#   ~/.bashrc             user
+#
+# Bash non-interactive load order:
+#   $BASH_ENV             env       if set

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#MISE description="Create a worktree for a new or existing remote branch"
+#USAGE arg "<branch>"
+#USAGE flag "--from <from>" "Base branch for new branches (default: remote HEAD)"
+#USAGE flag "--name <name>" "Override the worktree directory name"
+set -euo pipefail
+source "$(dirname "$0")/_bare_root"
+
+mise run worktree:fetch
+
+BRANCH="${usage_branch}"
+
+# Determine worktree directory name: sanitize slashes to dashes unless overridden
+NAME="${usage_name:-${BRANCH//\//-}}"
+
+# Detect remote default branch, fall back to main
+DEFAULT_BASE=$(git -C "$BARE" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||') || true
+DEFAULT_BASE="${DEFAULT_BASE:-main}"
+FROM="${usage_from:-origin/$DEFAULT_BASE}"
+
+# Auto-detect: track existing remote branch, or create a new one
+if git -C "$BARE" show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+  echo "Tracking existing remote branch origin/$BRANCH..."
+  git -C "$BARE" worktree add "$ROOT/$NAME" -b "$BRANCH" "origin/$BRANCH"
+else
+  echo "Creating new branch $BRANCH from $FROM..."
+  git -C "$BARE" worktree add "$ROOT/$NAME" -b "$BRANCH" "$FROM"
+fi

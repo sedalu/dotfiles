@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Fetch all branches from origin"
+set -euo pipefail
+source "$(dirname "$0")/_bare_root"
+
+git -C "$BARE" fetch origin

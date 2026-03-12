@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#USAGE complete "Update Homebrew and upgrade formulae"
+#MISE description="Update Homebrew and upgrade formulae"
+#MISE hide=true
+
+set -euo pipefail
+
+# --- update -----------------------------
+
+echo ""
+echo "🔄 Updating Homebrew and upgrading formulae..."
+
+brew update
+brew upgrade
+brew upgrade --cask
+brew cleanup
+
+echo "🎉 Homebrew updated."

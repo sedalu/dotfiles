@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#USAGE complete "Check required directories exist"
+#MISE description="Check required directories exist"
+#MISE hide=true
+set -euo pipefail
+
+dirs=(
+    # xdg
+    "$XDG_CACHE_HOME"
+    "$XDG_CONFIG_HOME"
+    "$XDG_DATA_HOME"
+    "$XDG_STATE_HOME"
+    # shell/bash
+    "$XDG_STATE_HOME/bash"
+    # shell/zsh
+    "$XDG_CACHE_HOME/zsh/init"
+    "$XDG_STATE_HOME/zsh"
+)
+
+fail=0
+for dir in "${dirs[@]}"; do
+    if [[ -d "$dir" ]]; then
+        echo "✅ $dir"
+    else
+        echo "❌ $dir does not exist"
+        ((fail++)) || true
+    fi
+done
+
+if ((fail > 0)); then
+    echo ""
+    echo "❌ $fail directory check(s) failed"
+    exit 1
+fi
+echo ""
+echo "✅ All required directories exist"

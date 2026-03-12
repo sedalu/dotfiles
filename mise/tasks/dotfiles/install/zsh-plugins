@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#USAGE complete "Clone zsh plugins to XDG_DATA_HOME"
+#MISE description="Clone zsh plugins to XDG_DATA_HOME"
+#MISE hide=true
+set -euo pipefail
+
+# --- config ----------------------------
+
+# Plugin mappings as "name:url" pairs.
+plugins=(
+    "fzf-tab:https://github.com/Aloxaf/fzf-tab.git"
+    "zsh-autosuggestions:https://github.com/zsh-users/zsh-autosuggestions.git"
+    "zsh-completions:https://github.com/zsh-users/zsh-completions.git"
+    "zsh-fast-syntax-highlighting:https://github.com/zdharma-continuum/fast-syntax-highlighting.git"
+    "zsh-history-substring-search:https://github.com/zsh-users/zsh-history-substring-search.git"
+)
+
+# Root directory for zsh plugin checkouts.
+ZSH_PLUGINS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ ZSH_PLUGINS_DIR=$ZSH_PLUGINS_DIR"
+
+# --- install ---------------------------
+
+mkdir -p "$ZSH_PLUGINS_DIR"
+
+echo ""
+echo "📦 Cloning zsh plugins..."
+
+failed=0
+for pair in "${plugins[@]}"; do
+    name="${pair%%:*}"
+    url="${pair#*:}"
+    dest="$ZSH_PLUGINS_DIR/$name"
+
+    if [[ -d "$dest" ]]; then
+        echo "⏭️ $name already exists, skipping"
+        continue
+    fi
+
+    if git clone --depth 1 "$url" "$dest"; then
+        echo "✔ $name installed"
+    else
+        echo "🛑 Error: Failed to clone $name" >&2
+        failed=$((failed + 1))
+    fi
+done
+
+if [[ "$failed" -gt 0 ]]; then
+    echo ""
+    echo "🛑 Error: $failed plugin(s) failed" >&2
+    exit 1
+fi
+
+echo ""
+echo "🎉 All zsh plugins installed"

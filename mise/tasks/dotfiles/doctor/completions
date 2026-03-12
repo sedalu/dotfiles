@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#USAGE complete "Spot-check shell completions for key tools (soft warning)"
+#MISE description="Spot-check shell completions for key tools (soft warning)"
+#MISE depends=[dotfiles:doctor:dirs]
+#MISE hide=true
+set -euo pipefail
+
+data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+tools=(mise gh fzf bat starship)
+
+missing=0
+for tool in "${tools[@]}"; do
+    bash_comp="$data_home/bash/completions/$tool"
+    zsh_comp="$data_home/zsh/site-functions/_$tool"
+
+    bash_ok=false
+    zsh_ok=false
+    [[ -f "$bash_comp" ]] && bash_ok=true
+    [[ -f "$zsh_comp" ]] && zsh_ok=true
+
+    if $bash_ok && $zsh_ok; then
+        echo "✅ $tool (bash + zsh)"
+    elif $bash_ok; then
+        echo "⚠️ $tool (bash only, missing zsh)"
+        ((missing++)) || true
+    elif $zsh_ok; then
+        echo "⚠️ $tool (zsh only, missing bash)"
+        ((missing++)) || true
+    else
+        echo "⚠️ $tool (no completions found)"
+        ((missing++)) || true
+    fi
+done
+
+if ((missing > 0)); then
+    echo ""
+    echo "⚠️ $missing tool(s) missing completions"
+fi
+
+exit 0

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#USAGE complete "Check essential tools are on PATH"
+#MISE description="Check essential tools are on PATH"
+#MISE hide=true
+set -euo pipefail
+
+tools=(
+    bash
+    git
+    mise
+    zsh
+)
+
+fail=0
+for tool in "${tools[@]}"; do
+    if path="$(command -v "$tool" 2>/dev/null)"; then
+        version="$("$tool" --version 2>/dev/null | head -1)" || version="(version unknown)"
+        echo "✅ $tool — $version ($path)"
+    else
+        echo "❌ $tool not found on PATH"
+        ((fail++)) || true
+    fi
+done
+
+if ((fail > 0)); then
+    echo ""
+    echo "❌ $fail tool(s) missing"
+    exit 1
+fi
+echo ""
+echo "✅ All essential tools found"

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#USAGE complete "Check Brewfile packages are installed"
+#MISE description="Check Brewfile packages are installed"
+#MISE depends=[dotfiles:doctor:tools]
+#MISE hide=true
+set -euo pipefail
+
+# Brewfile location — falls back to the standard dotfiles path if not set in the environment.
+brewfile="${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/brew/Brewfile}"
+
+if [[ ! -f "$brewfile" ]]; then
+    echo "❌ Brewfile not found at $brewfile"
+    exit 1
+fi
+echo "✅ $brewfile"
+
+if brew bundle check --file="$brewfile" 2>&1; then
+    echo "✅ All Brewfile packages installed"
+else
+    echo "❌ Brewfile packages out of sync — run brew bundle install"
+    exit 1
+fi

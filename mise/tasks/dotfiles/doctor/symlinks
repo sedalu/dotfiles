@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#USAGE complete "Check symlinks point to correct targets"
+#MISE description="Check symlinks point to correct targets"
+#MISE depends=[dotfiles:doctor:repo]
+#MISE hide=true
+set -euo pipefail
+
+# synlinks: source -> target
+symlinks=(
+    # claude
+    "$HOME/.claude/CLAUDE.md:$DOTFILES_DIR/claude/CLAUDE.md"
+    "$HOME/.claude/LESSIONS.md:$DOTFILES_DIR/claude/LESSIONS.md"
+    # shell/bash
+    "$HOME/.bash_profile:$DOTFILES_DIR/shell/bash/.bash_profile"
+    "$HOME/.bashrc:$DOTFILES_DIR/shell/bash/.bashrc"
+    # shell/zsh
+    "$HOME/.zshenv:$DOTFILES_DIR/shell/zsh/.zshenv"
+)
+
+fail=0
+for entry in "${symlinks[@]}"; do
+    link="${entry%%:*}"
+    target="${entry#*:}"
+    name="${link##*/}"
+
+    if [[ ! -L "$link" ]]; then
+        echo "❌ $name is not a symlink (expected $link)"
+        ((fail++)) || true
+        continue
+    fi
+
+    current="$(readlink "$link")"
+    if [[ "$current" != "$target" ]]; then
+        echo "❌ $name points to $current (expected $target)"
+        ((fail++)) || true
+    else
+        echo "✅ $name → $target"
+    fi
+done
+
+if ((fail > 0)); then
+    echo ""
+    echo "❌ $fail symlink(s) failed"
+    exit 1
+fi
+echo ""
+echo "✅ All symlinks correct"

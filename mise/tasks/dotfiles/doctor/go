@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#USAGE complete "Check Go environment is correctly configured."
+#MISE description="Check Go environment is correctly configured."
+#MISE hide=true
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Expected GOPATH — Go module workspace root.
+expected_gopath="$XDG_DATA_HOME/go"
+# Expected GOMODCACHE — downloaded module cache.
+expected_gomodcache="$XDG_CACHE_HOME/go/mod"
+# Expected GOCACHE — build output cache.
+expected_gocache="$XDG_CACHE_HOME/go-build"
+
+# --- verify -----------------------------
+
+failed=0
+
+echo ""
+echo "🔍 Checking Go environment..."
+
+# 1. go is available — all remaining checks depend on it.
+if ! command -v go &>/dev/null; then
+    echo "❌ go not found on PATH"
+    echo ""
+    echo "❌ 1 of 5 check(s) failed"
+    exit 1
+fi
+echo "✅ go ($(command -v go))"
+
+# 2. GOENV file exists and is readable.
+if [[ -f "$GOENV" ]]; then
+    echo "✅ GOENV=$GOENV"
+else
+    echo "❌ GOENV file not found at $GOENV — run mise run dotfiles:install:go"
+    failed=$((failed + 1))
+fi
+
+# 3. GOPATH
+actual="$(go env GOPATH)"
+if [[ "$actual" == "$expected_gopath" ]]; then
+    echo "✅ GOPATH=$actual"
+else
+    echo "❌ GOPATH=$actual, expected $expected_gopath"
+    failed=$((failed + 1))
+fi
+
+# 4. GOMODCACHE
+actual="$(go env GOMODCACHE)"
+if [[ "$actual" == "$expected_gomodcache" ]]; then
+    echo "✅ GOMODCACHE=$actual"
+else
+    echo "❌ GOMODCACHE=$actual, expected $expected_gomodcache"
+    failed=$((failed + 1))
+fi
+
+# 5. GOCACHE
+actual="$(go env GOCACHE)"
+if [[ "$actual" == "$expected_gocache" ]]; then
+    echo "✅ GOCACHE=$actual"
+else
+    echo "❌ GOCACHE=$actual, expected $expected_gocache"
+    failed=$((failed + 1))
+fi
+
+if [[ $failed -gt 0 ]]; then
+    echo ""
+    echo "❌ $failed of 5 check(s) failed"
+    exit 1
+fi
+echo ""
+echo "✅ All 5 checks passed"

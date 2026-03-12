@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#USAGE complete "Print each entry in \$PATH on its own line."
+
+set -euo pipefail
+
+# --- print ---------------------------------
+
+echo "$PATH" | tr ':' '\n'

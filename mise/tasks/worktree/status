@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#MISE description="Show status of all worktrees (branch, dirty, ahead/behind)"
+set -euo pipefail
+
+printf "%-25s %-35s %s\n" "WORKTREE" "BRANCH" "STATUS"
+printf "%-25s %-35s %s\n" "--------" "------" "------"
+
+while read -r WT; do
+  NAME="${WT##*/}"
+  BRANCH=$(git -C "$WT" branch --show-current 2>/dev/null || echo "?")
+  DIRTY=$(git -C "$WT" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+  AHEAD=$(git -C "$WT" rev-list --count @{u}..HEAD 2>/dev/null || echo "?")
+  BEHIND=$(git -C "$WT" rev-list --count HEAD..@{u} 2>/dev/null || echo "?")
+  MARKER=""
+  [ "$DIRTY" -gt 0 ] 2>/dev/null && MARKER="*"
+  [ "$AHEAD" != "?" ] && [ "$AHEAD" -gt 0 ] 2>/dev/null && MARKER="${MARKER} ↑${AHEAD}"
+  [ "$BEHIND" != "?" ] && [ "$BEHIND" -gt 0 ] 2>/dev/null && MARKER="${MARKER} ↓${BEHIND}"
+  printf "%-25s %-35s %s\n" "$NAME" "$BRANCH" "$MARKER"
+done < <(source "$(dirname "$0")/_list_worktrees")

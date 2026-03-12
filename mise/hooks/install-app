@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+#USAGE complete "Mount a DMG from the mise install path and copy the .app bundle to ~/Applications."
+#USAGE flag "--path <path>" "Directory containing the DMG (default: \$MISE_TOOL_INSTALL_PATH)."
+#USAGE flag "--app <name>" "Name of the .app bundle to install (default: first .app found on the volume)."
+#USAGE flag "--dest <dir>" "Destination directory for the .app bundle (default: ~/Applications)."
+#MISE description="Mount a DMG from the mise install path and copy the .app bundle to ~/Applications."
+#MISE hide=true
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Directory containing the DMG, resolved from --path flag or $MISE_TOOL_INSTALL_PATH.
+path=""
+# Name of the .app bundle (without .app suffix), resolved from --app flag.
+app=""
+# Destination directory for the installed .app bundle.
+dest=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --path)
+        path="${2:?--path requires a value}"
+        shift 2
+        ;;
+    --app)
+        app="${2:?--app requires a value}"
+        shift 2
+        ;;
+    --dest)
+        dest="${2:?--dest requires a value}"
+        shift 2
+        ;;
+    *)
+        echo "🛑 Error: unknown argument: $1" >&2
+        exit 1
+        ;;
+    esac
+done
+
+# Resolve final values: CLI flag takes precedence over environment variable.
+path="${path:-${MISE_TOOL_INSTALL_PATH:-}}"
+dest="${dest:-$HOME/Applications}"
+
+if [[ -z "$path" ]]; then
+    echo "🛑 Error: --path or \$MISE_TOOL_INSTALL_PATH must be set." >&2
+    exit 1
+fi
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ path=$path"
+echo "→ app=${app:-(auto)}"
+echo "→ dest=$dest"
+
+# --- install ----------------------------
+
+# Skip on non-macOS — .app bundles are macOS-only.
+if [[ "$(uname)" != "Darwin" ]]; then
+    echo ""
+    echo "⏭️ Not running on macOS, skipping"
+    exit 0
+fi
+
+echo ""
+echo "📦 Installing .app bundle..."
+
+# Find the first DMG in the install path.
+dmg=""
+while IFS= read -r file; do
+    dmg="$file"
+    break
+done < <(find "$path" -maxdepth 1 -name "*.dmg" 2>/dev/null)
+
+if [[ -z "$dmg" ]]; then
+    echo "🛑 Error: no .dmg file found in $path." >&2
+    exit 1
+fi
+
+echo "→ dmg=$dmg"
+
+# Unmount the volume on exit to ensure cleanup even on error.
+volume=""
+cleanup() {
+    if [[ -n "$volume" ]]; then
+        if ! hdiutil detach "$volume" -quiet 2>/dev/null; then
+            true
+        fi
+    fi
+}
+trap cleanup EXIT
+
+# Mount the DMG and capture the volume path from hdiutil's tab-separated output.
+echo "Mounting DMG..."
+while IFS=$'\t' read -r _ _ mountpoint_raw; do
+    # Use read to strip leading/trailing whitespace from the field.
+    read -r mountpoint <<< "$mountpoint_raw"
+    if [[ "$mountpoint" == /Volumes/* ]]; then
+        volume="$mountpoint"
+        break
+    fi
+done < <(hdiutil attach "$dmg" -nobrowse)
+
+if [[ -z "$volume" ]]; then
+    echo "🛑 Error: could not determine mount point from hdiutil output." >&2
+    exit 1
+fi
+
+echo "→ volume=$volume"
+
+# Locate the .app bundle on the volume — explicit name or first found.
+app_path=""
+if [[ -n "$app" ]]; then
+    if [[ ! -d "$volume/$app.app" ]]; then
+        echo "🛑 Error: $app.app not found on volume $volume." >&2
+        exit 1
+    fi
+    app_path="$volume/$app.app"
+else
+    while IFS= read -r found; do
+        app_path="$found"
+        break
+    done < <(find "$volume" -maxdepth 1 -name "*.app" -type d 2>/dev/null)
+
+    if [[ -z "$app_path" ]]; then
+        echo "🛑 Error: no .app bundle found on volume $volume." >&2
+        exit 1
+    fi
+fi
+
+echo "→ app=$app_path"
+
+# Derive the bundle filename for the destination path.
+app_name="${app_path##*/}"
+
+# Ensure the destination directory exists.
+mkdir -p "$dest"
+
+# Copy the .app bundle to the destination.
+echo "→ dest=$dest/$app_name"
+cp -R "$app_path" "$dest/$app_name"
+
+# --- verify -----------------------------
+
+if [[ ! -d "$dest/$app_name" ]]; then
+    echo "🛑 Error: $app_name was not found at $dest after install." >&2
+    exit 1
+fi
+
+echo "✅ $app_name installed to $dest."

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="List all worktrees"
+set -euo pipefail
+source "$(dirname "$0")/_bare_root"
+
+git -C "$BARE" worktree list

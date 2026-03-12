@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Prune stale worktree references"
+set -euo pipefail
+source "$(dirname "$0")/_bare_root"
+
+git -C "$BARE" worktree prune --verbose

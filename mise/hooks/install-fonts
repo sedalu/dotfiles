@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#USAGE complete "Copy font files from the mise install path to the system font directory."
+#USAGE flag "--path <path>" "Directory containing the font files (default: \$MISE_TOOL_INSTALL_PATH)."
+#MISE description="Copy font files from the mise install path to the system font directory."
+#MISE hide=true
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Directory containing the font files, resolved from --path flag or $MISE_TOOL_INSTALL_PATH.
+path=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --path)
+        path="${2:?--path requires a value}"
+        shift 2
+        ;;
+    *)
+        echo "🛑 Error: unknown argument: $1" >&2
+        exit 1
+        ;;
+    esac
+done
+
+# Resolve final values: CLI flag takes precedence over environment variable.
+path="${path:-${MISE_TOOL_INSTALL_PATH:-}}"
+
+if [[ -z "$path" ]]; then
+    echo "🛑 Error: --path or \$MISE_TOOL_INSTALL_PATH must be set." >&2
+    exit 1
+fi
+
+# Current operating system — used to select font directory and conditionally run fc-cache.
+os="$(uname)"
+
+# Font destination directory — OS-specific.
+if [[ "$os" == "Darwin" ]]; then
+    # macOS well-known user font directory.
+    fonts_dir="$HOME/Library/Fonts"
+else
+    # XDG user font directory, with fallback.
+    fonts_dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
+fi
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ path=$path"
+echo "→ fonts_dir=$fonts_dir"
+
+# --- install ----------------------------
+
+echo ""
+echo "📦 Installing fonts..."
+
+# Find all TTF and OTF font files in the install path.
+fonts=()
+while IFS= read -r file; do
+    fonts+=("$file")
+done < <(find "$path" -type f \( -iname "*.ttf" -o -iname "*.otf" \) 2>/dev/null)
+
+if [[ ${#fonts[@]} -eq 0 ]]; then
+    echo "🛑 Error: no font files found in $path." >&2
+    exit 1
+fi
+
+echo "→ found ${#fonts[@]} font file(s)"
+
+# Ensure the font directory exists.
+mkdir -p "$fonts_dir"
+
+# Copy all font files to the destination.
+cp "${fonts[@]}" "$fonts_dir/"
+
+# Refresh the font cache on Linux so fonts are immediately available.
+if [[ "$os" != "Darwin" ]]; then
+    echo "🔄 Refreshing font cache..."
+    fc-cache --force
+fi
+
+# --- verify -----------------------------
+
+echo "✅ ${#fonts[@]} font file(s) installed to $fonts_dir."

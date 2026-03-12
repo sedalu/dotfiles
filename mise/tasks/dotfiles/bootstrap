@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#USAGE complete "Bootstrap dotfiles on a fresh machine."
+#USAGE arg "[repo-url]" "URL of the dotfiles git repository (or set DOTFILES_REPO in ~/.dotfiles)"
+
+set -euo pipefail
+
+# --- config ----------------------------
+# Load user overrides for DOTFILES_REPO, DOTFILES_DIR, etc. if present.
+if [[ -f "$HOME/.dotfiles" ]]; then
+    source "$HOME/.dotfiles"
+    echo "Loaded overrides from ~/.dotfiles."
+    echo ""
+fi
+
+# Git repository URL for the dotfiles.
+DOTFILES_REPO="${1:-${DOTFILES_REPO:?Usage: bootstrap <repo-url>}}"
+# Working tree — where dotfiles are checked out (defaults to ~/.config).
+DOTFILES_DIR="${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}"
+# Bare git repository storage location.
+DOTFILES_GIT="${DOTFILES_GIT:-${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles.git}"
+# Path where the mise installer script will place the binary.
+MISE_INSTALL_PATH="${MISE_INSTALL_PATH:-$HOME/.local/bin/mise}"
+
+echo "⚙️ Configuring..."
+echo "→ DOTFILES_REPO=$DOTFILES_REPO"
+echo "→ DOTFILES_DIR=$DOTFILES_DIR"
+echo "→ DOTFILES_GIT=$DOTFILES_GIT"
+echo "→ MISE_INSTALL_PATH=$MISE_INSTALL_PATH"
+
+# --- clone -----------------------------
+echo ""
+echo "⬇️ Cloning dotfiles repository..."
+if [[ -d "$DOTFILES_GIT" ]]; then
+    echo "Repository already exists at $DOTFILES_GIT."
+    echo "✖ Skipped."
+else
+    mkdir -p "$(dirname "$DOTFILES_GIT")"
+    git clone --bare "$DOTFILES_REPO" "$DOTFILES_GIT"
+    git --git-dir="$DOTFILES_GIT" config core.worktree "$DOTFILES_DIR"
+    git --git-dir="$DOTFILES_GIT" checkout
+    echo "✔ Done."
+fi
+
+# Wire up $DOTFILES_DIR/.git so plain git commands work without --git-dir.
+echo "gitdir: $DOTFILES_GIT" > "$DOTFILES_DIR/.git"
+
+# --- environment -----------------------
+# Source env.sh directly from the checkout (symlinks don't exist yet).
+# shellcheck source=shell/env.sh
+source "$DOTFILES_DIR/shell/env.sh"
+
+# --- install ---------------------------
+echo ""
+echo "📦 Installing tools and packages..."
+
+if ! command -v mise &>/dev/null; then
+    "$DOTFILES_DIR/mise/tasks/dotfiles/install/mise"
+fi
+
+mise run dotfiles:install
+echo "✔ Done."
+
+# --- verify ----------------------------
+echo ""
+echo "Running health checks..."
+if mise run dotfiles:doctor; then
+    echo ""
+    echo "✅ Bootstrap complete. Open a new shell to pick up the environment."
+else
+    echo ""
+    echo "⚠️ Bootstrap finished but some health checks failed."
+    echo "   Run 'mise run dotfiles:doctor' to investigate."
+fi

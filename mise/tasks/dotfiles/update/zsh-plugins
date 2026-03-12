@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#USAGE complete "Update zsh plugins"
+#MISE description="Update zsh plugins"
+#MISE hide=true
+
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Zsh plugins directory.
+ZSH_PLUGINS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ ZSH_PLUGINS_DIR=$ZSH_PLUGINS_DIR"
+
+# --- update -----------------------------
+
+if [[ ! -d "$ZSH_PLUGINS_DIR" ]]; then
+    echo "🛑 Error: $ZSH_PLUGINS_DIR does not exist. Run 'mise run dotfiles:install:zsh-plugins' first." >&2
+    exit 1
+fi
+
+echo ""
+echo "🔄 Updating zsh plugins..."
+
+failed=0
+
+for dir in "$ZSH_PLUGINS_DIR"/*/; do
+    [[ -d "$dir/.git" ]] || continue
+    name=$(basename "$dir")
+    echo "🔄 Updating $name..."
+    if git -C "$dir" pull --rebase --autostash; then
+        echo "✅ $name updated."
+    else
+        echo "⚠️ Failed to update $name." >&2
+        failed=$((failed + 1))
+    fi
+done
+
+if [[ $failed -gt 0 ]]; then
+    exit 1
+fi
+
+echo ""
+echo "🎉 All zsh plugins updated."

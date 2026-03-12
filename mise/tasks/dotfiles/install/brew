@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#USAGE complete "Install Homebrew and Brewfile packages"
+#MISE description="Install Homebrew and Brewfile packages"
+#MISE hide=true
+set -euo pipefail
+
+# --- install ---------------------------
+
+echo ""
+echo "📦 Installing Homebrew..."
+
+if command -v brew &>/dev/null; then
+    echo "⏭️ Homebrew already installed, skipping"
+else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    echo "✔ Done."
+fi
+
+echo ""
+echo "📦 Installing Brewfile packages..."
+brew bundle install
+echo "✔ Done."
+
+echo ""
+echo "🎉 Homebrew setup complete"

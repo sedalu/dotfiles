@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#USAGE complete "Generate bash and zsh completions for a tool and write them to the XDG data directories."
+#USAGE flag "--tool <tool>" "The tool name (default: $MISE_TOOL_NAME)"
+#USAGE flag "--version <version>" "The tool version (default: $MISE_TOOL_VERSION)"
+#USAGE arg "[args]..." "Completion command args, use {} as shell name placeholder (e.g. 'completions {}')"
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Tool name, resolved from --tool flag or $MISE_TOOL_NAME.
+tool=""
+# Tool version, resolved from --version flag or $MISE_TOOL_VERSION.
+version=""
+# Completion command args, with {} as the shell name placeholder.
+args=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --tool)
+        tool="${2:?--tool requires a value}"
+        shift 2
+        ;;
+    --version)
+        version="${2:?--version requires a value}"
+        shift 2
+        ;;
+    *)
+        args+=("$1")
+        shift
+        ;;
+    esac
+done
+
+# Resolve final values: CLI flag takes precedence over environment variable.
+tool="${tool:-${MISE_TOOL_NAME:-}}"
+version="${version:-${MISE_TOOL_VERSION:-}}"
+
+if [[ ${#args[@]} -eq 0 ]]; then
+    echo "🛑 Error: completion args required" >&2
+    exit 1
+fi
+
+# ${args[*]} joins into a single string — intentional for glob matching.
+if [[ ! "${args[*]}" == *"{}"* ]]; then
+    echo "🛑 Error: args must contain {} as shell name placeholder" >&2
+    exit 1
+fi
+
+if [[ -z "${tool}" ]]; then
+    echo "🛑 Error: --tool or \$MISE_TOOL_NAME must be set" >&2
+    exit 1
+fi
+
+# Bash completion output directory.
+bash_dir="${XDG_DATA_HOME:-$HOME/.local/share}/bash/completions"
+# Zsh completion output directory.
+zsh_dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ tool=${tool}"
+echo "→ version=${version:-none}"
+echo "→ bash_dir=${bash_dir}"
+echo "→ zsh_dir=${zsh_dir}"
+
+# --- install ----------------------------
+
+mkdir -p "${bash_dir}" "${zsh_dir}"
+
+echo ""
+echo "📦 Installing completions for ${tool}${version:+ v${version}}..."
+
+# Replace {} placeholder with the shell name.
+bash_args=("${args[@]//{}/bash}")
+zsh_args=("${args[@]//{}/zsh}")
+
+# Attempt both shells before exiting — captures all failures in a single run.
+failed=0
+
+echo "→ ${bash_dir}/${tool}"
+if ! "${tool}" "${bash_args[@]}" >"${bash_dir}/${tool}"; then
+    echo "🛑 Error: bash completion command failed for ${tool}" >&2
+    rm -f "${bash_dir}/${tool}"
+    failed=1
+fi
+
+echo "→ ${zsh_dir}/_${tool}"
+if ! "${tool}" "${zsh_args[@]}" >"${zsh_dir}/_${tool}"; then
+    echo "🛑 Error: zsh completion command failed for ${tool}" >&2
+    rm -f "${zsh_dir}/_${tool}"
+    failed=1
+fi
+
+# --- verify -----------------------------
+
+if [[ "${failed}" -eq 1 ]]; then
+    echo ""
+    echo "⚠️ Some completions failed to generate for ${tool}."
+    exit 1
+fi
+
+echo "✅ Completions installed for ${tool}."

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#MISE description="Remove a worktree and prune stale references"
+#USAGE arg "<n>"
+set -euo pipefail
+source "$(dirname "$0")/_bare_root"
+
+git -C "$BARE" worktree remove "$ROOT/${usage_name}"
+mise run worktree:prune

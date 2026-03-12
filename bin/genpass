@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#USAGE complete "Generate a random password."
+#USAGE arg "[length]" "Password length (default: 32)."
+
+set -euo pipefail
+
+# --- config --------------------------------
+
+# Password length (default: 32).
+length="${1:-32}"
+
+# --- generate ------------------------------
+
+openssl rand -base64 $((length * 2)) | tr -d "=/+\n" | cut -c1-"$length"

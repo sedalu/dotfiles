@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#MISE description="Switch the pr/ worktree to a given branch"
+#USAGE arg "<branch>"
+set -euo pipefail
+source "$(dirname "$0")/_bare_root"
+
+mise run worktree:fetch
+git -C "$ROOT/pr" checkout "${usage_branch}"

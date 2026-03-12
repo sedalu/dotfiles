@@ -1,0 +1,146 @@
+[settings]
+auto_install = true
+disable_backends = ["asdf", "pipx", "ubi"]
+env_shell_expand = true
+experimental = true
+lockfile = true
+quiet = true
+verbose = false
+
+[settings.npm]
+package_manager = "bun"
+
+# [plugins]
+# fnox-env = "https://github.com/jdx/mise-env-fnox"
+
+[shell_aliases]
+# eza -> ls
+ls  = "eza --all --icons=always --group-directories-first --git"
+ll  = "eza --all --icons=always --group-directories-first --git --long"
+lt  = "eza --all --icons=always --group-directories-first --git --tree --level=1"
+llt = "eza --all --icons=always --group-directories-first --git --long --tree --level=1"
+
+# bat -> cat
+cat = "bat"
+
+[tools]
+"aqua:astral-sh/uv" = "latest"
+"aqua:docker/compose" = "latest"
+"aqua:mvdan/sh" = "latest"
+"github:dandavison/delta" = "latest"
+"github:jesseduffield/lazygit" = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"npm:bash-language-server" = "latest"
+"npm:httpyac" = "latest"
+# "ubi:jstemmer/go-junit-report" = "latest"
+# "ubi:mvdan/gofumpt" = "latest"
+bun = "latest"
+eza = "latest"
+go = "latest"
+golangci-lint-langserver = "latest"
+gum = "latest"
+helix = "latest"
+jq = "latest"
+node = "latest"
+prettier = "latest"
+python = "latest"
+rust = "latest"
+shellcheck = "latest"
+shfmt = "latest"
+tokei = "latest"
+usage = "latest"
+uv = "latest"
+zoxide = "latest"
+"aqua:artempyanykh/marksman" = "latest"
+"aqua:astral-sh/ruff" = "latest"
+"npm:pyright" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+
+[tools."aqua:tamasfe/taplo"] 
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
+
+[tools."github:ryanoasis/nerd-fonts"]
+version = "latest"
+asset_pattern = "JetBrainsMono.tar.xz"
+postinstall = "$DOTDILES_DIR/mise/hooks/install-fonts"
+
+[tools."go:github.com/ardanlabs/kronk/cmd/kronk"]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+[tools."go:github.com/go-delve/delve/cmd/dlv"]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+[tools."http:ghostty"]
+version = "1.2.3"
+postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
+platforms.macos-arm64.url = "https://release.files.ghostty.org/{{version}}/Ghostty.dmg"
+
+[tools.bat]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --completion {}"
+
+[tools.crush]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+[tools.fd]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --gen-completions {}"
+
+[tools.fnox]
+version = "latest"
+postinstall = """
+$DOTFILES_DIR/mise/hooks/completions completion {}
+rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init/fnox.zsh ${XDG_CACHE_HOME:-$HOME/.cache}/bash/init/fnox.bash
+"""
+
+[tools.fzf]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --{}"
+
+[tools.golangci-lint]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+[tools.localstack]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+# [tools.ollama]
+# version = "latest"
+# postinstall = "$DOTFILES_DIR/mise/hooks/ollama-postinstall"
+
+[tools.ripgrep]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --tool rg --generate complete-{}"
+
+[tools.starship]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
+
+[tools.xh]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate complete-{}"
+
+[tools.yq]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+[env]
+# EDITOR = "hx"
+# VISUAL = "${EDITOR}"
+
+# PAGER = "bat --paging=always"
+# GIT_PAGER = "delta"
+# MANPAGER = "sh -c 'col -bx | bat --language man --paging=always'"
+
+# KRONK_LIB_PATH = "${XDG_DATA_HOME}/kronk/libraries"
+# KRONK_PROCESSOR = "metal"
+
+# [env._.fnox-env]
+# tools = true

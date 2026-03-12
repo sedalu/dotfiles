@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#USAGE complete "Set up SSH directory, keys, and permissions"
+#MISE description="Set up SSH directory, keys, and permissions"
+#MISE hide=true
+#MISE depends=["dotfiles:install:symlinks"]
+set -euo pipefail
+
+# --- config ----------------------------
+
+# SSH directory path.
+ssh_dir="$HOME/.ssh"
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ ssh_dir=$ssh_dir"
+
+# --- install ---------------------------
+
+echo ""
+echo "📁 Setting up SSH directory..."
+
+if [[ ! -d "$ssh_dir" ]]; then
+    mkdir -m 700 "$ssh_dir"
+    echo "✔ Done."
+else
+    echo "⏭️ $ssh_dir already exists, skipping"
+fi
+
+echo ""
+echo "🔑 Generating ed25519 key pair..."
+
+if [[ ! -f "$ssh_dir/id_ed25519" ]]; then
+    ssh-keygen -t ed25519 -N "" -C "$(whoami)@$(hostname -s)" -f "$ssh_dir/id_ed25519"
+    echo "✔ Done."
+else
+    echo "⏭️ ed25519 key pair already exists, skipping"
+fi
+
+echo ""
+echo "🔒 Fixing permissions..."
+
+chmod 700 "$ssh_dir"
+for key in "$ssh_dir"/id_*; do
+    [[ -f "$key" ]] || continue
+    if [[ "$key" == *.pub ]]; then
+        chmod 644 "$key"
+    else
+        chmod 600 "$key"
+    fi
+done
+echo "✔ Done."
+
+echo ""
+echo "🎉 SSH setup complete"

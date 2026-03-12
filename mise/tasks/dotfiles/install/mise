@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#USAGE complete "Install mise from mise.run"
+#MISE description="Install mise from mise.run"
+#MISE hide=true
+set -euo pipefail
+
+# --- config ----------------------------
+
+# Installation path for the mise binary.
+MISE_INSTALL_PATH="${MISE_INSTALL_PATH:-$HOME/.local/bin/mise}"
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ MISE_INSTALL_PATH=$MISE_INSTALL_PATH"
+
+# --- install ---------------------------
+
+echo ""
+echo "📦 Installing mise..."
+
+if command -v mise &>/dev/null; then
+    echo "⏭️ mise already on PATH, skipping"
+else
+    curl https://mise.run | MISE_INSTALL_PATH="$MISE_INSTALL_PATH" sh
+    echo "✔ Done."
+fi
+
+echo ""
+echo "🎉 mise installed"

@@ -1,0 +1,37 @@
+[user]
+    name = Lumnah, Seth
+    email = seth.lumnah@boldlygo.dev
+[filter "lfs"]
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+[init]
+    defaultBranch = main
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true
+    side-by-side = true
+    dark = true
+    syntax-theme = Dracula
+    minus-style = syntax "#3b2630"
+    minus-emph-style = syntax "#53303a"
+    plus-style = syntax "#273330"
+    plus-emph-style = syntax "#30493d"
+    line-numbers-minus-style = "#f38ba8"
+    line-numbers-plus-style = "#a6e3a1"
+    line-numbers-zero-style = "#6c7086"
+[merge]
+    conflictStyle = zdiff3
+[diff]
+    colorMoved = default
+[alias]
+    co = checkout
+    br = branch
+    st = status
+    lg = log --oneline --graph --decorate
+    unstage = reset HEAD --
+    amend = commit --amend --no-edit

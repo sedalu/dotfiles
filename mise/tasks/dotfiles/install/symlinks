@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#USAGE complete "Create symlinks for shell config files"
+#MISE description="Create symlinks for shell config files"
+#MISE hide=true
+set -euo pipefail
+
+# --- config ----------------------------
+
+# Symlink mappings as "link:target" pairs.
+symlinks=(
+    # claude
+    "$HOME/.claude/CLAUDE.md:$DOTFILES_DIR/claude/CLAUDE.md"
+    "$HOME/.claude/LESSONS.md:$DOTFILES_DIR/claude/LESSONS.md"
+    # shell/bash
+    "$HOME/.bash_profile:$DOTFILES_DIR/shell/bash/.bash_profile"
+    "$HOME/.bashrc:$DOTFILES_DIR/shell/bash/.bashrc"
+    # shell/zsh
+    "$HOME/.zshenv:$DOTFILES_DIR/shell/zsh/.zshenv"
+    # ssh
+    "$HOME/.ssh/config:$DOTFILES_DIR/ssh/config"
+)
+
+echo ""
+echo "⚙️ Configuring..."
+echo "→ DOTFILES_DIR=$DOTFILES_DIR"
+
+# --- install ---------------------------
+
+echo ""
+echo "🔗 Installing symlinks..."
+
+failed=0
+for pair in "${symlinks[@]}"; do
+    link="${pair%%:*}"
+    target="${pair#*:}"
+    name="${link##*/}"
+
+    mkdir -p "${link%/*}"
+
+    if [[ -L "$link" ]]; then
+        current="$(readlink "$link")"
+        if [[ "$current" == "$target" ]]; then
+            echo "⏭️ $name already correct, skipping"
+            continue
+        fi
+        echo "⚠️ $name points to $current, updating..."
+        rm "$link"
+    elif [[ -e "$link" ]]; then
+        echo "⚠️ $name exists as a regular file, backing up to ${link}.bak"
+        mv "$link" "${link}.bak"
+    fi
+
+    if ln -s "$target" "$link"; then
+        echo "✔ $name → $target"
+    else
+        echo "🛑 Error: Failed to create $name symlink" >&2
+        failed=$((failed + 1))
+    fi
+done
+
+if [[ "$failed" -gt 0 ]]; then
+    echo ""
+    echo "🛑 Error: $failed symlink(s) failed" >&2
+    exit 1
+fi
+
+echo ""
+echo "🎉 All symlinks installed"

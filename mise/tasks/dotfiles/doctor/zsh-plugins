@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#USAGE complete "Check zsh plugins are installed (soft warning)"
+#MISE description="Check zsh plugins are installed (soft warning)"
+#MISE depends=[dotfiles:doctor:dirs]
+#MISE hide=true
+set -euo pipefail
+
+plugins_dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+plugins=(
+    fzf-tab
+    zsh-autosuggestions
+    zsh-completions
+    zsh-fast-syntax-highlighting
+    zsh-history-substring-search
+)
+
+missing=0
+for plugin in "${plugins[@]}"; do
+    if [[ -d "$plugins_dir/$plugin" ]]; then
+        echo "✅ $plugin"
+    else
+        echo "⚠️ $plugin not found"
+        ((missing++)) || true
+    fi
+done
+
+if ((missing > 0)); then
+    echo ""
+    echo "⚠️ $missing plugin(s) missing — run mise run dotfiles:install:zsh-plugins"
+fi
+
+exit 0

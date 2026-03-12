@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#USAGE complete "Check SSH setup is healthy"
+#MISE description="Check SSH setup is healthy"
+#MISE hide=true
+set -euo pipefail
+
+ssh_dir="$HOME/.ssh"
+config_target="$DOTFILES_DIR/ssh/config"
+fail=0
+
+# 1. ~/.ssh/ exists with 700 permissions
+if [[ -d "$ssh_dir" ]]; then
+    perms=$(stat -f '%Lp' "$ssh_dir")
+    if [[ "$perms" == "700" ]]; then
+        echo "✅ $ssh_dir (mode $perms)"
+    else
+        echo "❌ $ssh_dir has mode $perms, expected 700"
+        ((fail++)) || true
+    fi
+else
+    echo "❌ $ssh_dir does not exist"
+    ((fail++)) || true
+fi
+
+# 2. ~/.ssh/config is a symlink to $DOTFILES_DIR/ssh/config
+link="$ssh_dir/config"
+if [[ -L "$link" ]]; then
+    current="$(readlink "$link")"
+    if [[ "$current" == "$config_target" ]]; then
+        echo "✅ config → $config_target"
+    else
+        echo "❌ config points to $current, expected $config_target"
+        ((fail++)) || true
+    fi
+else
+    echo "❌ $link is not a symlink"
+    ((fail++)) || true
+fi
+
+# 3. ~/.ssh/id_ed25519 exists with 600 permissions
+key="$ssh_dir/id_ed25519"
+if [[ -f "$key" ]]; then
+    perms=$(stat -f '%Lp' "$key")
+    if [[ "$perms" == "600" ]]; then
+        echo "✅ id_ed25519 (mode $perms)"
+    else
+        echo "❌ id_ed25519 has mode $perms, expected 600"
+        ((fail++)) || true
+    fi
+else
+    echo "❌ $key does not exist"
+    ((fail++)) || true
+fi
+
+# 4. ~/.ssh/id_ed25519.pub exists
+pub="$ssh_dir/id_ed25519.pub"
+if [[ -f "$pub" ]]; then
+    echo "✅ id_ed25519.pub"
+else
+    echo "❌ $pub does not exist"
+    ((fail++)) || true
+fi
+
+if ((fail > 0)); then
+    echo ""
+    echo "❌ $fail SSH check(s) failed"
+    exit 1
+fi
+echo ""
+echo "✅ SSH setup is healthy"

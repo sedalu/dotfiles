@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#MISE description="Bootstrap a bare-worktree repo (clone URL or convert existing)"
+#USAGE arg "[url]"
+set -euo pipefail
+
+cd "${MISE_ORIGINAL_CWD:-$PWD}"
+URL="${usage_url:-}"
+
+if [ -n "$URL" ]; then
+  # --- Clone URL as bare worktree layout ---
+  NAME=$(basename "$URL" .git)
+  mkdir -p "$NAME"
+  cd "$NAME"
+  git clone --bare "$URL" .bare
+  git -C .bare config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  git -C .bare fetch origin
+  git -C .bare worktree add ../main main 2>/dev/null \
+    || git -C .bare worktree add ../main -b main origin/main
+  git -C .bare worktree add ../pr -b pr-review origin/main
+  echo "Created bare-worktree layout in $(pwd)"
+else
+  # --- Convert existing clone in $PWD ---
+  if [ ! -d .git ]; then
+    echo "fatal: no .git directory found — run with a URL or from inside a regular clone" >&2
+    exit 1
+  fi
+  mv .git .bare
+  git -C .bare config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  git -C .bare fetch origin
+
+  # Determine default branch
+  DEFAULT_BRANCH=$(git -C .bare symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||') || true
+  if [ -z "$DEFAULT_BRANCH" ]; then
+    DEFAULT_BRANCH="main"
+  fi
+
+  git -C .bare worktree add ../main "$DEFAULT_BRANCH" 2>/dev/null \
+    || git -C .bare worktree add ../main -b main "origin/$DEFAULT_BRANCH"
+  git -C .bare worktree add ../pr -b pr-review "origin/$DEFAULT_BRANCH"
+
+  # Remove leftover working tree files (they now live in main/)
+  find . -maxdepth 1 ! -name . ! -name .bare ! -name main ! -name pr -exec rm -rf {} +
+  echo "Converted to bare-worktree layout in $(pwd)"
+fi

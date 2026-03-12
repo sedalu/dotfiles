@@ -1,0 +1,17 @@
+# Walks up from the caller's directory to find .bare directory
+# Sets: BARE (path to .bare), ROOT (parent of .bare)
+# Sourced by worktree:* tasks — not a standalone task.
+
+dir="${MISE_ORIGINAL_CWD:-$PWD}"
+while [ "$dir" != "/" ]; do
+  if [ -d "$dir/.bare" ]; then
+    BARE="$dir/.bare"
+    ROOT="$dir"
+    break
+  fi
+  dir=$(dirname "$dir")
+done
+if [ -z "${BARE:-}" ]; then
+  echo "fatal: not inside a worktree project (no .bare found)" >&2
+  exit 1
+fi

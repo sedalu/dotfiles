@@ -1,0 +1,37 @@
+theme = "catppuccin_mocha"
+
+[editor]
+bufferline = "multiple"
+
+[editor.soft-wrap]
+enable = true
+
+[keys.normal]
+# Lazygit
+C-g = [
+    ":write-all",
+    ":insert-output lazygit >/dev/tty",
+    ":redraw",
+    ":reload-all",
+]
+
+# Save (overrides default: save selection to register)
+C-s = ":write"
+
+# Quit all
+C-q = ":quit-all"
+
+# Window split navigation via Ctrl+Arrow
+"C-left"  = "jump_view_left"
+"C-right" = "jump_view_right"
+"C-up"    = "jump_view_up"
+"C-down"  = "jump_view_down"
+
+[keys.normal.space]
+# Buffer operations
+x = ":buffer-close"
+X = ":buffer-close-others"
+
+# Window splits
+v = ":vsplit"
+s = ":hsplit"
