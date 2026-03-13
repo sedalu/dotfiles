@@ -10,7 +10,7 @@ set -euo pipefail
 # --- install ----------------------------
 
 # shellcheck source=lib/dotfiles/hostname.sh
-source "${DOTFILES_DIR}/lib/dotfiles/hostname.sh"
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname.sh"
 
 mas_dir="${DOTFILES_DIR}/mas"
 machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"

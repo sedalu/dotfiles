@@ -1,0 +1,9 @@
+# $DOTFILES_DIR/shell/bash/bash_env
+# Bash environment — sourced by .bash_profile, .bashrc, and $BASH_ENV.
+# Equivalent to zsh's .zshenv: loads shared env vars for all bash contexts.
+
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/env.sh"
+
+# --- Bash-specific -------------------------
+
+export HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/bash/history"

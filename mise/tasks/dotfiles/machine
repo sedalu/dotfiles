@@ -92,11 +92,12 @@ fi
 
 # --- persist DOTFILES_MACHINE --------------
 
-if grep -q '^DOTFILES_MACHINE=' "$dotfiles_file" 2>/dev/null; then
-    # Update existing line
-    sed -i'' -e "s/^DOTFILES_MACHINE=.*/DOTFILES_MACHINE=\"$name\"/" "$dotfiles_file"
+touch "$dotfiles_file"
+if grep -q '^DOTFILES_MACHINE=' "$dotfiles_file"; then
+    tmp="$(mktemp)"
+    sed "s|^DOTFILES_MACHINE=.*|DOTFILES_MACHINE=\"$name\"|" "$dotfiles_file" > "$tmp"
+    mv "$tmp" "$dotfiles_file"
 else
-    # Append
     echo "DOTFILES_MACHINE=\"$name\"" >> "$dotfiles_file"
 fi
 echo "✔ DOTFILES_MACHINE=\"$name\" written to ~/.dotfiles"

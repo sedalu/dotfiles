@@ -56,7 +56,7 @@ fi
 export DOTFILES_MACHINE="${DOTFILES_MACHINE:-$(printf '%s' "$_dotfiles_raw_host" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//')}"
 unset _dotfiles_raw_host
 export DOTFILES_OS="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
-export DOTFILES_SHELL="${DOTFILES_SHELL}" # TODO: add fallback
+export DOTFILES_SHELL="${DOTFILES_SHELL:-$(basename "$SHELL")}"
 
 # Homebrew Bundle
 export HOMEBREW_BUNDLE_FILE="$DOTFILES_DIR/brew/Brewfile"

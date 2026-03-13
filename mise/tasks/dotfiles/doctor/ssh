@@ -8,9 +8,17 @@ ssh_dir="$HOME/.ssh"
 config_target="$DOTFILES_DIR/ssh/config"
 fail=0
 
+_get_perms() {
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        stat -f '%Lp' "$1"
+    else
+        stat -c '%a' "$1"
+    fi
+}
+
 # 1. ~/.ssh/ exists with 700 permissions
 if [[ -d "$ssh_dir" ]]; then
-    perms=$(stat -f '%Lp' "$ssh_dir")
+    perms=$(_get_perms "$ssh_dir")
     if [[ "$perms" == "700" ]]; then
         echo "✅ $ssh_dir (mode $perms)"
     else
@@ -40,7 +48,7 @@ fi
 # 3. ~/.ssh/id_ed25519 exists with 600 permissions
 key="$ssh_dir/id_ed25519"
 if [[ -f "$key" ]]; then
-    perms=$(stat -f '%Lp' "$key")
+    perms=$(_get_perms "$key")
     if [[ "$perms" == "600" ]]; then
         echo "✅ id_ed25519 (mode $perms)"
     else

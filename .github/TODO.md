@@ -2,14 +2,6 @@
 
 `rtk init --global --ultra-compact --hook-only --auto-patch`
 
-On macOS, these should be set. $DOTDILES_MACHINE should match LocalHostName
-
-```shell
-sudo scutil --set ComputerName "NewName"
-sudo scutil --set LocalHostName "newname"
-sudo scutil --set HostName "newname.local"
-```
-
 ## Device Names
 
 | Series                            | Planet/World Name | Personal Laptop | Desktop/Server | Phone/Mobile | Backup/Secondary |

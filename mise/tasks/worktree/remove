@@ -4,5 +4,5 @@
 set -euo pipefail
 source "$(dirname "$0")/_bare_root"
 
-git -C "$BARE" worktree remove "$ROOT/${usage_name}"
+git -C "$BARE" worktree remove "$ROOT/${usage_n}"
 mise run worktree:prune
