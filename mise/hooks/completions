@@ -71,8 +71,16 @@ echo ""
 echo "📦 Installing completions for ${tool}${version:+ v${version}}..."
 
 # Replace {} placeholder with the shell name.
-bash_args=("${args[@]//{}/bash}")
-zsh_args=("${args[@]//{}/zsh}")
+bash_args=()
+zsh_args=()
+pattern='{}'
+
+for arg in "${args[@]}"; do
+    bash_args+=("${arg//$pattern/bash}")
+    zsh_args+=("${arg//$pattern/zsh}")
+done
+
+unset pattern
 
 # Attempt both shells before exiting — captures all failures in a single run.
 failed=0
