@@ -3,11 +3,12 @@ brew "bash"
 brew "git"
 brew "zsh"
 
-cask "obsidian"
-
 # macOS only
 if OS.mac?
-    "mas"
+    brew "mas"
+
+    cask "obsidian"
+    cask "tailscale-app"
 end
 
 # specific machines
