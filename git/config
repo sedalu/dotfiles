@@ -1,5 +1,5 @@
 [user]
-    name = Lumnah, Seth
+    name = Seth Lumnah
     email = seth.lumnah@boldlygo.dev
 [filter "lfs"]
     process = git-lfs filter-process
