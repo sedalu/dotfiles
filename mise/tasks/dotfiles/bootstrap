@@ -35,7 +35,7 @@ if [[ -d "$DOTFILES_GIT" ]]; then
     echo "✖ Skipped."
 else
     mkdir -p "$(dirname "$DOTFILES_GIT")"
-    git clone --separate_git-dir "$DOTFILES_GIT" "$DOTFILES_REPO" "$DOTFILES_GIT"
+    git clone --separate-git-dir "$DOTFILES_GIT" "$DOTFILES_REPO" "$DOTFILES_DIR"
 #    git --git-dir="$DOTFILES_GIT" config core.worktree "$DOTFILES_DIR"
 #    git --git-dir="$DOTFILES_GIT" checkout
     echo "✔ Done."
