@@ -55,7 +55,7 @@ mkcd() {
 # Reload the current shell's rc file.
 reload() {
     if [[ -n "$ZSH_VERSION" ]]; then
-        source "$HOME/.zshrc"
+        source "$HOME/.zshenv"
     elif [[ -n "$BASH_VERSION" ]]; then
         source "$HOME/.bashrc"
     fi

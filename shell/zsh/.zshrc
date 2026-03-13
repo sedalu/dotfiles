@@ -65,7 +65,7 @@ fpath=(
 )
 autoload -Uz compinit
 export ZSH_COMPDUMP="$XDG_CACHE_HOME/zsh/compdump"
-if [[ -n "$ZSH_COMPDUMP"(#qN.mh+24) ]]; then
+if [[ -n ${ZSH_COMPDUMP}(#qN.mh+24) ]]; then
     compinit -d "$ZSH_COMPDUMP"
 else
     compinit -C -d "$ZSH_COMPDUMP"

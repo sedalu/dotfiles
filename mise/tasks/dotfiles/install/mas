@@ -15,11 +15,11 @@ machine="${DOTFILES_MACHINE:-$(hostname | tr '[:upper:]' '[:lower:]' | tr -cs 'a
 install_from_file() {
     local file="${1}"
     [[ -f "${file}" ]] || return 0
-    while IFS= read --raw line; do
+    while IFS= read -r line; do
         [[ "${line}" =~ ^[[:space:]]*$ ]] && continue
         [[ "${line}" =~ ^[[:space:]]*# ]] && continue
         mas install "${line%% *}"
-    done < "${file}"
+    done <"${file}"
 }
 
 echo ""
