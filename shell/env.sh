@@ -48,6 +48,10 @@ export PATH="$XDG_DATA_HOME/mise/shims:$PATH"
 export DOTFILES_DIR="${DOTFILES_DIR:-$XDG_CONFIG_HOME}"
 export DOTFILES_GIT="${DOTFILES_GIT:-$XDG_DATA_HOME/dotfiles.git}"
 
+export DOTFILES_MACHINE="${DOTFILES_MACHINE:-$(hostname | tr '[:upper:]' '[:lower:]')}" # TODO: handle normalization; non-[a-z0-9-] -> -
+export DOTFILES_OS="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
+export DOTFILES_SHELL="${DOTFILES_SHELL}" # TODO: add fallback
+
 # Homebrew Bundle
 export HOMEBREW_BUNDLE_FILE="$DOTFILES_DIR/brew/Brewfile"
 
