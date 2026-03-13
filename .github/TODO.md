@@ -1,5 +1,7 @@
 # TODOs
 
+`rtk init --global --ultra-compact --hook-only --auto-patch`
+
 On macOS, these should be set. $DOTDILES_MACHINE should match LocalHostName
 
 ```shell
