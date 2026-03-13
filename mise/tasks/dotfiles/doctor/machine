@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#USAGE complete "Check machine name configuration"
+#MISE description="Check machine name configuration"
+#MISE hide=true
+set -euo pipefail
+
+# shellcheck source=lib/dotfiles/hostname.sh
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname.sh"
+
+fail=0
+warn=0
+
+# Check DOTFILES_MACHINE is set
+if [[ -n "${DOTFILES_MACHINE:-}" ]]; then
+    echo "✅ DOTFILES_MACHINE=$DOTFILES_MACHINE"
+else
+    echo "⚠️  DOTFILES_MACHINE is not set"
+    ((warn++)) || true
+fi
+
+# Check ~/.dotfiles has DOTFILES_MACHINE
+if grep -q '^DOTFILES_MACHINE=' "$HOME/.dotfiles" 2>/dev/null; then
+    echo "✅ ~/.dotfiles contains DOTFILES_MACHINE"
+else
+    echo "⚠️  ~/.dotfiles missing DOTFILES_MACHINE — run 'mise run dotfiles:machine'"
+    ((warn++)) || true
+fi
+
+# Check DOTFILES_MACHINE matches OS hostname
+current_normalized="$(normalize_hostname "$(get_hostname)")"
+if [[ -n "${DOTFILES_MACHINE:-}" && "$DOTFILES_MACHINE" != "$current_normalized" ]]; then
+    echo "⚠️  DOTFILES_MACHINE ($DOTFILES_MACHINE) differs from OS hostname ($current_normalized)"
+    ((warn++)) || true
+elif [[ -n "${DOTFILES_MACHINE:-}" ]]; then
+    echo "✅ DOTFILES_MACHINE matches OS hostname"
+fi
+
+echo ""
+if ((warn > 0)); then
+    echo "⚠️  $warn machine check warning(s)"
+    # Soft warning — don't fail the doctor run
+    exit 0
+fi
+echo "✅ Machine name configured correctly"

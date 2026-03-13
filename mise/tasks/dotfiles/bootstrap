@@ -49,6 +49,15 @@ echo "gitdir: $DOTFILES_GIT" > "$DOTFILES_DIR/.git"
 # shellcheck source=shell/env.sh
 source "$DOTFILES_DIR/shell/env.sh"
 
+# --- machine name ----------------------
+echo ""
+echo "🖥  Setting machine name..."
+if command -v mise &>/dev/null; then
+    mise run dotfiles:machine
+else
+    "$DOTFILES_DIR/mise/tasks/dotfiles/machine"
+fi
+
 # --- install ---------------------------
 echo ""
 echo "📦 Installing tools and packages..."

@@ -20,7 +20,7 @@ sudo scutil --set HostName "newname.local"
 | **John Carter of Mars (Barsoom)** | Kaol              | Good            | Good           | Excellent    | —                |
 | **John Carter of Mars (Barsoom)** | Thark             | Good            | Good           | Good         | —                |
 | **Dune**                          | Arrakis           | ⭐ Excellent    | Good           | Good         | —                |
-| **Dune**                          | Caladan           | Good            | Excellent      | Excellent    | —                |
+| **Dune**                          | Caladan (claimed) | Good            | Excellent      | Excellent    | —                |
 | **Dune**                          | Ix                | Good            | Excellent      | Good         | —                |
 | **Dune**                          | Tleilax           | —               | Good           | —            | Excellent        |
 | **Dune**                          | Kaitain           | Excellent       | ⭐ Excellent   | Good         | —                |

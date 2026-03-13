@@ -48,7 +48,13 @@ export PATH="$XDG_DATA_HOME/mise/shims:$PATH"
 export DOTFILES_DIR="${DOTFILES_DIR:-$XDG_CONFIG_HOME}"
 export DOTFILES_GIT="${DOTFILES_GIT:-$XDG_DATA_HOME/dotfiles.git}"
 
-export DOTFILES_MACHINE="${DOTFILES_MACHINE:-$(hostname | tr '[:upper:]' '[:lower:]')}" # TODO: handle normalization; non-[a-z0-9-] -> -
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    _dotfiles_raw_host="$(scutil --get LocalHostName 2>/dev/null || hostname)"
+else
+    _dotfiles_raw_host="$(hostname)"
+fi
+export DOTFILES_MACHINE="${DOTFILES_MACHINE:-$(printf '%s' "$_dotfiles_raw_host" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//')}"
+unset _dotfiles_raw_host
 export DOTFILES_OS="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
 export DOTFILES_SHELL="${DOTFILES_SHELL}" # TODO: add fallback
 

@@ -9,8 +9,11 @@ set -euo pipefail
 
 # --- install ----------------------------
 
+# shellcheck source=lib/dotfiles/hostname.sh
+source "${DOTFILES_DIR}/lib/dotfiles/hostname.sh"
+
 mas_dir="${DOTFILES_DIR}/mas"
-machine="${DOTFILES_MACHINE:-$(hostname | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//')}"
+machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
 
 install_from_file() {
     local file="${1}"
