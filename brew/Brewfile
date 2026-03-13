@@ -1,7 +1,17 @@
+# Linux and macOS
 brew "bash"
 brew "git"
 brew "zsh"
 
-# cask "font-jetbrains-mono-nerd-font"
-# cask "ghostty"
 cask "obsidian"
+
+# macOS only
+if OS.mac?
+    "mas"
+end
+
+# specific machines
+case ENV["DOTFILES_MACHINE"]
+when "machine-name"
+else
+end

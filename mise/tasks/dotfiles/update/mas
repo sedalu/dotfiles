@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#USAGE complete "Update App Store apps via mas"
+#MISE description="Update App Store apps via mas"
+#MISE hide=true
+
+set -euo pipefail
+
+[[ "${DOTFILES_OS:-}" != "darwin" ]] && exit 0
+
+# --- update -----------------------------
+
+echo ""
+echo "🔄 Updating App Store apps..."
+
+mas upgrade
+
+echo ""
+echo "🎉 App Store apps updated."

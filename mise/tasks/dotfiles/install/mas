@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#USAGE complete "Install App Store apps via mas"
+#MISE description="Install App Store apps via mas"
+#MISE hide=true
+
+set -euo pipefail
+
+[[ "${DOTFILES_OS:-}" != "darwin" ]] && exit 0
+
+# --- install ----------------------------
+
+mas_dir="${DOTFILES_DIR}/mas"
+machine="${DOTFILES_MACHINE:-$(hostname | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//')}"
+
+install_from_file() {
+    local file="${1}"
+    [[ -f "${file}" ]] || return 0
+    while IFS= read --raw line; do
+        [[ "${line}" =~ ^[[:space:]]*$ ]] && continue
+        [[ "${line}" =~ ^[[:space:]]*# ]] && continue
+        mas install "${line%% *}"
+    done < "${file}"
+}
+
+echo ""
+echo "📦 Installing App Store apps..."
+
+install_from_file "${mas_dir}/apps"
+install_from_file "${mas_dir}/apps.${machine}"
+
+echo ""
+echo "🎉 App Store apps installed."
