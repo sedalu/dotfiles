@@ -2,6 +2,8 @@
 
 XDG-compliant dotfiles managed as a bare git repo. The worktree is `$DOTFILES_DIR` (typically `$XDG_CONFIG_HOME` or `~/.config`) and the git directory lives at `$DOTFILES_GIT` (typically `$XDG_DATA_DIR/dotfiles.git` or `~/.local/share/dotfiles.git`). Use the `dotfiles` alias (defined in `shell/interactive.sh`) for git operations against this repo.
 
+See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture and design rationale.
+
 ## Directory layout
 
 | Directory       | Purpose                                                         |

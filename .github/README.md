@@ -21,6 +21,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`) |
 | `starship.toml` | Starship prompt config                                |
+| `DESIGN.md`     | [System architecture and design rationale](DESIGN.md) |
 
 ## Setup
 
