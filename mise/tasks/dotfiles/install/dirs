@@ -4,28 +4,15 @@
 #MISE hide=true
 set -euo pipefail
 
-# --- install ---------------------------
+# shellcheck source=../../../../lib/dotfiles/dirs.sh
+. "$DOTFILES_DIR/lib/dotfiles/dirs.sh"
 
-# XDG base directories and shell-specific subdirectories.
-dirs=(
-    # xdg
-    "$XDG_CACHE_HOME"
-    "$XDG_CONFIG_HOME"
-    "$XDG_DATA_HOME"
-    "$XDG_STATE_HOME"
-    # shell/bash
-    "$XDG_DATA_HOME/bash/completions"
-    "$XDG_STATE_HOME/bash"
-    # shell/zsh
-    "$XDG_STATE_HOME/zsh"
-    "$XDG_CACHE_HOME/zsh/init"
-    "$XDG_DATA_HOME/zsh/site-functions"
-)
+# --- install ---------------------------
 
 echo ""
 echo "📁 Creating XDG directories..."
 
-for dir in "${dirs[@]}"; do
+for dir in "${dotfiles_dirs[@]}"; do
     mkdir -p "$dir"
 done
 echo "✔ Done."

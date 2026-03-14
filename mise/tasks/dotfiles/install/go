@@ -4,14 +4,8 @@
 #MISE hide=true
 set -euo pipefail
 
-# --- config -----------------------------
-
-# Go module workspace root.
-gopath="$XDG_DATA_HOME/go"
-# Downloaded module cache.
-gomodcache="$XDG_CACHE_HOME/go/mod"
-# Build output cache.
-gocache="$XDG_CACHE_HOME/go-build"
+# shellcheck source=../../../../lib/dotfiles/go.sh
+. "$DOTFILES_DIR/lib/dotfiles/go.sh"
 
 # --- install ----------------------------
 
@@ -22,17 +16,17 @@ fi
 
 echo ""
 echo "⚙️ Configuring Go environment..."
-echo "→ GOPATH=$gopath"
-echo "→ GOMODCACHE=$gomodcache"
-echo "→ GOCACHE=$gocache"
+echo "→ GOPATH=$dotfiles_gopath"
+echo "→ GOMODCACHE=$dotfiles_gomodcache"
+echo "→ GOCACHE=$dotfiles_gocache"
 
 # Ensure the directory for $GOENV exists before go env -w writes to it.
 mkdir -p "$(dirname "$GOENV")"
 
 go env -w \
-    GOPATH="$gopath" \
-    GOMODCACHE="$gomodcache" \
-    GOCACHE="$gocache"
+    GOPATH="$dotfiles_gopath" \
+    GOMODCACHE="$dotfiles_gomodcache" \
+    GOCACHE="$dotfiles_gocache"
 
 echo "✅ Done."
 echo ""

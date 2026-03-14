@@ -119,30 +119,3 @@
 | **A Fire Upon the Deep** (Vinge)        | Outofband    | Ship    | Out of Band II, rescue vessel to Tines' World         |
 | **A Fire Upon the Deep** (Vinge)        | Skroderider  | Ship    | Sentient plant-on-wheels' mobile platform             |
 
-## Deduplicate repeated lists in mise tasks
-
-Several lists are duplicated between `mise/tasks/dotfiles/install/` and `mise/tasks/dotfiles/doctor/`. Extract each into a shared source so changes only need to happen once.
-
-### 1. XDG Directories
-
-- **install/dirs** defines 9 directories
-- **doctor/dirs** checks 7 of those 9 (missing `$XDG_DATA_HOME/bash/completions` and `$XDG_DATA_HOME/zsh/site-functions`)
-- Doctor should check the full list — the subset is likely an oversight
-
-### 2. Zsh Plugins
-
-- **install/zsh-plugins** uses `name:url` pairs (5 plugins)
-- **doctor/zsh-plugins** uses plain names (same 5 plugins)
-- Same logical list, different formats — extract plugin names so both scripts derive from one source
-
-### 3. Symlinks
-
-- **install/symlinks** defines 6 symlink pairs
-- **doctor/symlinks** checks 5 of those 6 (missing `$HOME/.ssh/config:$DOTFILES_DIR/ssh/config`)
-- Doctor should check all symlinks — the missing SSH entry is likely an oversight
-
-### 4. Go Env Vars
-
-- **install/go** defines `gopath`, `gomodcache`, `gocache` with XDG-based values
-- **doctor/go** defines `expected_gopath`, `expected_gomodcache`, `expected_gocache` with identical values
-- Same values duplicated under different variable names — extract to a shared config

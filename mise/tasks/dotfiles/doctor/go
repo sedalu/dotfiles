@@ -4,14 +4,8 @@
 #MISE hide=true
 set -euo pipefail
 
-# --- config -----------------------------
-
-# Expected GOPATH — Go module workspace root.
-expected_gopath="$XDG_DATA_HOME/go"
-# Expected GOMODCACHE — downloaded module cache.
-expected_gomodcache="$XDG_CACHE_HOME/go/mod"
-# Expected GOCACHE — build output cache.
-expected_gocache="$XDG_CACHE_HOME/go-build"
+# shellcheck source=../../../../lib/dotfiles/go.sh
+. "$DOTFILES_DIR/lib/dotfiles/go.sh"
 
 # --- verify -----------------------------
 
@@ -39,28 +33,28 @@ fi
 
 # 3. GOPATH
 actual="$(go env GOPATH)"
-if [[ "$actual" == "$expected_gopath" ]]; then
+if [[ "$actual" == "$dotfiles_gopath" ]]; then
     echo "✅ GOPATH=$actual"
 else
-    echo "❌ GOPATH=$actual, expected $expected_gopath"
+    echo "❌ GOPATH=$actual, expected $dotfiles_gopath"
     failed=$((failed + 1))
 fi
 
 # 4. GOMODCACHE
 actual="$(go env GOMODCACHE)"
-if [[ "$actual" == "$expected_gomodcache" ]]; then
+if [[ "$actual" == "$dotfiles_gomodcache" ]]; then
     echo "✅ GOMODCACHE=$actual"
 else
-    echo "❌ GOMODCACHE=$actual, expected $expected_gomodcache"
+    echo "❌ GOMODCACHE=$actual, expected $dotfiles_gomodcache"
     failed=$((failed + 1))
 fi
 
 # 5. GOCACHE
 actual="$(go env GOCACHE)"
-if [[ "$actual" == "$expected_gocache" ]]; then
+if [[ "$actual" == "$dotfiles_gocache" ]]; then
     echo "✅ GOCACHE=$actual"
 else
-    echo "❌ GOCACHE=$actual, expected $expected_gocache"
+    echo "❌ GOCACHE=$actual, expected $dotfiles_gocache"
     failed=$((failed + 1))
 fi
 

@@ -4,21 +4,8 @@
 #MISE hide=true
 set -euo pipefail
 
-# --- config ----------------------------
-
-# Symlink mappings as "link:target" pairs.
-symlinks=(
-    # claude
-    "$HOME/.claude/CLAUDE.md:$DOTFILES_DIR/claude/CLAUDE.md"
-    "$HOME/.claude/LESSONS.md:$DOTFILES_DIR/claude/LESSONS.md"
-    # shell/bash
-    "$HOME/.bash_profile:$DOTFILES_DIR/shell/bash/.bash_profile"
-    "$HOME/.bashrc:$DOTFILES_DIR/shell/bash/.bashrc"
-    # shell/zsh
-    "$HOME/.zshenv:$DOTFILES_DIR/shell/zsh/.zshenv"
-    # ssh
-    "$HOME/.ssh/config:$DOTFILES_DIR/ssh/config"
-)
+# shellcheck source=../../../../lib/dotfiles/symlinks.sh
+. "$DOTFILES_DIR/lib/dotfiles/symlinks.sh"
 
 echo ""
 echo "⚙️ Configuring..."
@@ -30,7 +17,7 @@ echo ""
 echo "🔗 Installing symlinks..."
 
 failed=0
-for pair in "${symlinks[@]}"; do
+for pair in "${dotfiles_symlinks[@]}"; do
     link="${pair%%:*}"
     target="${pair#*:}"
     target="${target/#\~/$HOME}"

@@ -5,18 +5,13 @@
 #MISE hide=true
 set -euo pipefail
 
-plugins_dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
-plugins=(
-    fzf-tab
-    zsh-autosuggestions
-    zsh-completions
-    zsh-fast-syntax-highlighting
-    zsh-history-substring-search
-)
+# shellcheck source=../../../../lib/dotfiles/zsh-plugins.sh
+. "$DOTFILES_DIR/lib/dotfiles/zsh-plugins.sh"
 
 missing=0
-for plugin in "${plugins[@]}"; do
-    if [[ -d "$plugins_dir/$plugin" ]]; then
+for pair in "${dotfiles_zsh_plugins[@]}"; do
+    plugin="${pair%%:*}"
+    if [[ -d "$ZSH_PLUGINS_DIR/$plugin" ]]; then
         echo "✅ $plugin"
     else
         echo "⚠️ $plugin not found"

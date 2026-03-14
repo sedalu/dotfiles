@@ -4,21 +4,11 @@
 #MISE hide=true
 set -euo pipefail
 
-dirs=(
-    # xdg
-    "$XDG_CACHE_HOME"
-    "$XDG_CONFIG_HOME"
-    "$XDG_DATA_HOME"
-    "$XDG_STATE_HOME"
-    # shell/bash
-    "$XDG_STATE_HOME/bash"
-    # shell/zsh
-    "$XDG_CACHE_HOME/zsh/init"
-    "$XDG_STATE_HOME/zsh"
-)
+# shellcheck source=../../../../lib/dotfiles/dirs.sh
+. "$DOTFILES_DIR/lib/dotfiles/dirs.sh"
 
 fail=0
-for dir in "${dirs[@]}"; do
+for dir in "${dotfiles_dirs[@]}"; do
     if [[ -d "$dir" ]]; then
         echo "✅ $dir"
     else
