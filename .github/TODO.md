@@ -4,71 +4,145 @@
 
 ## Device Names
 
-| Series                            | Planet/World Name | Personal Laptop | Desktop/Server | Phone/Mobile | Backup/Secondary |
-| --------------------------------- | ----------------- | --------------- | -------------- | ------------ | ---------------- |
-| **John Carter of Mars (Barsoom)** | Barsoom           | ⭐ Excellent    | Good           | Good         | —                |
-| **John Carter of Mars (Barsoom)** | Hastor            | Good            | Excellent      | Good         | —                |
-| **John Carter of Mars (Barsoom)** | Manator           | —               | Good           | —            | Excellent        |
-| **John Carter of Mars (Barsoom)** | Kaol              | Good            | Good           | Excellent    | —                |
-| **John Carter of Mars (Barsoom)** | Thark             | Good            | Good           | Good         | —                |
-| **Dune**                          | Arrakis           | ⭐ Excellent    | Good           | Good         | —                |
-| **Dune**                          | Caladan (claimed) | Good            | Excellent      | Excellent    | —                |
-| **Dune**                          | Ix                | Good            | Excellent      | Good         | —                |
-| **Dune**                          | Tleilax           | —               | Good           | —            | Excellent        |
-| **Dune**                          | Kaitain           | Excellent       | ⭐ Excellent   | Good         | —                |
-| **Dune**                          | Grumman           | Good            | Good           | Good         | —                |
-| **Dune**                          | Balrin            | —               | Good           | —            | Excellent        |
-| **Dune**                          | Tupile            | Good            | Good           | Excellent    | —                |
-| **Dune**                          | Sikun             | —               | Good           | —            | Excellent        |
-| **Foundation**                    | Trantor           | ⭐ Excellent    | ⭐ Excellent   | Good         | —                |
-| **Foundation**                    | Terminus          | ⭐ Excellent    | Good           | Excellent    | —                |
-| **Foundation**                    | Gaia              | Good            | Excellent      | Excellent    | —                |
-| **Foundation**                    | Haven             | Good            | Good           | Good         | —                |
-| **Foundation**                    | Helicon           | —               | Good           | Excellent    | —                |
-| **Foundation**                    | Kalgan            | Good            | Excellent      | Good         | —                |
-| **Foundation**                    | Santanni          | Good            | Good           | Good         | —                |
-| **Foundation**                    | Synnax            | —               | Good           | Excellent    | —                |
-| **Foundation**                    | Wega              | Good            | Good           | Good         | —                |
-| **Foundation**                    | Zeon              | Good            | Good           | Excellent    | —                |
-| **Foundation**                    | Aurora            | Good            | Good           | Good         | —                |
-| **Foundation**                    | Rossem            | —               | Good           | —            | Excellent        |
-| **Foundation**                    | Comporellon       | Good            | Excellent      | Good         | —                |
-| **Foundation**                    | Mandress          | Good            | Good           | Good         | —                |
-| **Hyperion**                      | Hyperion          | ⭐ Excellent    | Excellent      | Good         | —                |
-| **Hyperion**                      | Pacem             | Good            | Excellent      | Good         | —                |
-| **Hyperion**                      | Maui              | Good            | Good           | Excellent    | —                |
-| **Hyperion**                      | Lusus             | —               | Good           | —            | Excellent        |
-| **Hyperion**                      | Hebrides          | Good            | Good           | Good         | —                |
-| **Hyperion**                      | Thebes            | Good            | Excellent      | Good         | —                |
-| **Hyperion**                      | Madhya            | —               | Good           | Excellent    | —                |
-| **The Expanse**                   | Ceres             | Good            | Good           | Good         | —                |
-| **The Expanse**                   | Eros              | Good            | Good           | Good         | —                |
-| **The Expanse**                   | Tycho             | Good            | Excellent      | Good         | —                |
-| **The Expanse**                   | Ganymede          | Good            | Excellent      | Excellent    | —                |
-| **The Expanse**                   | Europa            | Good            | Good           | Good         | —                |
-| **The Expanse**                   | Titan             | ⭐ Excellent    | Excellent      | Good         | —                |
-| **The Expanse**                   | Io                | Good            | Good           | Good         | —                |
-| **The Expanse**                   | Vesta             | Good            | Good           | Excellent    | —                |
-| **Hitchhiker's Guide**            | Magrathea         | Good            | Excellent      | Good         | —                |
-| **Hitchhiker's Guide**            | Betelgeuse        | Good            | Good           | Good         | —                |
-| **Hitchhiker's Guide**            | Milliways         | —               | —              | —            | Good             |
-| **Revelation Space**              | Yellowstone       | ⭐ Excellent    | Excellent      | Good         | —                |
-| **Revelation Space**              | Resurgam          | Good            | Excellent      | Good         | —                |
-| **Revelation Space**              | Ararat            | Good            | Good           | Excellent    | —                |
-| **Revelation Space**              | Hela              | —               | Good           | —            | Excellent        |
-| **Revelation Space**              | Skynet            | Good            | Good           | Good         | —                |
-| **Revelation Space**              | Epsilon Eridani   | Good            | Excellent      | Good         | —                |
-| **Revelation Space**              | Chasm City        | Good            | Good           | Excellent    | —                |
-| **Revelation Space**              | Thorn             | —               | Good           | —            | Excellent        |
-| **Revelation Space**              | Felicity          | Good            | Good           | Good         | —                |
-| **Revelation Space**              | Glitter Band      | —               | Good           | —            | Excellent        |
-| **Ancillary Justice**             | Radch             | ⭐ Excellent    | Excellent      | Good         | —                |
-| **Ancillary Justice**             | Aatr              | Good            | Good           | Excellent    | —                |
-| **Ancillary Justice**             | Athoek            | Good            | Excellent      | Good         | —                |
-| **Ancillary Justice**             | Ime               | —               | Good           | —            | Excellent        |
-| **Ancillary Justice**             | Kef               | Good            | Good           | Good         | —                |
-| **Ancillary Justice**             | Omaugh            | Good            | Good           | Good         | —                |
-| **Ancillary Justice**             | Shis'urna         | —               | Good           | Excellent    | —                |
-| **The Left Hand of Darkness**     | Gethen            | ⭐ Excellent    | Good           | Good         | —                |
-| **The Left Hand of Darkness**     | Karhide           | Good            | Excellent      | Good         | —                |
-| **The Left Hand of Darkness**     | Orgoreyn          | Good            | Good           | Excellent    | —                |
+| Series                                  | Name         | Type    | Description                                           |
+| --------------------------------------- | ------------ | ------- | ----------------------------------------------------- |
+| **Ancillary Justice** (Leckie)          | Aatr         | Planet  | Radchaai-controlled world                             |
+| **Ancillary Justice** (Leckie)          | Atagaris     | Ship    | Sword of Atagaris, Radchaai military cruiser          |
+| **Ancillary Justice** (Leckie)          | Athoek       | Planet  | Tea-growing Radchaai world                            |
+| **Ancillary Justice** (Leckie)          | Ime          | Planet  | Remote Radchaai territory                             |
+| **Ancillary Justice** (Leckie)          | Kalr         | Ship    | Mercy of Kalr, Breq's assigned vessel                 |
+| **Ancillary Justice** (Leckie)          | Kef          | Planet  | Radchaai border world                                 |
+| **Ancillary Justice** (Leckie)          | Omaugh       | Planet  | Radchaai palace world                                 |
+| **Ancillary Justice** (Leckie)          | Radch        | Planet  | Capital of the Radchaai empire                        |
+| **Ancillary Justice** (Leckie)          | Shisurna     | Planet  | Radchaai world with diverse populations               |
+| **Ancillary Justice** (Leckie)          | Toren        | Ship    | Justice of Toren, ancillary troop carrier             |
+| **Blindsight** (Watts)                  | Rorschach    | Ship    | Alien vessel found at the edge of the solar system    |
+| **Blindsight** (Watts)                  | Theseus      | Ship    | Earth's first contact vessel with vampire captain     |
+| **Chanur** (Cherryh)                    | Chanur       | Ship    | Pride of Chanur, hani merchant trader                 |
+| **Dune** (Herbert)                      | Arrakis      | Planet  | Desert world, sole source of the spice melange        |
+| **Dune** (Herbert)                      | Balrin       | Planet  | Minor Landsraad world                                 |
+| **Dune** (Herbert)                      | ✅ Caladan   | Planet  | Ancestral home of House Atreides                      |
+| **Dune** (Herbert)                      | Grumman      | Planet  | Homeworld of House Moritani                           |
+| **Dune** (Herbert)                      | Heighliner   | Ship    | Spacing Guild foldspace transport                     |
+| **Dune** (Herbert)                      | Ix           | Planet  | Machine-culture industrial world                      |
+| **Dune** (Herbert)                      | Kaitain      | Planet  | Imperial capital of the Known Universe                |
+| **Dune** (Herbert)                      | Sikun        | Planet  | Minor Landsraad world                                 |
+| **Dune** (Herbert)                      | Tleilax      | Planet  | Homeworld of the Bene Tleilax                         |
+| **Dune** (Herbert)                      | Tupile       | Planet  | Hidden sanctuary for renegade houses                  |
+| **Foundation** (Asimov)                 | Aurora       | Planet  | First Spacer world settled from Earth                 |
+| **Foundation** (Asimov)                 | Comporellon  | Planet  | Ancient world near the galactic core                  |
+| **Foundation** (Asimov)                 | ✅ Farstar   | Ship    | Foundation search vessel in Second Foundation arc     |
+| **Foundation** (Asimov)                 | Gaia         | Planet  | Living world with collective consciousness            |
+| **Foundation** (Asimov)                 | Haven        | Planet  | Independent Traders' refuge world                     |
+| **Foundation** (Asimov)                 | Helicon      | Planet  | Hari Seldon's homeworld                               |
+| **Foundation** (Asimov)                 | Kalgan       | Planet  | Pleasure world and seat of the Mule                   |
+| **Foundation** (Asimov)                 | Mandress     | Planet  | Peripheral Foundation world                           |
+| **Foundation** (Asimov)                 | Rossem       | Planet  | Frozen backwater hiding Second Foundation             |
+| **Foundation** (Asimov)                 | Santanni     | Planet  | Foundation-allied trade world                         |
+| **Foundation** (Asimov)                 | Synnax       | Planet  | Backwater world of Foundation origin                  |
+| **Foundation** (Asimov)                 | Terminus     | Planet  | Edge-of-galaxy seat of the Foundation                 |
+| **Foundation** (Asimov)                 | Trantor      | Planet  | Ecumenopolis capital of the Galactic Empire           |
+| **Foundation** (Asimov)                 | Wega         | Planet  | Galactic Empire world                                 |
+| **Foundation** (Asimov)                 | Zeon         | Planet  | Galactic Empire border world                          |
+| **Honor Harrington** (Weber)            | Fearless     | Ship    | Harrington's first command, light cruiser             |
+| **Honor Harrington** (Weber)            | Hexapuma     | Ship    | Edward Saganami-C class heavy cruiser                 |
+| **Honor Harrington** (Weber)            | Nike         | Ship    | Battlecruiser class named for the goddess             |
+| **Honor Harrington** (Weber)            | Saganami     | Ship    | Namesake heavy cruiser class of the RMN               |
+| **House of Suns** (Reynolds)            | Silverwing   | Ship    | Silver Wings of Morning, Gentian Line vessel          |
+| **Hyperion Cantos** (Simmons)           | Consul       | Ship    | The Consul's personal diplomatic starship             |
+| **Hyperion Cantos** (Simmons)           | Hebrides     | Planet  | Hegemony colonial world                               |
+| **Hyperion Cantos** (Simmons)           | Hyperion     | Planet  | Labyrinthine world home to the Time Tombs             |
+| **Hyperion Cantos** (Simmons)           | Lusus        | Planet  | High-gravity industrial Hegemony world                |
+| **Hyperion Cantos** (Simmons)           | Madhya       | Planet  | Hegemony world in the Web                             |
+| **Hyperion Cantos** (Simmons)           | Maui         | Planet  | Ocean resort world in the Hegemony                    |
+| **Hyperion Cantos** (Simmons)           | Pacem        | Planet  | Vatican world of the Catholic Church                  |
+| **Hyperion Cantos** (Simmons)           | Raphael      | Ship    | Archangel-class starship                              |
+| **Hyperion Cantos** (Simmons)           | Thebes       | Planet  | Hegemony military world                               |
+| **Hyperion Cantos** (Simmons)           | Yggdrasill   | Ship    | Hegemony treeship, living starship                    |
+| **John Carter of Mars** (Burroughs)     | Barsoom      | Planet  | Mars as known to its inhabitants                      |
+| **Murderbot Diaries** (Wells)           | Perihelion   | Ship    | Survey vessel central to Murderbot's story            |
+| **Old Man's War** (Scalzi)              | Kite         | Ship    | Colonial Defense Forces assault ship                  |
+| **Old Man's War** (Scalzi)              | Sparrowhawk  | Ship    | CDF light transport vessel                            |
+| **Old Man's War** (Scalzi)              | Tubingen     | Ship    | CDF cruiser-class warship                             |
+| **Pandora's Star** (Hamilton)           | Scimitarr    | Ship    | Commonwealth exploratory vessel                       |
+| **Pandora's Star** (Hamilton)           | Secondchance | Ship    | Second Chance, first starship to the Dyson Pair       |
+| **Project Hail Mary** (Weir)            | Hailmary     | Ship    | Last-hope interstellar vessel to Tau Ceti             |
+| **Pushing Ice** (Reynolds)              | Rockhopper   | Ship    | Comet-mining vessel diverted to chase Janus           |
+| **Rendezvous with Rama** (Clarke)       | Endeavour    | Ship    | Solar survey vessel that discovers Rama               |
+| **Rendezvous with Rama** (Clarke)       | Rama         | Ship    | Alien cylindrical worldship entering the solar system |
+| **Revelation Space** (Reynolds)         | Ararat       | Planet  | Ocean world refuge for Resurgam colonists             |
+| **Revelation Space** (Reynolds)         | Felicity     | Planet  | Peripheral colony world                               |
+| **Revelation Space** (Reynolds)         | Hela         | Planet  | Ice world orbiting Haldora with vanishing moon        |
+| **Revelation Space** (Reynolds)         | Inference    | Ship    | Conjoiner lighthugger                                 |
+| **Revelation Space** (Reynolds)         | Nightshade   | Ship    | Experimental stealth starship                         |
+| **Revelation Space** (Reynolds)         | Nostalgia    | Ship    | Nostalgia for Infinity, plague-ridden lighthugger     |
+| **Revelation Space** (Reynolds)         | Resurgam     | Planet  | Arid colony world with Amarantin ruins                |
+| **Revelation Space** (Reynolds)         | Skynet       | Planet  | Revelation Space colony world                         |
+| **Revelation Space** (Reynolds)         | Thorn        | Planet  | Peripheral Revelation Space world                     |
+| **Revelation Space** (Reynolds)         | Yellowstone  | Planet  | Rust Belt orbital hub, Chasm City below               |
+| **Ringworld** (Niven)                   | Bastard      | Ship    | Lying Bastard, first Ringworld expedition craft       |
+| **Ringworld** (Niven)                   | Longshot     | Ship    | Long Shot, fastest known Puppeteer ship               |
+| **Ringworld** (Niven)                   | Needle       | Ship    | Hot Needle of Inquiry, second Ringworld expedition    |
+| **Ringworld** (Niven)                   | Ringworld    | Station | Megastructure ring around a star                      |
+| **Seveneves** (Stephenson)              | Endurance    | Ship    | ISS-derived survival vessel after the moon breaks up  |
+| **Seveneves** (Stephenson)              | Izzy         | Station | International Space Station repurposed as ark         |
+| **Seveneves** (Stephenson)              | Ymir         | Ship    | Comet-harvesting nuclear submarine turned spacecraft  |
+| **Sun Eater** (Ruocchio)                | Tamerlane    | Ship    | Imperial warship of Hadrian Marlowe                   |
+| **Tau Zero** (Anderson)                 | Leonora      | Ship    | Leonora Christine, Bussard ramjet colonizer           |
+| **The Expanse** (Corey)                 | Agatha       | Ship    | Agatha King, UNN Jupiter fleet flagship               |
+| **The Expanse** (Corey)                 | Canterbury   | Ship    | Ice hauler whose destruction sparks system-wide war   |
+| **The Expanse** (Corey)                 | Ceres        | Planet  | Dwarf planet and Belt capital station                 |
+| **The Expanse** (Corey)                 | Donnager     | Ship    | MCRN flagship battleship                              |
+| **The Expanse** (Corey)                 | Eros         | Planet  | Asteroid station site of the protomolecule outbreak   |
+| **The Expanse** (Corey)                 | Europa       | Planet  | Jovian moon colony                                    |
+| **The Expanse** (Corey)                 | Ganymede     | Planet  | Breadbasket moon of the outer planets                 |
+| **The Expanse** (Corey)                 | Io           | Planet  | Jovian moon and protomolecule research site           |
+| **The Expanse** (Corey)                 | Medina       | Station | Ring Station at the hub of the gate network           |
+| **The Expanse** (Corey)                 | Nauvoo       | Ship    | Generation ship converted to warship Behemoth         |
+| **The Expanse** (Corey)                 | Pella        | Ship    | Free Navy flagship of Marco Inaros                    |
+| **The Expanse** (Corey)                 | Razorback    | Ship    | Racing pinnace used by Bobbie and Avasarala           |
+| **The Expanse** (Corey)                 | Rocinante    | Ship    | Legitimate salvage Martian corvette                   |
+| **The Expanse** (Corey)                 | Titan        | Planet  | Saturn moon and Martian naval base                    |
+| **The Expanse** (Corey)                 | Tycho        | Station | Tycho Station, Belt engineering and shipyard hub      |
+| **The Expanse** (Corey)                 | Vesta        | Planet  | Belt asteroid colony                                  |
+| **The Left Hand of Darkness** (Le Guin) | Gethen       | Planet  | Winter world of ambisexual humans                     |
+| **The Left Hand of Darkness** (Le Guin) | Karhide      | Planet  | Gethenian nation of King Argaven                      |
+| **The Left Hand of Darkness** (Le Guin) | Orgoreyn     | Planet  | Rival Gethenian nation-state                          |
+| **The Martian** (Weir)                  | Hermes       | Ship    | Earth-Mars cycler carrying Ares crew                  |
+| **The Stars My Destination** (Bester)   | Doone        | Ship    | Clan vessel in the teleportation age                  |
+| **The Stars My Destination** (Bester)   | Doris        | Ship    | Vessel linked to Gully Foyle's vengeance              |
+| **Vorkosigan Saga** (Bujold)            | Ariel        | Ship    | Dendarii Mercenaries fast courier                     |
+| **Vorkosigan Saga** (Bujold)            | Kestrel      | Ship    | Dendarii fleet escort vessel                          |
+| **Vorkosigan Saga** (Bujold)            | Serg         | Ship    | Prince Serg, Barrayaran flagship dreadnought          |
+| **Wayfarers** (Chambers)                | Lovelace     | Ship    | AI-driven vessel in the Galactic Commons              |
+| **Wayfarers** (Chambers)                | Wayfarer     | Ship    | Tunneling ship boring wormholes through space         |
+| **A Fire Upon the Deep** (Vinge)        | Outofband    | Ship    | Out of Band II, rescue vessel to Tines' World         |
+| **A Fire Upon the Deep** (Vinge)        | Skroderider  | Ship    | Sentient plant-on-wheels' mobile platform             |
+
+## Deduplicate repeated lists in mise tasks
+
+Several lists are duplicated between `mise/tasks/dotfiles/install/` and `mise/tasks/dotfiles/doctor/`. Extract each into a shared source so changes only need to happen once.
+
+### 1. XDG Directories
+
+- **install/dirs** defines 9 directories
+- **doctor/dirs** checks 7 of those 9 (missing `$XDG_DATA_HOME/bash/completions` and `$XDG_DATA_HOME/zsh/site-functions`)
+- Doctor should check the full list — the subset is likely an oversight
+
+### 2. Zsh Plugins
+
+- **install/zsh-plugins** uses `name:url` pairs (5 plugins)
+- **doctor/zsh-plugins** uses plain names (same 5 plugins)
+- Same logical list, different formats — extract plugin names so both scripts derive from one source
+
+### 3. Symlinks
+
+- **install/symlinks** defines 6 symlink pairs
+- **doctor/symlinks** checks 5 of those 6 (missing `$HOME/.ssh/config:$DOTFILES_DIR/ssh/config`)
+- Doctor should check all symlinks — the missing SSH entry is likely an oversight
+
+### 4. Go Env Vars
+
+- **install/go** defines `gopath`, `gomodcache`, `gocache` with XDG-based values
+- **doctor/go** defines `expected_gopath`, `expected_gomodcache`, `expected_gocache` with identical values
+- Same values duplicated under different variable names — extract to a shared config
