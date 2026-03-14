@@ -10,9 +10,3 @@ if OS.mac?
     cask "obsidian"
     cask "tailscale-app"
 end
-
-# specific machines
-case ENV["DOTFILES_MACHINE"]
-when "machine-name"
-else
-end
