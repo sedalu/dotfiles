@@ -4,23 +4,23 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 
 ## Structure
 
-| Directory       | Purpose                                             |
-| --------------- | --------------------------------------------------- |
-| `shell/`        | Bash and Zsh config (env, interactive, completions) |
-| `brew/`         | Homebrew `Brewfile`                                 |
-| `mise/`         | mise config, tasks, and hooks                       |
-| `git/`          | Git config and ignore                               |
-| `ghostty/`      | Ghostty terminal config                             |
-| `helix/`        | Helix editor config                                 |
-| `gh/`           | GitHub CLI config and hosts                         |
-| `bat/`          | Bat syntax highlighting config                      |
-| `lazygit/`      | Lazygit TUI config                                  |
-| `claude/`       | Claude Code workflow notes                          |
-| `mas/`          | Mac App Store app list                              |
-| `fnox/`         | Secret management config (macOS Keychain)           |
-| `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)  |
+| Directory       | Purpose                                               |
+| --------------- | ----------------------------------------------------- |
+| `shell/`        | Bash and Zsh config (env, interactive, completions)   |
+| `brew/`         | Homebrew `Brewfile`                                   |
+| `mise/`         | mise config, tasks, and hooks                         |
+| `git/`          | Git config and ignore                                 |
+| `ghostty/`      | Ghostty terminal config                               |
+| `helix/`        | Helix editor config                                   |
+| `gh/`           | GitHub CLI config and hosts                           |
+| `bat/`          | Bat syntax highlighting config                        |
+| `lazygit/`      | Lazygit TUI config                                    |
+| `claude/`       | Claude Code workflow notes                            |
+| `mas/`          | Mac App Store app list                                |
+| `fnox/`         | Secret management config (macOS Keychain)             |
+| `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`) |
-| `starship.toml` | Starship prompt config                              |
+| `starship.toml` | Starship prompt config                                |
 
 ## Setup
 
@@ -34,10 +34,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/<user>/dotfiles/main/bin/boo
 Or clone manually first, then run the bootstrap script (it skips the clone step if the repo already exists):
 
 ```sh
-mkdir -p ~/.local/share
-git clone --bare https://github.com/<user>/dotfiles.git ~/.local/share/dotfiles.git
-git --git-dir=~/.local/share/dotfiles.git config core.worktree ~/.config
-git --git-dir=~/.local/share/dotfiles.git checkout -f
+git clone --separate-git-dir ~/.local/share/dotfiles.git \
+    https://github.com/<user>/dotfiles.git ~/.config
 
 ~/.config/bin/bootstrap https://github.com/<user>/dotfiles.git
 ```

@@ -4,24 +4,24 @@ XDG-compliant dotfiles managed as a bare git repo. The worktree is `$DOTFILES_DI
 
 ## Directory layout
 
-| Directory       | Purpose                                                 |
-| --------------- | ------------------------------------------------------- |
-| `shell/`        | Shared env (`env.sh`, `interactive.sh`) + bash/zsh dirs |
-| `mise/`         | Tool versions (`config.toml`), tasks, and hooks         |
-| `brew/`         | Homebrew Brewfile (system-level deps and casks only)    |
-| `git/`          | Git config and ignore                                   |
-| `ghostty/`      | Ghostty terminal config                                 |
-| `helix/`        | Helix editor config and language servers                |
-| `gh/`           | GitHub CLI config and hosts                             |
-| `bat/`          | Bat syntax highlighting config and themes               |
-| `claude/`       | Claude Code personal workflow notes                     |
-| `fnox/`         | fnox secret management config (macOS Keychain)          |
-| `lazygit/`      | Lazygit TUI config and Catppuccin theme                 |
-| `lib/`          | Shell helper libraries                                  |
-| `mas/`          | Mac App Store app list                                  |
-| `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)      |
-| `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)   |
-| `starship.toml` | Starship prompt theme                                   |
+| Directory       | Purpose                                                         |
+| --------------- | --------------------------------------------------------------- |
+| `shell/`        | Shared env (`env.sh`, `interactive.sh`) + bash/zsh dirs         |
+| `mise/`         | Tool versions (`config.toml`), tasks, and hooks                 |
+| `brew/`         | Homebrew Brewfile (system-level deps and casks only)            |
+| `git/`          | User-level git config and ignore                                |
+| `ghostty/`      | Ghostty terminal config                                         |
+| `helix/`        | Helix editor config and language servers                        |
+| `gh/`           | GitHub CLI config and hosts                                     |
+| `bat/`          | Bat syntax highlighting config and themes                       |
+| `claude/`       | User-level Claude Code workflow notes (symliked to `~/.claude`) |
+| `fnox/`         | fnox secret management config (macOS Keychain)                  |
+| `lazygit/`      | Lazygit TUI config and Catppuccin theme                         |
+| `lib/`          | Shell helper libraries                                          |
+| `mas/`          | Mac App Store app list                                          |
+| `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)              |
+| `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)           |
+| `starship.toml` | Starship prompt config                                          |
 
 ## Tooling: mise-first approach
 
