@@ -8,14 +8,18 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 | --------------- | --------------------------------------------------- |
 | `shell/`        | Bash and Zsh config (env, interactive, completions) |
 | `brew/`         | Homebrew `Brewfile`                                 |
-| `mise/`         | mise config and tasks                               |
+| `mise/`         | mise config, tasks, and hooks                       |
 | `git/`          | Git config and ignore                               |
 | `ghostty/`      | Ghostty terminal config                             |
 | `helix/`        | Helix editor config                                 |
 | `gh/`           | GitHub CLI config and hosts                         |
-| `bin/`          | Custom scripts (`bootstrap`)              |
+| `bat/`          | Bat syntax highlighting config                      |
+| `lazygit/`      | Lazygit TUI config                                  |
+| `claude/`       | Claude Code workflow notes                          |
+| `mas/`          | Mac App Store app list                              |
 | `fnox/`         | Secret management config (macOS Keychain)           |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)  |
+| `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`) |
 | `starship.toml` | Starship prompt config                              |
 
 ## Setup
@@ -63,7 +67,7 @@ mise run dotfiles:doctor    # run health checks
 For CLI tools and runtimes, prefer `mise/config.toml`:
 
 ```sh
-mise install --global
+mise use --global <tool>
 ```
 
 For system-level dependencies and GUI apps/casks, edit `brew/Brewfile`:

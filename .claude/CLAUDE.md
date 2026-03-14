@@ -13,17 +13,14 @@ XDG-compliant dotfiles managed as a bare git repo. The worktree is `$DOTFILES_DI
 | `ghostty/`      | Ghostty terminal config                                 |
 | `helix/`        | Helix editor config and language servers                |
 | `gh/`           | GitHub CLI config and hosts                             |
-| `aws/`          | AWS CLI config (credentials gitignored)                 |
 | `bat/`          | Bat syntax highlighting config and themes               |
-| `certs/`        | TLS certificates (contents gitignored)                  |
 | `claude/`       | Claude Code personal workflow notes                     |
 | `fnox/`         | fnox secret management config (macOS Keychain)          |
-| `go/`           | Go environment config (GOAUTH, GOPRIVATE)               |
 | `lazygit/`      | Lazygit TUI config and Catppuccin theme                 |
-| `localstack/`   | LocalStack config (auth.json gitignored)                |
-| `npm/`          | npm registry config                                     |
+| `lib/`          | Shell helper libraries                                  |
+| `mas/`          | Mac App Store app list                                  |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)      |
-| `bin/`          | Custom scripts (e.g., `bootstrap`)                         |
+| `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)   |
 | `starship.toml` | Starship prompt theme                                   |
 
 ## Tooling: mise-first approach
@@ -37,9 +34,9 @@ The Brewfile is intentionally small. Most tools live in `mise/config.toml`.
 
 If the tool supports shell completions, add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/completions` to generate bash and zsh completions.
 
-If installing a macOS GUI app, add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/mac-app` to move the .app to `~/Applications`.
+If installing a macOS GUI app, add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/install-app` to move the .app to `~/Applications`.
 
-If installing a font, add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/fonts` to move the font files to the users font store.
+If installing a font, add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/install-fonts` to move the font files to the users font store.
 
 ## Conventions
 
