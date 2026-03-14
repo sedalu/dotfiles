@@ -1,8 +1,7 @@
 # lib/dotfiles/symlinks.sh — symlink link:target pairs
 dotfiles_symlinks=(
     # claude
-    "$HOME/.claude/CLAUDE.md:$DOTFILES_DIR/claude/CLAUDE.md"
-    "$HOME/.claude/LESSONS.md:$DOTFILES_DIR/claude/LESSONS.md"
+    "$HOME/.claude:$DOTFILES_DIR/claude"
     # shell/bash
     "$HOME/.bash_profile:$DOTFILES_DIR/shell/bash/.bash_profile"
     "$HOME/.bashrc:$DOTFILES_DIR/shell/bash/.bashrc"

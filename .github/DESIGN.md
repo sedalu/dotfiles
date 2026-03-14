@@ -200,8 +200,7 @@ Defined in `lib/dotfiles/symlinks.sh` as `link:target` pairs:
 
 | Link                    | Target                                   |
 | ----------------------- | ---------------------------------------- |
-| `~/.claude/CLAUDE.md`   | `$DOTFILES_DIR/claude/CLAUDE.md`         |
-| `~/.claude/LESSONS.md`  | `$DOTFILES_DIR/claude/LESSONS.md`        |
+| `~/.claude`             | `$DOTFILES_DIR/claude`                   |
 | `~/.bash_profile`       | `$DOTFILES_DIR/shell/bash/.bash_profile` |
 | `~/.bashrc`             | `$DOTFILES_DIR/shell/bash/.bashrc`       |
 | `~/.zshenv`             | `$DOTFILES_DIR/shell/zsh/.zshenv`        |

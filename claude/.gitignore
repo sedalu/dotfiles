@@ -1,0 +1,14 @@
+# Auto-generated / ephemeral — do not track
+cache/
+sessions/
+backups/
+shell-snapshots/
+file-history/
+plans/
+plugins/
+projects/
+history.jsonl
+mcp-needs-auth-cache.json
+session-env
+hooks/.rtk-hook.sha256
+telemetry/

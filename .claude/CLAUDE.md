@@ -16,7 +16,7 @@ See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture an
 | `helix/`        | Helix editor config and language servers                        |
 | `gh/`           | GitHub CLI config and hosts                                     |
 | `bat/`          | Bat syntax highlighting config and themes                       |
-| `claude/`       | User-level Claude Code workflow notes (symliked to `~/.claude`) |
+| `claude/`       | Claude Code config: settings, hooks, statusline (symlinked to `~/.claude`) |
 | `fnox/`         | fnox secret management config (macOS Keychain)                  |
 | `lazygit/`      | Lazygit TUI config and Catppuccin theme                         |
 | `lib/`          | Shell helper libraries                                          |
