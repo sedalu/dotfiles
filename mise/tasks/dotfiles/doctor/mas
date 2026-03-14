@@ -19,8 +19,8 @@ if ! command -v mas > /dev/null 2>&1; then
     failed=$((failed + 1))
 fi
 
-if ! mas account > /dev/null 2>&1; then
-    echo "🛑 Error: not signed into the App Store (open App Store and sign in)" >&2
+if ! mas outdated > /dev/null 2>&1; then
+    echo "🛑 Error: mas cannot communicate with the App Store" >&2
     failed=$((failed + 1))
 fi
 

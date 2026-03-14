@@ -44,6 +44,10 @@ fi
 # Wire up $DOTFILES_DIR/.git so plain git commands work without --git-dir.
 echo "gitdir: $DOTFILES_GIT" > "$DOTFILES_DIR/.git"
 
+# Suppress "ignored file" warnings — the dotfiles .gitignore uses * (ignore all)
+# so every `git add` would otherwise print a noisy hint.
+git --git-dir="$DOTFILES_GIT" config advice.addIgnoredFile false
+
 # --- environment -----------------------
 # Source env.sh directly from the checkout (symlinks don't exist yet).
 # shellcheck source=shell/env.sh

@@ -35,7 +35,7 @@ _cached_source() {
 }
 
 # Safe to cache (static init scripts):
-(( $+commands[fnox] ))     && _cached_source fnox fnox activate zsh
+(( $+commands[fnox] ))     && source <(fnox activate zsh 2>/dev/null)
 (( $+commands[fzf] ))      && _cached_source fzf fzf --zsh
 (( $+commands[starship] )) && _cached_source starship starship init zsh
 

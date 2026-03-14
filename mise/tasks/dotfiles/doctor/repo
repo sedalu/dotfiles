@@ -13,14 +13,6 @@ if [[ ! -d "$DOTFILES_GIT" ]]; then
 else
     echo "✅ $DOTFILES_GIT exists"
 
-    worktree="$(git --git-dir="$DOTFILES_GIT" config core.worktree 2>/dev/null)" || worktree=""
-    if [[ "$worktree" == "$DOTFILES_DIR" ]]; then
-        echo "✅ core.worktree = $DOTFILES_DIR"
-    else
-        echo "❌ core.worktree = '$worktree' (expected $DOTFILES_DIR)"
-        ((fail++)) || true
-    fi
-
     git_file="$DOTFILES_DIR/.git"
     if [[ ! -f "$git_file" ]]; then
         echo "❌ $git_file does not exist or is not a file"
@@ -34,6 +26,14 @@ else
             echo "❌ $git_file contains '$git_file_content' (expected '$expected')"
             ((fail++)) || true
         fi
+    fi
+
+    advice="$(git --git-dir="$DOTFILES_GIT" config advice.addIgnoredFile 2>/dev/null)" || advice=""
+    if [[ "$advice" == "false" ]]; then
+        echo "✅ advice.addIgnoredFile = false"
+    else
+        echo "❌ advice.addIgnoredFile not set (run: git config advice.addIgnoredFile false)"
+        ((fail++)) || true
     fi
 fi
 
