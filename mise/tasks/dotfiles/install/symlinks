@@ -3,6 +3,7 @@
 #MISE description="Create symlinks for shell config files"
 #MISE hide=true
 set -euo pipefail
+shopt -s extglob nullglob
 
 # shellcheck source=../../../../lib/dotfiles/symlinks.sh
 . "$DOTFILES_DIR/lib/dotfiles/symlinks.sh"
@@ -33,6 +34,37 @@ for pair in "${dotfiles_symlinks[@]}"; do
         fi
         echo "⚠️ $name points to $current, updating..."
         rm "$link"
+    elif [[ -d "$link" ]]; then
+        # Directory exists where we need a symlink. If it's empty (or only
+        # contains .localized), remove it; otherwise back it up.
+        _contents=("$link"/!(.|..|.localized))
+        if [[ ${#_contents[@]} -eq 0 || ("${#_contents[@]}" -eq 1 && ! -e "${_contents[0]}") ]]; then
+            echo "⚠️ $name is an empty directory, removing..."
+            # macOS protects some dirs (e.g. ~/Downloads) with a deny-delete ACL.
+            # Save and strip the ACL so we can remove the dir, then restore it
+            # if the symlink creation fails.
+            _acl="$(ls -led "$link" 2>/dev/null | sed -n '2s/^ *[0-9]*: //p')"
+            if [[ -n "$_acl" ]]; then
+                chmod -N "$link"
+            fi
+            rm -rf "$link"
+            if ! ln -s "$target" "$link"; then
+                echo "🛑 Error: Failed to create $name symlink, restoring directory" >&2
+                mkdir -p "$link"
+                [[ -n "$_acl" ]] && chmod +a "$_acl" "$link"
+                failed=$((failed + 1))
+            else
+                echo "✔ $name → $target"
+            fi
+            unset _acl
+            continue
+        elif mv "$link" "${link}.bak" 2>/dev/null; then
+            echo "⚠️ $name exists as a directory, backed up to ${link}.bak"
+        else
+            echo "🛑 Error: cannot move $link (try removing it manually)" >&2
+            failed=$((failed + 1))
+            continue
+        fi
     elif [[ -e "$link" ]]; then
         echo "⚠️ $name exists as a regular file, backing up to ${link}.bak"
         mv "$link" "${link}.bak"

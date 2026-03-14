@@ -11,3 +11,12 @@ dotfiles_symlinks=(
     # ssh
     "$HOME/.ssh/config:$DOTFILES_DIR/ssh/config"
 )
+
+# Machine-specific symlinks (e.g., symlinks.caladan.sh)
+_machine_symlinks="$DOTFILES_DIR/lib/dotfiles/symlinks.${DOTFILES_MACHINE}.sh"
+if [[ -f "$_machine_symlinks" ]]; then
+    # shellcheck source=/dev/null
+    . "$_machine_symlinks"
+    dotfiles_symlinks+=("${dotfiles_machine_symlinks[@]}")
+fi
+unset _machine_symlinks
