@@ -24,24 +24,38 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 cat = "bat"
 
 [tools]
+# aqua
+"aqua:artempyanykh/marksman" = "latest"
+"aqua:astral-sh/ruff" = "latest"
 "aqua:astral-sh/uv" = "latest"
 "aqua:docker/compose" = "latest"
 "aqua:mvdan/sh" = "latest"
+# github
 "github:dandavison/delta" = "latest"
+"github:Feel-ix-343/markdown-oxide" = "latest"
 "github:jesseduffield/lazygit" = "latest"
+"github:noworrieseh/macdisp" = "latest"
+"github:rtk-ai/rtk" = "latest"
+# go
 "go:golang.org/x/tools/gopls" = "latest"
+# npm
 "npm:bash-language-server" = "latest"
 "npm:httpyac" = "latest"
+"npm:pyright" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+# ubi
 # "ubi:jstemmer/go-junit-report" = "latest"
-gofumpt = "latest"
+# bare
 bun = "latest"
+claude = "latest"
+difftastic = "latest"
 eza = "latest"
 go = "latest"
+gofumpt = "latest"
 golangci-lint-langserver = "latest"
 gum = "latest"
-[tools.helix]
-version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/helix-postinstall {}"
 jq = "latest"
 node = "latest"
 prettier = "latest"
@@ -53,17 +67,8 @@ tokei = "latest"
 usage = "latest"
 uv = "latest"
 zoxide = "latest"
-"aqua:artempyanykh/marksman" = "latest"
-"aqua:astral-sh/ruff" = "latest"
-"npm:pyright" = "latest"
-"npm:typescript" = "latest"
-"npm:typescript-language-server" = "latest"
-"npm:vscode-langservers-extracted" = "latest"
-"github:noworrieseh/macdisp" = "latest"
-"github:rtk-ai/rtk" = "latest"
-"github:Feel-ix-343/markdown-oxide" = "latest"
-claude = "latest"
-difftastic = "latest"
+
+# Sub-table tools (with postinstall hooks or extra options)
 
 [tools."aqua:tamasfe/taplo"]
 version = "latest"
@@ -113,6 +118,10 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions --{}"
 [tools.golangci-lint]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
+[tools.helix]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/helix-postinstall {}"
 
 [tools.localstack]
 version = "latest"
