@@ -1,0 +1,17 @@
+#!/bin/bash
+# Install Helix runtime overrides (custom queries, etc.)
+
+set -e
+
+# Get helix installation directory
+HELIX_BIN="$1"
+HELIX_DIR=$(dirname "$(dirname "$HELIX_BIN")")
+HELIX_RUNTIME="${HELIX_DIR}/runtime"
+
+# Copy custom markdown queries from config to runtime
+if [[ -d "${DOTFILES_DIR}/helix/queries/markdown" ]]; then
+  mkdir -p "${HELIX_RUNTIME}/queries/markdown"
+  cp "${DOTFILES_DIR}/helix/queries/markdown"/*.scm "${HELIX_RUNTIME}/queries/markdown/" 2>/dev/null || true
+fi
+
+echo "Helix runtime overrides installed"

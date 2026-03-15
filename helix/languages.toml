@@ -61,5 +61,6 @@ auto-format = true
 
 [[language]]
 name = "markdown"
+language-servers = ["markdown-oxide", "marksman"]
 formatter = { command = "prettier", args = ["--parser", "markdown"] }
 auto-format = true
