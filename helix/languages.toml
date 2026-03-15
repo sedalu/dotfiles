@@ -57,6 +57,14 @@ name = "json"
 formatter = { command = "prettier", args = ["--parser", "json"] }
 auto-format = true
 
+# Rust
+
+[[language]]
+name = "rust"
+language-servers = ["rust-analyzer"]
+formatter = { command = "rustfmt", args = ["--edition", "2021"] }
+auto-format = true
+
 # Markdown
 
 [[language]]

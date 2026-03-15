@@ -8,10 +8,12 @@ HELIX_BIN="$1"
 HELIX_DIR=$(dirname "$(dirname "$HELIX_BIN")")
 HELIX_RUNTIME="${HELIX_DIR}/runtime"
 
-# Copy custom markdown queries from config to runtime
-if [[ -d "${DOTFILES_DIR}/helix/queries/markdown" ]]; then
-  mkdir -p "${HELIX_RUNTIME}/queries/markdown"
-  cp "${DOTFILES_DIR}/helix/queries/markdown"/*.scm "${HELIX_RUNTIME}/queries/markdown/" 2>/dev/null || true
-fi
+# Copy custom queries from config to runtime
+for query_dir in markdown markdown-rustdoc rust-format-args; do
+  if [[ -d "${DOTFILES_DIR}/helix/queries/${query_dir}" ]]; then
+    mkdir -p "${HELIX_RUNTIME}/queries/${query_dir}"
+    cp "${DOTFILES_DIR}/helix/queries/${query_dir}"/*.scm "${HELIX_RUNTIME}/queries/${query_dir}/" 2>/dev/null || true
+  fi
+done
 
 echo "Helix runtime overrides installed"
