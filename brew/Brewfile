@@ -7,6 +7,7 @@ brew "zsh"
 if OS.mac?
     brew "mas"
 
+    cask "claude"
     cask "obsidian"
     cask "tailscale-app"
 end
