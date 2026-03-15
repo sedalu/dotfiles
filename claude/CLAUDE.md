@@ -59,6 +59,23 @@
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
+## Shared Dotfiles & Tasks
+
+Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch management and provides shared mise tasks for both worktree operations and dotfiles maintenance.
+
+**Common daily-use tasks:**
+- `worktree:branch [branch-name]` — Create a worktree for development on a new or existing branch
+- `worktree:status` — Monitor all worktrees for dirty state and ahead/behind remote
+- `worktree:sync [branch]` — Keep worktree in sync with remote
+- `worktree:list` — View all active worktrees and branches
+
+**Bootstrap & maintenance tasks:**
+- `dotfiles:install` — Full installation (one-time)
+- `dotfiles:update` — Update tools and configurations
+- `dotfiles:doctor` — Health check
+
+See `/Users/seth/.claude/dotfiles-reference.md` for detailed worktree workflows, environment variables, and complete task documentation.
+
 ## Lessons Convention
 
 Two-tier system for capturing mistakes and patterns:
