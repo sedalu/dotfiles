@@ -23,13 +23,15 @@
     diffFilter = delta --color-only
 [delta]
     navigate = true
-    side-by-side = true
+    side-by-side = false
     dark = true
     syntax-theme = Dracula
-    minus-style = syntax "#3b2630"
-    minus-emph-style = syntax "#53303a"
-    plus-style = syntax "#273330"
-    plus-emph-style = syntax "#30493d"
+    line-numbers = true
+    hunk-header-style = syntax
+    minus-style = syntax "#45213b"
+    minus-emph-style = syntax "#7d2e4a"
+    plus-style = syntax "#1f3a36"
+    plus-emph-style = syntax "#2d5a52"
     line-numbers-minus-style = "#f38ba8"
     line-numbers-plus-style = "#a6e3a1"
     line-numbers-zero-style = "#6c7086"
