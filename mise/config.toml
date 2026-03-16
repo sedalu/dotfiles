@@ -67,6 +67,7 @@ tokei = "latest"
 usage = "latest"
 uv = "latest"
 zoxide = "latest"
+glow = "latest"
 
 # Sub-table tools (with postinstall hooks or extra options)
 
