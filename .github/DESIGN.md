@@ -144,10 +144,11 @@ Example: `My-MacBook Pro (2)` → `my-macbook-pro-2`
 
 Machine-specific config files are loaded alongside base config when a sidecar file matching the machine name exists:
 
-| Base file                  | Sidecar pattern                            | Example                   |
-| -------------------------- | ------------------------------------------ | ------------------------- |
-| `lib/dotfiles/symlinks.sh` | `lib/dotfiles/symlinks.${MACHINE}.sh`      | `symlinks.caladan.sh`     |
-| `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`        |
+| Base file                  | Sidecar pattern                            | Example                        |
+| -------------------------- | ------------------------------------------ | ------------------------------ |
+| `lib/dotfiles/symlinks.sh` | `lib/dotfiles/symlinks.${MACHINE}.sh`      | `symlinks.caladan.sh`          |
+| `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
+| `macos/settings.sh`        | `macos/settings.${MACHINE}.sh`             | `settings.caladan.sh`          |
 
 The base `symlinks.sh` auto-loads its sidecar and appends `dotfiles_machine_symlinks` to the main array.
 
@@ -182,15 +183,22 @@ Created by `lib/dotfiles/dirs.sh` and verified by `dotfiles:doctor:dirs`:
 
 The `lib/dotfiles/` directory contains shared definitions sourced by multiple tasks. This ensures install tasks create exactly what doctor tasks verify — same definitions, different operations.
 
-| Library file        | Defines                                     | Used by                          |
-| ------------------- | ------------------------------------------- | -------------------------------- |
-| `symlinks.sh`       | Base symlink `link:target` pairs            | install:symlinks, doctor:symlinks |
-| `dirs.sh`           | XDG directories to create/verify            | install:dirs, doctor:dirs         |
-| `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, install:mas, env.sh      |
-| `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins |
-| `go.sh`             | Go XDG-compliant paths                      | install:go, doctor:go             |
+| Library file        | Defines                                     | Used by                                  |
+| ------------------- | ------------------------------------------- | ---------------------------------------- |
+| `symlinks.sh`       | Base symlink `link:target` pairs            | install:symlinks, doctor:symlinks        |
+| `dirs.sh`           | XDG directories to create/verify            | install:dirs, doctor:dirs                |
+| `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, install:mas, env.sh             |
+| `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
+| `go.sh`             | Go XDG-compliant paths                      | install:go, doctor:go                    |
 
-Machine-specific sidecars (e.g., `symlinks.caladan.sh`) extend the base definitions automatically.
+macOS settings live in `macos/` (not `lib/`), following the same data-file pattern as `brew/Brewfile` and `mas/apps`:
+
+| Config file             | Defines                                     | Used by                                  |
+| ----------------------- | ------------------------------------------- | ---------------------------------------- |
+| `macos/settings.sh`     | `defaults write` settings array             | install:macos, doctor:macos              |
+| `macos/catalog.sh`      | Catalog of known-interesting defaults keys  | scan:macos                               |
+
+Machine-specific sidecars (e.g., `symlinks.caladan.sh`, `settings.caladan.sh`) extend the base definitions automatically.
 
 ## 8. Symlink System
 
@@ -232,6 +240,7 @@ dotfiles:install
 ├── dirs             (parallel)
 ├── mise             (parallel)
 ├── go               (parallel)
+├── macos            (parallel, darwin only)
 ├── symlinks         (parallel)
 ├── zsh-plugins      (parallel)
 ├── mas              (parallel, darwin only)
@@ -244,6 +253,7 @@ dotfiles:install
 dotfiles:update
 ├── brew
 ├── mise             (depends: brew)
+├── macos            (parallel, darwin only)
 ├── zsh-plugins      (parallel)
 └── mas              (parallel, darwin only)
 ```
@@ -261,6 +271,7 @@ dotfiles:doctor
 │   ├── completions  (depends: dirs)
 │   └── zsh-plugins  (depends: dirs)
 ├── go               (parallel)
+├── macos            (parallel, darwin only)
 ├── ssh              (parallel)
 ├── machine          (parallel)
 └── mas              (parallel, darwin only)

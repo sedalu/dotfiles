@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#USAGE complete "Check macOS defaults match tracked settings"
+#MISE description="Check macOS defaults match tracked settings"
+#MISE hide=true
+set -euo pipefail
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    echo "⏭️  Not macOS, skipping"
+    exit 0
+fi
+
+# shellcheck source=../../../../macos/settings.sh
+. "$DOTFILES_DIR/macos/settings.sh"
+
+fail=0
+
+for entry in "${dotfiles_macos_settings[@]}"; do
+    IFS='|' read -r domain key type value <<< "$entry"
+
+    current="$(defaults read "$domain" "$key" 2>/dev/null)" || {
+        echo "❌ $domain $key — not set (expected: $value)"
+        ((fail++)) || true
+        continue
+    }
+
+    # Normalize booleans: defaults read returns 1/0, we store 1/0
+    # For float, strip trailing zeros for a stable comparison
+    if [[ "$type" == "float" ]]; then
+        # Compare as floats via awk to avoid 0.5 vs .5 mismatches
+        match=$(awk -v a="$current" -v b="$value" 'BEGIN { print (a+0 == b+0) ? "yes" : "no" }')
+        if [[ "$match" == "yes" ]]; then
+            echo "✅ $domain $key = $current"
+        else
+            echo "❌ $domain $key = $current (expected: $value)"
+            ((fail++)) || true
+        fi
+        continue
+    fi
+
+    if [[ "$current" == "$value" ]]; then
+        echo "✅ $domain $key = $current"
+    else
+        echo "❌ $domain $key = $current (expected: $value)"
+        ((fail++)) || true
+    fi
+done
+
+echo ""
+if ((fail > 0)); then
+    echo "❌ $fail setting(s) out of sync — run 'mise run dotfiles:install:macos'"
+    exit 1
+fi
+echo "✅ All macOS settings correct"

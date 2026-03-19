@@ -17,6 +17,7 @@ See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture an
 | `gh/`           | GitHub CLI config and hosts                                     |
 | `bat/`          | Bat syntax highlighting config and themes                       |
 | `claude/`       | Claude Code config: settings, hooks, statusline (symlinked to `~/.claude`) |
+| `macos/`        | macOS defaults settings (`settings.sh`, per-machine sidecars, `catalog.sh`) |
 | `fnox/`         | fnox secret management config (macOS Keychain)                  |
 | `lazygit/`      | Lazygit TUI config and Catppuccin theme                         |
 | `lib/`          | Shell helper libraries                                          |

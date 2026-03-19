@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#USAGE complete "Apply macOS defaults settings"
+#MISE description="Apply macOS defaults settings"
+#MISE hide=true
+set -euo pipefail
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    echo "⏭️  Not macOS, skipping"
+    exit 0
+fi
+
+# shellcheck source=../../../../macos/settings.sh
+. "$DOTFILES_DIR/macos/settings.sh"
+
+echo ""
+echo "🍎 Applying macOS settings..."
+
+for entry in "${dotfiles_macos_settings[@]}"; do
+    IFS='|' read -r domain key type value <<< "$entry"
+
+    case "$type" in
+        bool)
+            flag="-bool"
+            [[ "$value" == "1" ]] && write_val="true" || write_val="false"
+            ;;
+        int)
+            flag="-int"
+            write_val="$value"
+            ;;
+        float)
+            flag="-float"
+            write_val="$value"
+            ;;
+        string)
+            flag="-string"
+            write_val="$value"
+            ;;
+        *)
+            echo "⚠️  Unknown type '$type' for $domain $key, skipping"
+            continue
+            ;;
+    esac
+
+    if defaults write "$domain" "$key" "$flag" "$write_val" 2>/dev/null; then
+        echo "✔ $domain $key = $value"
+    else
+        echo "❌ Failed: $domain $key"
+    fi
+done
+
+echo ""
+echo "🔄 Restarting affected apps..."
+for app in Finder Dock SystemUIServer; do
+    killall "$app" 2>/dev/null && echo "  ↺ $app" || true
+done
+
+echo ""
+echo "🎉 macOS settings applied"
+echo "ℹ️  Some settings may require logout or reboot to take effect"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#USAGE complete "Re-apply macOS defaults settings"
+#MISE description="Re-apply macOS defaults settings"
+#MISE hide=true
+set -euo pipefail
+
+mise run dotfiles:install:macos

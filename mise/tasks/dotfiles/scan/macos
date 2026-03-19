@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+#USAGE complete "Scan macOS settings and save new/changed values"
+#MISE description="Scan macOS settings and save new/changed values"
+set -euo pipefail
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    echo "⏭️  Not macOS, skipping"
+    exit 0
+fi
+
+DOTFILES_DIR="${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}"
+
+# shellcheck source=../../../../lib/dotfiles/hostname.sh
+source "$DOTFILES_DIR/lib/dotfiles/hostname.sh"
+# shellcheck source=../../../../macos/catalog.sh
+source "$DOTFILES_DIR/macos/catalog.sh"
+
+machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
+global_file="$DOTFILES_DIR/macos/settings.sh"
+machine_file="$DOTFILES_DIR/macos/settings.${machine}.sh"
+
+# ---------------------------------------------------------------------------
+# Build lookup set of already-tracked domain|key pairs
+# ---------------------------------------------------------------------------
+_tracked_keys=()
+for src in "$global_file" "$machine_file"; do
+    [[ -f "$src" ]] || continue
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^[[:space:]]*\"([^|]+)\|([^|]+)\| ]]; then
+            _tracked_keys+=("${BASH_REMATCH[1]}|${BASH_REMATCH[2]}")
+        fi
+    done < "$src"
+done
+
+_is_tracked() {
+    local needle="$1"
+    for k in "${_tracked_keys[@]}"; do
+        [[ "$k" == "$needle" ]] && return 0
+    done
+    return 1
+}
+
+_get_stored_value() {
+    local domain="$1" key="$2" stored=""
+    for src in "$global_file" "$machine_file"; do
+        [[ -f "$src" ]] || continue
+        while IFS= read -r line; do
+            if [[ "$line" =~ ^[[:space:]]*\"${domain}\|${key}\|[^|]+\|(.+)\"[[:space:]]*$ ]]; then
+                stored="${BASH_REMATCH[1]}"
+                break 2
+            fi
+        done < "$src"
+    done
+    echo "$stored"
+}
+
+# ---------------------------------------------------------------------------
+# Helper: append a new entry to a settings file
+# ---------------------------------------------------------------------------
+_append_entry() {
+    local file="$1" entry="$2"
+    local line="    \"$entry\""
+
+    if [[ ! -f "$file" ]]; then
+        local mname="${machine}"
+        cat > "$file" <<EOF
+# macos/settings.${mname}.sh — macOS settings for machine: ${mname}
+dotfiles_machine_macos_settings=(
+$line
+)
+EOF
+        echo "  📝 Created $file"
+        return
+    fi
+
+    # Replace an existing entry for the same domain|key, or insert before closing )
+    local domain key
+    IFS='|' read -r domain key _ _ <<< "$entry"
+    local tmp
+    tmp="$(mktemp)"
+    awk -v entry="$line" -v domain="$domain" -v key="$key" '
+        /^[[:space:]]*"/ && $0 ~ "\"" domain "\\|" key "\\|" { found=1; print entry; next }
+        /^[[:space:]]*\)$/ && !done && !found { print entry; done=1 }
+        { print }
+    ' "$file" > "$tmp"
+    mv "$tmp" "$file"
+}
+
+# ---------------------------------------------------------------------------
+# Scan loop
+# ---------------------------------------------------------------------------
+echo ""
+echo "🔍 Scanning macOS settings..."
+echo "   Machine: $machine"
+echo ""
+
+global_pending=()
+machine_pending=()
+
+for catalog_entry in "${_macos_catalog[@]}"; do
+    IFS='|' read -r domain key type desc <<< "$catalog_entry"
+
+    current="$(defaults read "$domain" "$key" 2>/dev/null)" || continue
+
+    lookup="$domain|$key"
+
+    if _is_tracked "$lookup"; then
+        stored="$(_get_stored_value "$domain" "$key")"
+
+        # Float-safe comparison
+        match=false
+        if [[ "$type" == "float" && -n "$stored" ]]; then
+            m=$(awk -v a="$current" -v b="$stored" 'BEGIN { print (a+0 == b+0) ? "yes" : "no" }')
+            [[ "$m" == "yes" ]] && match=true
+        elif [[ "$current" == "$stored" ]]; then
+            match=true
+        fi
+
+        $match && continue
+
+        echo "  ⚠️  CHANGED  $domain $key"
+        echo "     $desc"
+        echo "     stored:  $stored"
+        echo "     current: $current"
+        echo ""
+    else
+        echo "  ✦ NEW     $domain $key"
+        echo "     $desc"
+        echo "     current: $current"
+        echo ""
+    fi
+
+    printf "     Save? [g]lobal / [m]achine / [s]kip: "
+    read -r choice
+    echo ""
+    case "${choice,,}" in
+        g) global_pending+=("$domain|$key|$type|$current") ;;
+        m) machine_pending+=("$domain|$key|$type|$current") ;;
+        *) echo "     Skipped." ; echo "" ;;
+    esac
+done
+
+# ---------------------------------------------------------------------------
+# Write pending entries
+# ---------------------------------------------------------------------------
+total=$(( ${#global_pending[@]} + ${#machine_pending[@]} ))
+
+if (( total == 0 )); then
+    echo "✅ No changes to save."
+    exit 0
+fi
+
+echo "💾 Saving $total setting(s)..."
+echo ""
+
+for entry in "${global_pending[@]}"; do
+    _append_entry "$global_file" "$entry"
+    IFS='|' read -r d k _ v <<< "$entry"
+    echo "  ✔ [global]  $d $k = $v"
+done
+
+for entry in "${machine_pending[@]}"; do
+    _append_entry "$machine_file" "$entry"
+    IFS='|' read -r d k _ v <<< "$entry"
+    echo "  ✔ [machine] $d $k = $v"
+done
+
+echo ""
+echo "✅ Done. Commit the changes:"
+echo "   git -C \"\$DOTFILES_DIR\" add -f macos/settings*.sh"
+echo "   git -C \"\$DOTFILES_DIR\" commit -m 'feat(macos): update tracked settings'"

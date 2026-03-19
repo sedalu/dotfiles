@@ -16,6 +16,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 | `bat/`          | Bat syntax highlighting config                        |
 | `lazygit/`      | Lazygit TUI config                                    |
 | `claude/`       | Claude Code config: settings, hooks, statusline       |
+| `macos/`        | macOS defaults settings (global + per-machine)        |
 | `mas/`          | Mac App Store app list                                |
 | `fnox/`         | Secret management config (macOS Keychain)             |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
