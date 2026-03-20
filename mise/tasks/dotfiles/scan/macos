@@ -12,29 +12,164 @@ DOTFILES_DIR="${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}"
 
 # shellcheck source=../../../../lib/dotfiles/hostname.sh
 source "$DOTFILES_DIR/lib/dotfiles/hostname.sh"
-# shellcheck source=../../../../macos/catalog.sh
-source "$DOTFILES_DIR/macos/catalog.sh"
 
 machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
 global_file="$DOTFILES_DIR/macos/settings.sh"
 machine_file="$DOTFILES_DIR/macos/settings.${machine}.sh"
 
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/macos"
+state_current="$state_dir/state.current.txt"
+state_previous="$state_dir/state.previous.txt"
+changes_file="$state_dir/changes.tmp"
+mkdir -p "$state_dir"
+
 # ---------------------------------------------------------------------------
-# Build lookup set of already-tracked domain|key pairs
+# Awk flattener: transforms `defaults read` nested plist into flat TSV
+# Output: domain\tkey\tvalue (one line per scalar key)
+# Maps "Apple Global Domain" → NSGlobalDomain
+# ---------------------------------------------------------------------------
+_PLIST_FLATTENER='
+BEGIN { domain = ""; nested = 0 }
+
+# Domain opening: 4-space indent, name = {
+/^    / && / =     \{/ && !/^        / {
+    line = $0
+    sub(/^    /, "", line)
+    sub(/ =.*/, "", line)
+    gsub(/"/, "", line)
+    domain = line
+    if (domain == "Apple Global Domain") domain = "NSGlobalDomain"
+    nested = 0
+    next
+}
+
+# Domain closing: 4-space indent };
+/^    \};/ {
+    domain = ""
+    nested = 0
+    next
+}
+
+# Skip if no domain set
+domain == "" { next }
+
+# 12+ space indent: inside nested structure, skip
+/^            / { next }
+
+# 8-space indent lines: domain-level keys
+/^        / {
+    # Nested structure closing
+    if (/^        \};/ || /^        \);/) {
+        if (nested > 0) nested--
+        next
+    }
+
+    # Skip if inside nested structure
+    if (nested > 0) next
+
+    # Nested structure opening (dict or array)
+    if (/\{[[:space:]]*$/ || /\([[:space:]]*$/) {
+        nested++
+        next
+    }
+
+    # Extract scalar key = value
+    line = $0
+    sub(/^        /, "", line)
+    sub(/;[[:space:]]*$/, "", line)
+
+    idx = index(line, " = ")
+    if (idx == 0) next
+
+    key = substr(line, 1, idx - 1)
+    val = substr(line, idx + 3)
+
+    # Strip quotes from key
+    gsub(/"/, "", key)
+
+    # Skip binary data
+    if (val ~ /^</) next
+
+    # Strip surrounding quotes from value
+    if (substr(val, 1, 1) == "\"" && substr(val, length(val), 1) == "\"") {
+        val = substr(val, 2, length(val) - 2)
+    }
+
+    printf "%s\t%s\t%s\n", domain, key, val
+}
+'
+
+# ---------------------------------------------------------------------------
+# Awk diff engine: single pass over previous + current state files
+# Output: TYPE<US>domain<US>key<US>old_value<US>new_value  (US = Unit Separator)
+# Uses Unit Separator (0x1f) so bash read preserves empty fields
+# Filters out changes where BOTH old and new values are timestamps
+# ---------------------------------------------------------------------------
+_DIFF_ENGINE='
+BEGIN { FS = "\t"; us = sprintf("%c", 31) }
+
+# First file: previous state
+NR == FNR {
+    prev[$1, $2] = $3
+    seen[$1, $2] = 1
+    next
+}
+
+# Second file: current state
+{
+    pk = $1 SUBSEP $2
+    if (pk in prev) {
+        if ($3 != prev[pk]) {
+            # Date noise filter: skip when BOTH old and new are ISO timestamps
+            dp = "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
+            if (prev[pk] ~ dp && $3 ~ dp) { delete seen[pk]; next }
+            printf "CHANGED%s%s%s%s%s%s%s%s\n", us, $1, us, $2, us, prev[pk], us, $3
+        }
+        delete seen[pk]
+    } else {
+        printf "NEW%s%s%s%s%s%s%s\n", us, $1, us, $2, us, us, $3
+    }
+}
+
+END {
+    for (pk in seen) {
+        split(pk, a, SUBSEP)
+        printf "REMOVED%s%s%s%s%s%s%s\n", us, a[1], us, a[2], us, prev[pk], us
+    }
+}
+'
+
+# ---------------------------------------------------------------------------
+# Type inference: resolve type at save time via defaults read-type
+# ---------------------------------------------------------------------------
+_infer_type() {
+    local domain="$1" key="$2"
+    local raw
+    raw="$(defaults read-type "$domain" "$key" 2>/dev/null)" || { echo "string"; return; }
+    case "$raw" in
+        *boolean*) echo "bool" ;;
+        *integer*) echo "int" ;;
+        *float*)   echo "float" ;;
+        *)         echo "string" ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+# Tracked keys helpers
 # ---------------------------------------------------------------------------
 _tracked_keys=()
 for src in "$global_file" "$machine_file"; do
     [[ -f "$src" ]] || continue
     while IFS= read -r line; do
-        if [[ "$line" =~ ^[[:space:]]*\"([^|]+)\|([^|]+)\| ]]; then
-            _tracked_keys+=("${BASH_REMATCH[1]}|${BASH_REMATCH[2]}")
+        if [[ "$line" =~ ^[[:space:]]*\"([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]] ]]; then
+            _tracked_keys+=("${BASH_REMATCH[1]} ${BASH_REMATCH[2]}")
         fi
     done < "$src"
 done
 
 _is_tracked() {
     local needle="$1"
-    for k in "${_tracked_keys[@]}"; do
+    for k in "${_tracked_keys[@]+"${_tracked_keys[@]}"}"; do
         [[ "$k" == "$needle" ]] && return 0
     done
     return 1
@@ -45,7 +180,7 @@ _get_stored_value() {
     for src in "$global_file" "$machine_file"; do
         [[ -f "$src" ]] || continue
         while IFS= read -r line; do
-            if [[ "$line" =~ ^[[:space:]]*\"${domain}\|${key}\|[^|]+\|(.+)\"[[:space:]]*$ ]]; then
+            if [[ "$line" =~ ^[[:space:]]*\"${domain}[[:space:]]+${key}[[:space:]]+[^[:space:]]+[[:space:]]+(.+)\"[[:space:]]*$ ]]; then
                 stored="${BASH_REMATCH[1]}"
                 break 2
             fi
@@ -55,16 +190,15 @@ _get_stored_value() {
 }
 
 # ---------------------------------------------------------------------------
-# Helper: append a new entry to a settings file
+# Append an entry to a settings file
 # ---------------------------------------------------------------------------
 _append_entry() {
     local file="$1" entry="$2"
     local line="    \"$entry\""
 
     if [[ ! -f "$file" ]]; then
-        local mname="${machine}"
         cat > "$file" <<EOF
-# macos/settings.${mname}.sh — macOS settings for machine: ${mname}
+# macos/settings.${machine}.sh — macOS settings for machine: ${machine}
 dotfiles_machine_macos_settings=(
 $line
 )
@@ -73,13 +207,12 @@ EOF
         return
     fi
 
-    # Replace an existing entry for the same domain|key, or insert before closing )
     local domain key
-    IFS='|' read -r domain key _ _ <<< "$entry"
+    read -r domain key _ <<< "$entry"
     local tmp
     tmp="$(mktemp)"
     awk -v entry="$line" -v domain="$domain" -v key="$key" '
-        /^[[:space:]]*"/ && $0 ~ "\"" domain "\\|" key "\\|" { found=1; print entry; next }
+        /^[[:space:]]*"/ && $0 ~ "\"" domain " " key " " { found=1; print entry; next }
         /^[[:space:]]*\)$/ && !done && !found { print entry; done=1 }
         { print }
     ' "$file" > "$tmp"
@@ -87,85 +220,122 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
-# Scan loop
+# Step 1: Snapshot all defaults
 # ---------------------------------------------------------------------------
 echo ""
-echo "🔍 Scanning macOS settings..."
+echo "📸 Snapshotting all macOS defaults..."
+
+defaults read 2>/dev/null | awk "$_PLIST_FLATTENER" | sort > "$state_current"
+
+echo "   $(wc -l < "$state_current" | tr -d ' ') keys captured"
+
+# ---------------------------------------------------------------------------
+# Step 2: First-run guard
+# ---------------------------------------------------------------------------
+if [[ ! -f "$state_previous" ]]; then
+    echo "   (No previous snapshot — diff will run next time)"
+    mv "$state_current" "$state_previous"
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Step 3: Diff against previous snapshot
+# ---------------------------------------------------------------------------
+echo ""
+echo "🔍 Scanning for changes..."
 echo "   Machine: $machine"
 echo ""
 
+awk -F'\t' "$_DIFF_ENGINE" "$state_previous" "$state_current" > "$changes_file"
+
+if [[ ! -s "$changes_file" ]]; then
+    echo "✅ No changes detected."
+    mv "$state_current" "$state_previous"
+    rm -f "$changes_file"
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Step 4: Interactive review (fd 3 for data, fd 0 for terminal)
+# ---------------------------------------------------------------------------
 global_pending=()
 machine_pending=()
 
-for catalog_entry in "${_macos_catalog[@]}"; do
-    IFS='|' read -r domain key type desc <<< "$catalog_entry"
-
-    current="$(defaults read "$domain" "$key" 2>/dev/null)" || continue
-
-    lookup="$domain|$key"
-
-    if _is_tracked "$lookup"; then
-        stored="$(_get_stored_value "$domain" "$key")"
-
-        # Float-safe comparison
-        match=false
-        if [[ "$type" == "float" && -n "$stored" ]]; then
-            m=$(awk -v a="$current" -v b="$stored" 'BEGIN { print (a+0 == b+0) ? "yes" : "no" }')
-            [[ "$m" == "yes" ]] && match=true
-        elif [[ "$current" == "$stored" ]]; then
-            match=true
-        fi
-
-        $match && continue
-
-        echo "  ⚠️  CHANGED  $domain $key"
-        echo "     $desc"
-        echo "     stored:  $stored"
-        echo "     current: $current"
-        echo ""
-    else
-        echo "  ✦ NEW     $domain $key"
-        echo "     $desc"
-        echo "     current: $current"
-        echo ""
-    fi
+while IFS=$'\x1f' read -r type domain key old new <&3; do
+    case "$type" in
+        NEW)
+            echo "  ✦ NEW      $domain $key"
+            echo "     now:     $new"
+            ;;
+        CHANGED)
+            if _is_tracked "$domain $key"; then
+                stored="$(_get_stored_value "$domain" "$key")"
+                echo "  ⚠️  CHANGED  $domain $key"
+                echo "     tracked: $stored"
+            else
+                echo "  ~  CHANGED  $domain $key"
+            fi
+            echo "     was:     $old"
+            echo "     now:     $new"
+            ;;
+        REMOVED)
+            echo "  ✗  REMOVED  $domain $key"
+            echo "     was:     $old"
+            echo ""
+            continue
+            ;;
+    esac
+    echo ""
 
     printf "     Save? [g]lobal / [m]achine / [s]kip: "
     read -r choice
     echo ""
-    case "${choice,,}" in
-        g) global_pending+=("$domain|$key|$type|$current") ;;
-        m) machine_pending+=("$domain|$key|$type|$current") ;;
+
+    case "$(echo "$choice" | tr '[:upper:]' '[:lower:]')" in
+        g)
+            inferred_type="$(_infer_type "$domain" "$key")"
+            global_pending+=("$domain $key $inferred_type $new")
+            ;;
+        m)
+            inferred_type="$(_infer_type "$domain" "$key")"
+            machine_pending+=("$domain $key $inferred_type $new")
+            ;;
         *) echo "     Skipped." ; echo "" ;;
     esac
-done
+done 3< "$changes_file"
+
+rm -f "$changes_file"
 
 # ---------------------------------------------------------------------------
-# Write pending entries
+# Step 5: Write pending entries
 # ---------------------------------------------------------------------------
 total=$(( ${#global_pending[@]} + ${#machine_pending[@]} ))
 
 if (( total == 0 )); then
     echo "✅ No changes to save."
-    exit 0
+else
+    echo "💾 Saving $total setting(s)..."
+    echo ""
+
+    for entry in "${global_pending[@]+"${global_pending[@]}"}"; do
+        _append_entry "$global_file" "$entry"
+        read -r d k _ v <<< "$entry"
+        echo "  ✔ [global]  $d $k = $v"
+    done
+
+    for entry in "${machine_pending[@]+"${machine_pending[@]}"}"; do
+        _append_entry "$machine_file" "$entry"
+        read -r d k _ v <<< "$entry"
+        echo "  ✔ [machine] $d $k = $v"
+    done
+
+    echo ""
+    echo "✅ Done. Commit the changes:"
+    echo "   git -C \"\$DOTFILES_DIR\" add -f macos/settings*.sh"
+    echo "   git -C \"\$DOTFILES_DIR\" commit -m 'feat(macos): update tracked settings'"
 fi
 
-echo "💾 Saving $total setting(s)..."
-echo ""
-
-for entry in "${global_pending[@]}"; do
-    _append_entry "$global_file" "$entry"
-    IFS='|' read -r d k _ v <<< "$entry"
-    echo "  ✔ [global]  $d $k = $v"
-done
-
-for entry in "${machine_pending[@]}"; do
-    _append_entry "$machine_file" "$entry"
-    IFS='|' read -r d k _ v <<< "$entry"
-    echo "  ✔ [machine] $d $k = $v"
-done
-
-echo ""
-echo "✅ Done. Commit the changes:"
-echo "   git -C \"\$DOTFILES_DIR\" add -f macos/settings*.sh"
-echo "   git -C \"\$DOTFILES_DIR\" commit -m 'feat(macos): update tracked settings'"
+# ---------------------------------------------------------------------------
+# Step 6: Rotate state
+# ---------------------------------------------------------------------------
+mv "$state_current" "$state_previous"
