@@ -15,7 +15,7 @@ fi
 fail=0
 
 for entry in "${dotfiles_macos_settings[@]}"; do
-    IFS='|' read -r domain key type value <<< "$entry"
+    read -r domain key type value <<< "$entry"
 
     current="$(defaults read "$domain" "$key" 2>/dev/null)" || {
         echo "❌ $domain $key — not set (expected: $value)"
