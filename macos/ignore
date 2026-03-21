@@ -14,3 +14,8 @@ com.apple.madrid IMCloudKitSyncTypeKey
 com.apple.dock mod-count
 com.apple.imessage.bag CacheTime
 com.apple.imessage.bag Date
+com.apple.CloudKit
+com.apple.mmcs
+com.apple.Spotlight-Settings.extension FTEResetForSuperSpotlight
+com.iggsoftware.banktivity kAppiraterUseCount
+com.iggsoftware.banktivity SKPurchaseIntentUpdatesLastChecked
