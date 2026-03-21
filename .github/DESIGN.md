@@ -59,10 +59,16 @@ Example: setting `DOTFILES_DIR=/other/path` in `~/.dotfiles` works because the `
 
 ## 3. Shell Load Order
 
-The shell config is split into two layers:
+The shell config is split into two shared files, each with optional OS and machine layers:
 
 - **`shell/env.sh`** — environment variables only (sourced by both `.zshenv` and `bash_env`)
 - **`shell/interactive.sh`** — aliases, functions, pager/fzf config (sourced by both `.zshrc` and `.bashrc`)
+
+Each file sources optional layers at the end (Global → OS → Machine):
+
+1. `shell/{env,interactive}.sh` — base (always loaded)
+2. `shell/{env,interactive}.${DOTFILES_OS}.sh` — OS-specific (if exists)
+3. `shell/{env,interactive}.${DOTFILES_MACHINE}.sh` — machine-specific (if exists)
 
 ### Bash Chain
 
@@ -71,6 +77,8 @@ The shell config is split into two layers:
 ├── source ~/.dotfiles          (if exists)
 ├── source bash_env
 │   └── source env.sh           (XDG, PATH, DOTFILES_*)
+│       ├── source env.${OS}.sh        (if exists)
+│       └── source env.${MACHINE}.sh   (if exists)
 ├── mkdir state/cache dirs
 ├── export BASH_ENV=bash_env    (non-interactive inheritance)
 └── source .bashrc
@@ -80,6 +88,8 @@ The shell config is split into two layers:
     ├── _cached_source: fnox, fzf, starship, zoxide
     ├── history, completions, options, keybindings
     └── source interactive.sh
+        ├── source interactive.${OS}.sh        (if exists)
+        └── source interactive.${MACHINE}.sh   (if exists)
 ```
 
 ### Zsh Chain
@@ -88,6 +98,8 @@ The shell config is split into two layers:
 .zshenv
 ├── source ~/.dotfiles          (if exists)
 ├── source env.sh               (XDG, PATH, DOTFILES_*)
+│   ├── source env.${OS}.sh        (if exists)
+│   └── source env.${MACHINE}.sh   (if exists)
 ├── export ZDOTDIR=shell/zsh
 ├── mkdir state/cache dirs
 └── export HISTFILE
@@ -99,6 +111,8 @@ The shell config is split into two layers:
 ├── _cached_source: zoxide
 ├── options, keybindings
 └── source interactive.sh
+    ├── source interactive.${OS}.sh        (if exists)
+    └── source interactive.${MACHINE}.sh   (if exists)
 ```
 
 ### Key Mechanisms
@@ -125,6 +139,8 @@ The shell config is split into two layers:
 
 Homebrew paths are hardcoded in `env.sh` to avoid a `brew shellenv` subprocess on every shell start.
 
+OS-specific shell layers (`shell/env.${DOTFILES_OS}.sh`, `shell/interactive.${DOTFILES_OS}.sh`) are sourced at the end of their base files when present. See §3 for the full load order.
+
 ## 5. Machine-Specific Variations
 
 `DOTFILES_MACHINE` is derived from the normalized hostname or overridden via `~/.dotfiles`.
@@ -146,6 +162,8 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 
 | Base file                  | Sidecar pattern                            | Example                        |
 | -------------------------- | ------------------------------------------ | ------------------------------ |
+| `shell/env.sh`             | `shell/env.${MACHINE}.sh`                  | `env.caladan.sh`               |
+| `shell/interactive.sh`     | `shell/interactive.${MACHINE}.sh`          | `interactive.caladan.sh`       |
 | `lib/dotfiles/symlinks.sh` | `lib/dotfiles/symlinks.${MACHINE}.sh`      | `symlinks.caladan.sh`          |
 | `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
 | `macos/settings.sh`        | `macos/settings.${MACHINE}.sh`             | `settings.caladan.sh`          |

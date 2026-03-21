@@ -60,3 +60,8 @@ reload() {
         source "$HOME/.bashrc"
     fi
 }
+
+# --- OS & Machine Layers ------------------
+
+[[ -f "$DOTFILES_DIR/shell/interactive.${DOTFILES_OS}.sh" ]] && source "$DOTFILES_DIR/shell/interactive.${DOTFILES_OS}.sh"
+[[ -f "$DOTFILES_DIR/shell/interactive.${DOTFILES_MACHINE}.sh" ]] && source "$DOTFILES_DIR/shell/interactive.${DOTFILES_MACHINE}.sh"

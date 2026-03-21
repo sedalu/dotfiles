@@ -89,3 +89,8 @@ export GOENV="$XDG_CONFIG_HOME/go/env"
 
 # Bun
 export BUN_INSTALL="$XDG_DATA_HOME/bun"
+
+# --- OS & Machine Layers ------------------
+
+[[ -f "$DOTFILES_DIR/shell/env.${DOTFILES_OS}.sh" ]] && source "$DOTFILES_DIR/shell/env.${DOTFILES_OS}.sh"
+[[ -f "$DOTFILES_DIR/shell/env.${DOTFILES_MACHINE}.sh" ]] && source "$DOTFILES_DIR/shell/env.${DOTFILES_MACHINE}.sh"
