@@ -1,2 +1,3 @@
 # brew/Brewfile.caladan — Brewfile for machine: caladan
+cask "obsidian"
 cask "steam"

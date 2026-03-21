@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#USAGE complete "Set up Obsidian vault structure and templates"
+#MISE description="Set up Obsidian vault structure and templates"
+#MISE hide=true
+set -euo pipefail
+
+# shellcheck source=../../../../lib/dotfiles/hostname.sh
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname.sh"
+
+# --- gate: only run if obsidian is in this machine's Brewfile ---
+
+brewfile_dir="$(dirname "${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/brew/Brewfile}")"
+machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
+
+has_obsidian=false
+for bf in "$brewfile_dir/Brewfile" "$brewfile_dir/Brewfile.${machine}"; do
+    if [[ -f "$bf" ]] && grep -q 'obsidian' "$bf"; then
+        has_obsidian=true
+        break
+    fi
+done
+
+if [[ "$has_obsidian" != true ]]; then
+    echo ""
+    echo "⏭️  Obsidian not in Brewfile for ${machine}, skipping"
+    exit 0
+fi
+
+# shellcheck source=../../../../lib/dotfiles/obsidian.sh
+source "$DOTFILES_DIR/lib/dotfiles/obsidian.sh"
+
+current_year="$(date +%Y)"
+
+# --- create vault directories ---
+
+echo ""
+echo "📁 Creating Obsidian vault directories..."
+
+for dir in "${dotfiles_obsidian_dirs[@]}"; do
+    mkdir -p "$dir"
+done
+echo "✔ Done."
+
+# --- copy templates (no-clobber) ---
+
+echo ""
+echo "📄 Copying Obsidian templates..."
+
+for entry in "${dotfiles_obsidian_templates[@]}"; do
+    src="${entry%%:*}"
+    dst="${entry#*:}"
+
+    # Substitute {{year}} in destination path and content
+    dst="${dst//\{\{year\}\}/$current_year}"
+
+    src_path="$DOTFILES_DIR/obsidian/$src"
+
+    if [[ -f "$dst" ]]; then
+        echo "⏭️  ${dst##*/} already exists, skipping"
+        continue
+    fi
+
+    sed "s/{{year}}/$current_year/g" "$src_path" > "$dst"
+    echo "✔ ${dst##*/}"
+done
+
+echo ""
+echo "🎉 Obsidian vault setup complete"
