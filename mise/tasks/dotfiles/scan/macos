@@ -330,9 +330,18 @@ else
     done
 
     echo ""
-    echo "✅ Done. Commit the changes:"
-    echo "   git -C \"\$DOTFILES_DIR\" add -f macos/settings*.sh"
-    echo "   git -C \"\$DOTFILES_DIR\" commit -m 'feat(macos): update tracked settings'"
+    printf "Commit the changes? [y/N]: "
+    read -r commit_choice
+    case "$(echo "$commit_choice" | tr '[:upper:]' '[:lower:]')" in
+        y|yes)
+            git -C "$DOTFILES_DIR" add -f macos/settings*.sh
+            git -C "$DOTFILES_DIR" commit -m 'feat(macos): update tracked settings'
+            ;;
+        *)
+            echo "   git -C \"\$DOTFILES_DIR\" add -f macos/settings*.sh"
+            echo "   git -C \"\$DOTFILES_DIR\" commit -m 'feat(macos): update tracked settings'"
+            ;;
+    esac
 fi
 
 # ---------------------------------------------------------------------------
