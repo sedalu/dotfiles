@@ -127,12 +127,15 @@ NR == FNR {
             # ISO 8601 with T separator
             iso = "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
             if (prev[pk] ~ iso && $3 ~ iso) { delete seen[pk]; next }
-            # Unix epoch floats (10+ digit timestamps)
-            ep = "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\\.?[0-9]*$"
+            # Unix/CoreFoundation epoch floats (9+ digit timestamps)
+            ep = "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\\.?[0-9]*$"
             if (prev[pk] ~ ep && $3 ~ ep) { delete seen[pk]; next }
             # HTTP dates (e.g. "Mon, 21 Mar 2026 12:00:00 GMT")
             hd = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9][0-9] (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9] GMT$"
             if (prev[pk] ~ hd && $3 ~ hd) { delete seen[pk]; next }
+            # US locale dates (e.g. "03/20/2026, 22:57:28.5640")
+            usd = "^[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9], [0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
+            if (prev[pk] ~ usd && $3 ~ usd) { delete seen[pk]; next }
             printf "CHANGED%s%s%s%s%s%s%s%s\n", us, $1, us, $2, us, prev[pk], us, $3
         }
         delete seen[pk]
@@ -330,9 +333,11 @@ while IFS=$'\x1f' read -r type domain key old new <&3; do
             echo "     now:     $new"
             ;;
         REMOVED)
-            echo "  ✗  REMOVED  $domain $key"
-            echo "     was:     $old"
-            echo ""
+            if _is_tracked "$domain $key"; then
+                echo "  ✗  REMOVED  $domain $key"
+                echo "     was:     $old"
+                echo ""
+            fi
             continue
             ;;
     esac
