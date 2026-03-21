@@ -23,3 +23,6 @@ com.apple.controlcenter NSStatusItem Preferred Position Sound
 com.apple.controlcenter NSStatusItem VisibleCC Sound
 com.apple.photoanalysisd
 com.apple.routined
+com.apple.facetime.bag
+com.apple.Spotlight
+md.obsidian NSNavPanelExpandedSizeForOpenMode
