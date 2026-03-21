@@ -1,0 +1,16 @@
+# Telemetry & engagement (changes every run)
+com.apple.amsengagementd
+com.apple.IFTelemetrySELFIngestor
+com.apple.lighthouse.siri.*
+com.apple.CloudSubscriptionFeatures.*
+
+# Sync state (transient)
+com.apple.madrid CloudKitIsSyncing
+com.apple.madrid IMCloudKitSyncJobStateKey
+com.apple.madrid IMCloudKitSyncStatusKey
+com.apple.madrid IMCloudKitSyncTypeKey
+
+# Counters & caches
+com.apple.dock mod-count
+com.apple.imessage.bag CacheTime
+com.apple.imessage.bag Date
