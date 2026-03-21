@@ -26,3 +26,7 @@ com.apple.routined
 com.apple.facetime.bag
 com.apple.Spotlight
 md.obsidian NSNavPanelExpandedSizeForOpenMode
+com.apple.controlcenter
+com.apple.imagent
+com.apple.messages.nicknames
+com.apple.sociallayerd.CloudKit.ckwriter
