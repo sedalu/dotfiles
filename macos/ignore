@@ -19,3 +19,7 @@ com.apple.mmcs
 com.apple.Spotlight-Settings.extension FTEResetForSuperSpotlight
 com.iggsoftware.banktivity kAppiraterUseCount
 com.iggsoftware.banktivity SKPurchaseIntentUpdatesLastChecked
+com.apple.controlcenter NSStatusItem Preferred Position Sound
+com.apple.controlcenter NSStatusItem VisibleCC Sound
+com.apple.photoanalysisd
+com.apple.routined
