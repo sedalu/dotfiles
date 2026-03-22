@@ -68,6 +68,7 @@ usage = "latest"
 uv = "latest"
 zoxide = "latest"
 glow = "latest"
+gh = "latest"
 
 # Sub-table tools (with postinstall hooks or extra options)
 
