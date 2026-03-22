@@ -8,17 +8,33 @@ macos_settings_files() {
     printf '%s\n' "${files[@]}"
 }
 
-# Parse defaults write lines from a file into parallel arrays.
+# Strip trailing # comments and surrounding quotes from a value.
+_macos_clean_value() {
+    local v="$1"
+    v="${v%%#*}"        # strip trailing comment
+    v="${v%"${v##*[! ]}"}"  # trim trailing whitespace
+    v="${v#\"}" ; v="${v%\"}"  # strip surrounding double quotes
+    v="${v#\'}" ; v="${v%\'}"  # strip surrounding single quotes
+    printf '%s' "$v"
+}
+
+# Parse defaults write/delete lines from a file into parallel arrays.
 # Appends to caller's: _dw_domains, _dw_keys, _dw_types, _dw_values
+# Delete lines use type=__delete__ and value=__delete__.
 macos_parse_defaults() {
     local file="$1"
     [[ -f "$file" ]] || return 0
     while IFS= read -r line; do
         if [[ "$line" =~ ^defaults\ write\ ([^\ ]+)\ ([^\ ]+)\ -([^\ ]+)\ (.+)$ ]]; then
             _dw_domains+=("${BASH_REMATCH[1]}")
-            _dw_keys+=("${BASH_REMATCH[2]}")
+            _dw_keys+=("$(_macos_clean_value "${BASH_REMATCH[2]}")")
             _dw_types+=("${BASH_REMATCH[3]}")
-            _dw_values+=("${BASH_REMATCH[4]}")
+            _dw_values+=("$(_macos_clean_value "${BASH_REMATCH[4]}")")
+        elif [[ "$line" =~ ^defaults\ delete\ ([^\ ]+)\ (.+)$ ]]; then
+            _dw_domains+=("${BASH_REMATCH[1]}")
+            _dw_keys+=("$(_macos_clean_value "${BASH_REMATCH[2]}")")
+            _dw_types+=("__delete__")
+            _dw_values+=("__delete__")
         fi
     done < "$file"
 }

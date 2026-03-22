@@ -26,6 +26,17 @@ for i in "${!_dw_domains[@]}"; do
     type="${_dw_types[$i]}"
     value="${_dw_values[$i]}"
 
+    if [[ "$type" == "__delete__" ]]; then
+        if defaults read "$domain" "$key" &>/dev/null; then
+            current="$(defaults read "$domain" "$key")"
+            echo "❌ $domain $key = $current (expected: deleted)"
+            ((fail++)) || true
+        else
+            echo "✅ $domain $key (deleted)"
+        fi
+        continue
+    fi
+
     current="$(defaults read "$domain" "$key" 2>/dev/null)" || {
         echo "❌ $domain $key — not set (expected: $value)"
         ((fail++)) || true

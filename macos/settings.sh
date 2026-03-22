@@ -14,11 +14,24 @@ killall_targets=(
 )
 
 # --- Dock ---
-defaults write com.apple.dock orientation -string bottom
-defaults write com.apple.dock tilesize -int 36
-defaults write com.apple.dock autohide -bool true
-defaults write com.apple.dock autohide-time-modifier -float 0
-defaults write com.apple.dock autohide-delay -float 0
+# Set the Dock position
+defaults write com.apple.dock "orientation" -string "bottom" # default: bottom
+# Set the icon size of Dock items in pixels.
+defaults write com.apple.dock "tilesize" -int "36" # default: 48
+# Autohides the Dock. You can toggle the Dock using ⌥⌘d.
+defaults write com.apple.dock "autohide" -bool "true" # default: false
+# Change the Dock opening and closing animation times.
+defaults write com.apple.dock "autohide-time-modifier" -float "0" # default: 0.5
+# Change the Dock opening delay.
+defaults write com.apple.dock "autohide-delay" -float "0" # default: 0.2
+# Show recently used apps in a separate section of the Dock.
+defaults write com.apple.dock "show-recents" -bool "true" # default: true
+# Change the Dock minimize animation.
+defaults write com.apple.dock "mineffect" -string "genie" # default: genie
+# Only show opened apps in Dock.
+defaults write com.apple.dock "static-only" -bool "false" # default: false
+# Scroll up on a Dock icon to show all Space's opened windows for an app, or open stack.
+defaults delete com.apple.dock "scroll-to-open" # default: false
 
 # --- Finder ---
 # View style: clmv=column, icnv=icon, Nlsv=list, Flwv=gallery
