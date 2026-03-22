@@ -31,3 +31,8 @@ com.apple.imagent
 com.apple.messages.nicknames
 com.apple.sociallayerd.CloudKit.ckwriter
 com.apple.systempreferences.AppleIDSettings
+com.apple.Keyboard-Settings.extension NSWindow Frame NSSpellCheckerSpellingPanel
+com.apple.Keyboard-Settings.extension NSWindow Frame NSSpellCheckerSubstitutionsPanel2
+com.apple.speech.recognition.AppleSpeechRecognition.prefs DictationIMUpgradedTo10_16
+NSGlobalDomain KB_DoubleQuoteOption
+NSGlobalDomain KB_SingleQuoteOption

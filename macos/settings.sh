@@ -29,6 +29,7 @@ dotfiles_macos_settings=(
     "NSGlobalDomain com.apple.springing.delay float 0.5"
     "NSGlobalDomain com.apple.sound.beep.flash int 0"
     "com.apple.dock autohide bool 1"
+    "NSGlobalDomain com.apple.keyboard.fnState bool 1"
 )
 
 # Machine-specific settings (e.g., macos/settings.caladan.sh)
