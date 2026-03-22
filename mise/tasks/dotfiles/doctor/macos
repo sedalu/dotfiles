@@ -9,13 +9,22 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
     exit 0
 fi
 
-# shellcheck source=../../../../macos/settings.sh
-. "$DOTFILES_DIR/macos/settings.sh"
+# shellcheck source=../../../../../lib/dotfiles/macos.sh
+source "$DOTFILES_DIR/lib/dotfiles/macos.sh"
+
+_dw_domains=() _dw_keys=() _dw_types=() _dw_values=()
+
+while IFS= read -r file; do
+    macos_parse_defaults "$file"
+done < <(macos_settings_files)
 
 fail=0
 
-for entry in "${dotfiles_macos_settings[@]}"; do
-    read -r domain key type value <<< "$entry"
+for i in "${!_dw_domains[@]}"; do
+    domain="${_dw_domains[$i]}"
+    key="${_dw_keys[$i]}"
+    type="${_dw_types[$i]}"
+    value="${_dw_values[$i]}"
 
     current="$(defaults read "$domain" "$key" 2>/dev/null)" || {
         echo "❌ $domain $key — not set (expected: $value)"
@@ -23,21 +32,7 @@ for entry in "${dotfiles_macos_settings[@]}"; do
         continue
     }
 
-    # Normalize booleans: defaults read returns 1/0, we store 1/0
-    # For float, strip trailing zeros for a stable comparison
-    if [[ "$type" == "float" ]]; then
-        # Compare as floats via awk to avoid 0.5 vs .5 mismatches
-        match=$(awk -v a="$current" -v b="$value" 'BEGIN { print (a+0 == b+0) ? "yes" : "no" }')
-        if [[ "$match" == "yes" ]]; then
-            echo "✅ $domain $key = $current"
-        else
-            echo "❌ $domain $key = $current (expected: $value)"
-            ((fail++)) || true
-        fi
-        continue
-    fi
-
-    if [[ "$current" == "$value" ]]; then
+    if macos_values_match "$type" "$value" "$current"; then
         echo "✅ $domain $key = $current"
     else
         echo "❌ $domain $key = $current (expected: $value)"

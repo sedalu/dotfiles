@@ -9,50 +9,79 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
     exit 0
 fi
 
-# shellcheck source=../../../../macos/settings.sh
-. "$DOTFILES_DIR/macos/settings.sh"
+# shellcheck source=../../../../../lib/dotfiles/macos.sh
+source "$DOTFILES_DIR/lib/dotfiles/macos.sh"
+
+global_file="$DOTFILES_DIR/macos/settings.sh"
+machine_file="$DOTFILES_DIR/macos/settings.${DOTFILES_MACHINE}.sh"
 
 echo ""
 echo "🍎 Applying macOS settings..."
 
-for entry in "${dotfiles_macos_settings[@]}"; do
-    read -r domain key type value <<< "$entry"
+# --- Step 1: Parse defaults write lines and snapshot current values ---
+_dw_domains=() _dw_keys=() _dw_types=() _dw_values=()
+declare -A _before=()
 
-    case "$type" in
-        bool)
-            flag="-bool"
-            [[ "$value" == "1" ]] && write_val="true" || write_val="false"
-            ;;
-        int)
-            flag="-int"
-            write_val="$value"
-            ;;
-        float)
-            flag="-float"
-            write_val="$value"
-            ;;
-        string)
-            flag="-string"
-            write_val="$value"
-            ;;
-        *)
-            echo "⚠️  Unknown type '$type' for $domain $key, skipping"
-            continue
-            ;;
-    esac
+while IFS= read -r file; do
+    macos_parse_defaults "$file"
+done < <(macos_settings_files)
 
-    if defaults write "$domain" "$key" "$flag" "$write_val" 2>/dev/null; then
-        echo "✔ $domain $key = $value"
+for i in "${!_dw_domains[@]}"; do
+    _before["${_dw_domains[$i]} ${_dw_keys[$i]}"]="$(defaults read "${_dw_domains[$i]}" "${_dw_keys[$i]}" 2>/dev/null || echo "")"
+done
+
+# --- Step 2: Source files (executes all defaults writes + populates killall_targets) ---
+# Wrap defaults to provide per-line feedback
+defaults() {
+    if command defaults "$@" 2>/dev/null; then
+        echo "  ✔ ${*:2}"
     else
-        echo "❌ Failed: $domain $key"
+        echo "  ❌ ${*:2}"
+    fi
+}
+
+killall_targets=()
+
+# shellcheck source=../../../../../macos/settings.sh
+. "$global_file"
+
+if [[ -f "$machine_file" ]]; then
+    echo "  📎 Machine: $DOTFILES_MACHINE"
+    # shellcheck source=/dev/null
+    . "$machine_file"
+fi
+
+# Restore real defaults command
+unset -f defaults
+
+# --- Step 3: Compare before/after and killall only changed targets ---
+declare -A _domain_to_target=()
+for entry in "${killall_targets[@]}"; do
+    _domain_to_target["${entry%%:*}"]="${entry#*:}"
+done
+
+declare -A _needed_targets=()
+for i in "${!_dw_domains[@]}"; do
+    domain="${_dw_domains[$i]}"
+    key="${_dw_keys[$i]}"
+    after="$(defaults read "$domain" "$key" 2>/dev/null || echo "")"
+    if [[ "${_before[$domain $key]}" != "$after" ]]; then
+        target="${_domain_to_target[$domain]:-}"
+        [[ -n "$target" ]] && _needed_targets["$target"]=1
     fi
 done
 
-echo ""
-echo "🔄 Restarting affected apps..."
-for app in Finder Dock SystemUIServer; do
-    killall "$app" 2>/dev/null && echo "  ↺ $app" || true
-done
+if (( ${#_needed_targets[@]} > 0 )); then
+    echo ""
+    echo "🔄 Restarting changed apps..."
+    for target in "${!_needed_targets[@]}"; do
+        killall "$target" 2>/dev/null || true
+        echo "  ↺ $target"
+    done
+else
+    echo ""
+    echo "✅ No changes detected, no restarts needed"
+fi
 
 echo ""
 echo "🎉 macOS settings applied"

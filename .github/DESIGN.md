@@ -209,12 +209,12 @@ The `lib/dotfiles/` directory contains shared definitions sourced by multiple ta
 | `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
 | `go.sh`             | Go XDG-compliant paths                      | install:go, doctor:go                    |
 
-macOS settings live in `macos/` (not `lib/`), following the same data-file pattern as `brew/Brewfile` and `mas/apps`:
+macOS settings live in `macos/` (not `lib/`). Each line is a real `defaults write` command — no DSL or array parsing needed. Shared helpers in `lib/dotfiles/macos.sh` handle parsing and comparison for both tasks:
 
 | Config file             | Defines                                     | Used by                                  |
 | ----------------------- | ------------------------------------------- | ---------------------------------------- |
-| `macos/settings.sh`     | `defaults write` settings array             | install:macos, doctor:macos              |
-| `macos/catalog.sh`      | Catalog of known-interesting defaults keys  | scan:macos                               |
+| `macos/settings.sh`     | `defaults write` commands + `killall_targets` mapping | install:macos, doctor:macos  |
+| `lib/dotfiles/macos.sh` | Shared parsing and comparison helpers       | install:macos, doctor:macos              |
 
 Machine-specific sidecars (e.g., `symlinks.caladan.sh`, `settings.caladan.sh`) extend the base definitions automatically.
 
