@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+#USAGE complete "Sync macOS defaults catalog from macos-defaults.com"
+#MISE description="Sync macOS defaults catalog from macos-defaults.com"
+set -euo pipefail
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    echo "⏭️  Not macOS, skipping"
+    exit 0
+fi
+
+# --- Config ---
+REPO_URL="https://github.com/yannbertrand/macos-defaults.git"
+CACHE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/macos-defaults"
+SETTINGS_FILE="$DOTFILES_DIR/macos/settings.sh"
+
+# --- Clone or update ---
+if [[ -d "$CACHE_DIR/.git" ]]; then
+    echo "📦 Updating macos-defaults repo..."
+    git -C "$CACHE_DIR" pull --quiet
+else
+    echo "📦 Cloning macos-defaults repo..."
+    git clone --quiet --depth 1 "$REPO_URL" "$CACHE_DIR"
+fi
+
+# --- Load tracked defaults ---
+# shellcheck source=../../../../../lib/dotfiles/macos.sh
+source "$DOTFILES_DIR/lib/dotfiles/macos.sh"
+
+_dw_domains=() _dw_keys=() _dw_types=() _dw_values=()
+while IFS= read -r file; do
+    macos_parse_defaults "$file"
+done < <(macos_settings_files)
+
+# Build tracked set as "domain|key" array
+_tracked=()
+for i in "${!_dw_domains[@]}"; do
+    _tracked+=("${_dw_domains[$i]}|${_dw_keys[$i]}")
+done
+
+_in_set() {
+    local needle="$1" ; shift
+    local item
+    for item in "$@"; do
+        [[ "$item" == "$needle" ]] && return 0
+    done
+    return 1
+}
+
+# --- Title-case a section slug ---
+_title_case() {
+    echo "$1" | tr '-' ' ' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)}1'
+}
+
+# --- Parse upstream repo into per-section blocks ---
+# For each new default, build a text block to insert into settings.sh.
+# Also collect killall targets and the full upstream set for staleness.
+docs_dir="$CACHE_DIR/docs"
+_upstream=()
+
+# Parallel arrays for new entries grouped by section
+_new_sections=()     # section slug
+_new_blocks=()       # text block to append
+_new_killall=()      # "domain:Target" or ""
+
+# Track which sections already have pending entries (by index into _new_sections)
+_section_index() {
+    local needle="$1" i
+    for i in "${!_new_sections[@]}"; do
+        [[ "${_new_sections[$i]}" == "$needle" ]] && echo "$i" && return 0
+    done
+    return 1
+}
+
+for section_dir in "$docs_dir"/*/; do
+    section_name="$(basename "$section_dir")"
+    [[ "$section_name" == ".vitepress" || "$section_name" == "public" || "$section_name" == "images" ]] && continue
+
+    for md_file in "$section_dir"/*.md; do
+        [[ -f "$md_file" ]] || continue
+        fname="$(basename "$md_file" .md)"
+        [[ "$fname" == "index" ]] && continue
+
+        # Extract description from frontmatter
+        description=""
+        in_frontmatter=false
+        while IFS= read -r line; do
+            if [[ "$line" == "---" ]]; then
+                if $in_frontmatter; then break; fi
+                in_frontmatter=true
+                continue
+            fi
+            if $in_frontmatter && [[ "$line" =~ ^description:\ (.+)$ ]]; then
+                description="${BASH_REMATCH[1]}"
+                description="${description#\"}" ; description="${description%\"}"
+                description="${description#\'}" ; description="${description%\'}"
+                break
+            fi
+        done < "$md_file"
+
+        # Extract defaults delete command from "Reset to default value" section
+        reset_cmd=""
+        in_reset=false
+        in_code_block=false
+        while IFS= read -r line; do
+            if [[ "$line" =~ ^##\ Reset\ to\ default\ value ]]; then
+                in_reset=true
+                continue
+            fi
+            if $in_reset && [[ "$line" == '```bash' ]]; then
+                in_code_block=true
+                continue
+            fi
+            if $in_reset && $in_code_block; then
+                [[ "$line" == '```' ]] && break
+                reset_cmd="$line"
+            fi
+        done < "$md_file"
+
+        [[ -z "$reset_cmd" ]] && continue
+
+        # Parse domain and key
+        delete_part="${reset_cmd%% &&*}"
+        if [[ "$delete_part" =~ ^defaults\ delete\ ([^\ ]+)\ (.+)$ ]]; then
+            domain="${BASH_REMATCH[1]}"
+            key="${BASH_REMATCH[2]}"
+            key="${key#\"}" ; key="${key%\"}"
+            key="${key#\'}" ; key="${key%\'}"
+        else
+            continue
+        fi
+
+        _upstream+=("${domain}|${key}")
+
+        # Skip if already tracked
+        _in_set "${domain}|${key}" "${_tracked[@]}" && continue
+
+        # Build the entry block
+        url="https://macos-defaults.com/${section_name}/${fname}.html"
+        entry="# ${description}"$'\n'"# ${url}"$'\n'"${delete_part}"
+
+        # Collect killall target (skip generic domains that map to multiple targets)
+        killall_entry=""
+        if [[ "$reset_cmd" == *"&& killall "* && "$domain" != "NSGlobalDomain" && "$domain" != "kCFPreferencesAnyApplication" ]]; then
+            killall_target="${reset_cmd##*killall }"
+            killall_entry="${domain}:${killall_target}"
+        fi
+
+        # Append to the section's block
+        if idx="$(_section_index "$section_name")"; then
+            _new_blocks[$idx]="${_new_blocks[$idx]}"$'\n'"${entry}"
+            # Add killall if not already noted for this section
+            if [[ -n "$killall_entry" && "${_new_killall[$idx]}" != *"$killall_entry"* ]]; then
+                _new_killall[$idx]="${_new_killall[$idx]:+${_new_killall[$idx]}|}${killall_entry}"
+            fi
+        else
+            _new_sections+=("$section_name")
+            _new_blocks+=("$entry")
+            _new_killall+=("$killall_entry")
+        fi
+    done
+done
+
+# --- Apply changes to settings.sh ---
+added=0
+new_sections_added=0
+stale_marked=0
+killall_added=0
+
+# Work on a copy, then replace
+tmp_file="${SETTINGS_FILE}.tmp.$$"
+cp "$SETTINGS_FILE" "$tmp_file"
+
+# Step 1: Insert new defaults into existing sections or append new sections
+for i in "${!_new_sections[@]}"; do
+    section_slug="${_new_sections[$i]}"
+    section_title="$(_title_case "$section_slug")"
+    block="${_new_blocks[$i]}"
+    entry_count=$(echo "$block" | grep -c '^defaults ')
+
+    # Find the section header in the file
+    header_pattern="^# --- ${section_title} ---"
+    if grep -q "$header_pattern" "$tmp_file"; then
+        # Find the last defaults line in this section (before next section or EOF)
+        # Get line number of section header
+        header_line=$(grep -n "$header_pattern" "$tmp_file" | head -1 | cut -d: -f1)
+
+        # Find next section header after this one
+        next_header_line=$(tail -n +"$((header_line + 1))" "$tmp_file" | grep -n '^# --- ' | head -1 | cut -d: -f1)
+
+        if [[ -n "$next_header_line" ]]; then
+            # Insert before the blank line + next section header
+            insert_line=$((header_line + next_header_line - 1))
+            # Check if the line before the next header is blank; if so, insert before it
+            prev_content="$(sed -n "${insert_line}p" "$tmp_file")"
+            [[ -z "$prev_content" ]] && insert_line=$((insert_line - 1))
+        else
+            # No next section — append before EOF
+            insert_line=$(wc -l < "$tmp_file")
+        fi
+
+        # Use head/tail to insert the block
+        {
+            head -n "$insert_line" "$tmp_file"
+            echo "$block"
+            tail -n +"$((insert_line + 1))" "$tmp_file"
+        } > "${tmp_file}.ins"
+        mv "${tmp_file}.ins" "$tmp_file"
+    else
+        # New section — append at end of file
+        {
+            echo ""
+            echo "# --- ${section_title} ---"
+            echo "$block"
+        } >> "$tmp_file"
+        ((new_sections_added++))
+    fi
+
+    ((added += entry_count))
+done
+
+# Step 2: Update killall_targets array with new targets
+# Read existing killall entries
+existing_killall=()
+while IFS= read -r line; do
+    if [[ "$line" =~ \"([^\"]+)\" ]]; then
+        existing_killall+=("${BASH_REMATCH[1]}")
+    fi
+done < <(grep '".*:.*"' "$tmp_file" | grep -v '^#')
+
+for i in "${!_new_killall[@]}"; do
+    [[ -z "${_new_killall[$i]}" ]] && continue
+    # Split on | for multiple targets per section
+    IFS='|' read -ra targets <<< "${_new_killall[$i]}"
+    for target_entry in "${targets[@]}"; do
+        # Check domain part — only add if domain not already in killall_targets
+        target_domain="${target_entry%%:*}"
+        already=false
+        for existing in "${existing_killall[@]}"; do
+            [[ "${existing%%:*}" == "$target_domain" ]] && already=true && break
+        done
+        if ! $already; then
+            # Insert before the closing ) of killall_targets
+            sed -i '' "s|^)|    \"${target_entry}\"\\
+)|" "$tmp_file"
+            existing_killall+=("$target_entry")
+            ((killall_added++))
+        fi
+    done
+done
+
+# Step 3: Mark stale entries
+for i in "${!_dw_domains[@]}"; do
+    entry="${_dw_domains[$i]}|${_dw_keys[$i]}"
+    _in_set "$entry" "${_upstream[@]}" && continue
+
+    domain="${_dw_domains[$i]}"
+    key="${_dw_keys[$i]}"
+
+    # Find the defaults line in the file and prepend "# stale: " if not already marked
+    # Match both "defaults write domain key" and "defaults delete domain key"
+    # The key might be quoted or unquoted
+    for pattern in \
+        "^defaults write ${domain} \"${key}\"" \
+        "^defaults write ${domain} ${key}" \
+        "^defaults delete ${domain} \"${key}\"" \
+        "^defaults delete ${domain} ${key}"; do
+        if grep -q "$pattern" "$tmp_file"; then
+            # Only mark if not already stale
+            if ! grep -B1 "$pattern" "$tmp_file" | grep -q '# stale'; then
+                sed -i '' "/${pattern}/s|^|# stale: |" "$tmp_file"
+                ((stale_marked++))
+            fi
+            break
+        fi
+    done
+done
+
+# Replace original
+mv "$tmp_file" "$SETTINGS_FILE"
+
+# --- Summary ---
+echo ""
+echo "📋 Catalog sync complete:"
+parts=()
+((added > 0)) && parts+=("${added} added")
+((new_sections_added > 0)) && parts+=("${new_sections_added} new sections")
+((killall_added > 0)) && parts+=("${killall_added} killall targets")
+((stale_marked > 0)) && parts+=("${stale_marked} stale")
+if ((${#parts[@]} > 0)); then
+    IFS='; ' ; echo "   ${parts[*]}"
+else
+    echo "   already up to date"
+fi
