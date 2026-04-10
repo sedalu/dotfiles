@@ -3,7 +3,6 @@ auto_install = true
 disable_backends = ["asdf", "pipx", "ubi"]
 env_shell_expand = true
 experimental = true
-lockfile = true
 quiet = true
 verbose = false
 
