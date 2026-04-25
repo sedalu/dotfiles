@@ -36,6 +36,15 @@ defaults write com.apple.Safari.SandboxBroker ShowDevelopMenu -bool true
 #   launchctl bootout gui/501/com.apple.tipsd
 # This needs to run after login; consider a launch agent or post-install script.
 
+# --- Mail ---
+# These are per-account settings stored in Mail's sandboxed container; no defaults write equivalent exists.
+# Must be configured manually in Mail.app → Settings → Accounts → [account] → Mailbox Behaviors:
+#   - Erase junk messages: after one week
+#   - Erase deleted messages: after one month
+# And in Mail.app → Settings → Junk Mail:
+#   - Enable junk mail filtering: ON
+#   - Move junk mail to the Junk mailbox
+
 # --- Spotlight ---
 # Disable "Help Apple Improve Search" (Search Queries Data Sharing Status: 2 = opted out).
 defaults write com.apple.assistant.support "Search Queries Data Sharing Status" -int 2
