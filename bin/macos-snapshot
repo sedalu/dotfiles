@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#USAGE complete "Capture a snapshot of all macOS defaults"
+#USAGE arg "[file]" "Output file (default: /tmp/macos-snapshot-TIMESTAMP.txt)"
+set -euo pipefail
+
+out="${1:-/tmp/macos-snapshot-$(date +%Y%m%d-%H%M%S)-$$.txt}"
+defaults read > "$out"
+echo "$out"

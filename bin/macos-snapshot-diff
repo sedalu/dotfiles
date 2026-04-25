@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#USAGE complete "Diff two macOS defaults snapshots, filtering noise"
+#USAGE arg "<before>" "Before snapshot file"
+#USAGE arg "<after>" "After snapshot file"
+set -euo pipefail
+
+before="$1"
+after="$2"
+[[ -f "$before" ]] || { echo "Error: $before not found" >&2; exit 1; }
+[[ -f "$after"  ]] || { echo "Error: $after not found"  >&2; exit 1; }
+
+diff "$before" "$after" \
+    | grep -v '^---\|^+++\|^@@' \
+    | grep -E '^[<>]' \
+    | grep -Ev '(Last(Check|Update|Run|Success|Modified|Opened|Used|Sync|Launch)|UpdatedAt|CheckDate|Date =|Time =|Timestamp|Epoch)' \
+    | grep -Ev '"(NS(Frame|Window|SplitView)|Frame |Width|Height|Origin|Size |Position)' \
+    | grep -Ev '= "[0-9]{4}-[0-9]{2}-[0-9]{2}' \
+    | grep -Ev '= [0-9]{9,}\.' \
+    | grep -Ev '= "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"' \
+    || true
