@@ -19,15 +19,14 @@ echo ""
 echo "🍎 Applying macOS settings..."
 
 # --- Step 1: Parse defaults write lines and snapshot current values ---
-_dw_domains=() _dw_keys=() _dw_types=() _dw_values=()
-declare -A _before=()
+_dw_domains=() _dw_keys=() _dw_types=() _dw_values=() _dw_before=()
 
 while IFS= read -r file; do
     macos_parse_defaults "$file"
 done < <(macos_settings_files)
 
 for i in "${!_dw_domains[@]}"; do
-    _before["${_dw_domains[$i]} ${_dw_keys[$i]}"]="$(defaults read "${_dw_domains[$i]}" "${_dw_keys[$i]}" 2>/dev/null || echo "")"
+    _dw_before[$i]="$(defaults read "${_dw_domains[$i]}" "${_dw_keys[$i]}" 2>/dev/null || echo "")"
 done
 
 # --- Step 2: Source files (executes all defaults writes + populates killall_targets) ---
@@ -55,26 +54,26 @@ fi
 unset -f defaults
 
 # --- Step 3: Compare before/after and killall only changed targets ---
-declare -A _domain_to_target=()
-for entry in "${killall_targets[@]}"; do
-    _domain_to_target["${entry%%:*}"]="${entry#*:}"
-done
+_needed_targets=()
+_has_target() { local t; for t in "${_needed_targets[@]}"; do [[ "$t" == "$1" ]] && return 0; done; return 1; }
 
-declare -A _needed_targets=()
 for i in "${!_dw_domains[@]}"; do
     domain="${_dw_domains[$i]}"
     key="${_dw_keys[$i]}"
     after="$(defaults read "$domain" "$key" 2>/dev/null || echo "")"
-    if [[ "${_before[$domain $key]}" != "$after" ]]; then
-        target="${_domain_to_target[$domain]:-}"
-        [[ -n "$target" ]] && _needed_targets["$target"]=1
+    if [[ "${_dw_before[$i]}" != "$after" ]]; then
+        for entry in "${killall_targets[@]}"; do
+            [[ "${entry%%:*}" == "$domain" ]] || continue
+            target="${entry#*:}"
+            _has_target "$target" || _needed_targets+=("$target")
+        done
     fi
 done
 
 if (( ${#_needed_targets[@]} > 0 )); then
     echo ""
     echo "🔄 Restarting changed apps..."
-    for target in "${!_needed_targets[@]}"; do
+    for target in "${_needed_targets[@]}"; do
         killall "$target" 2>/dev/null || true
         echo "  ↺ $target"
     done
