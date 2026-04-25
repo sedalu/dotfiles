@@ -42,13 +42,13 @@ defaults write com.apple.dock "autohide-time-modifier" -float "0"
 defaults write com.apple.dock "autohide-delay" -float "0"
 # Show recently used apps in a separate section of the Dock.
 # https://macos-defaults.com/dock/show-recents.html
-defaults write com.apple.dock "show-recents" -bool "true"
+defaults delete com.apple.dock "show-recents"
 # Change the Dock minimize animation.
 # https://macos-defaults.com/dock/mineffect.html
-defaults write com.apple.dock "mineffect" -string "genie"
+defaults delete com.apple.dock "mineffect"
 # Only show opened apps in Dock.
 # https://macos-defaults.com/dock/static-only.html
-defaults write com.apple.dock "static-only" -bool "false"
+defaults delete com.apple.dock "static-only"
 # Scroll up on a Dock icon to show all Space's opened windows for an app, or open stack.
 # https://macos-defaults.com/dock/scroll-to-open.html
 defaults delete com.apple.dock "scroll-to-open"
