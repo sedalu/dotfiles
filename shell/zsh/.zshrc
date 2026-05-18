@@ -92,7 +92,7 @@ setopt AUTO_MENU
 setopt AUTO_LIST
 setopt AUTO_PARAM_SLASH
 
-zstyle ':completion:*' matcher-list 'm:{a-z}={a-z}'
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/completion_cache"
 
@@ -109,11 +109,15 @@ zstyle ':fzf-tab:*' group-colors \
     $'\033[38;2;180;190;254m' $'\033[38;2;137;220;235m' $'\033[38;2;242;205;205m'
 zstyle ':fzf-tab:*' default-color $'\033[38;2;205;214;244m'
 
+compdef eza=ls
+
 # --- General ----------------------------
 
 # setopt CORRECT_ALL
 setopt NO_CASE_GLOB
 setopt MARK_DIRS
+setopt NOBEEP
+setopt NUMERIC_GLOB_SORT
 setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_SILENT
 

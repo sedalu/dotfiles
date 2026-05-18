@@ -3,6 +3,8 @@
 # Contains: pager, fzf, functions.
 # Aliases are managed via [shell_aliases] in the mise global config.
 
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
 # --- Pager ------------------------------
 
 export PAGER="bat --paging=always"
@@ -26,7 +28,7 @@ export FZF_DEFAULT_OPTS=$'
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
 
 # Ctrl+T — fuzzy file picker with bat preview
-export FZF_CTRL_T_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND='fd --type f --hidden --follow --exclude .git --strip-cwd-prefix'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range :200 {} 2>/dev/null || eza --tree --level=2 --icons=always --color=always {}'"
 
 # Alt+C — fuzzy directory jump via zoxide
