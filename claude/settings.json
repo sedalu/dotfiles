@@ -1,6 +1,27 @@
 {
   "model": "sonnet",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/mise-trust.sh",
+            "statusMessage": "Trusting mise config..."
+          }
+        ]
+      }
+    ],
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/mise-trust.sh"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
