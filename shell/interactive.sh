@@ -52,12 +52,12 @@ mkcd() {
     mkdir -p "$1" && cd "$1"
 }
 
-# Reload the current shell's rc file.
+# Replace the current shell process with a fresh instance.
 reload() {
     if [[ -n "$ZSH_VERSION" ]]; then
-        source "$HOME/.zshenv"
+        exec zsh
     elif [[ -n "$BASH_VERSION" ]]; then
-        source "$HOME/.bashrc"
+        exec bash
     fi
 }
 
