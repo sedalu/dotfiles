@@ -11,6 +11,7 @@ history.jsonl
 mcp-needs-auth-cache.json
 session-env
 hooks/.rtk-hook.sha256
+settings.local.json
 paste-cache/
 tasks/
 telemetry/
