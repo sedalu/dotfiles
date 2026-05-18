@@ -1,0 +1,3 @@
+# Machine-local / ephemeral — do not track
+settings.local.json
+worktrees/

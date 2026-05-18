@@ -14,3 +14,10 @@ hooks/.rtk-hook.sha256
 paste-cache/
 tasks/
 telemetry/
+daemon/
+daemon.lock
+daemon.log
+daemon.status.json
+.last-cleanup
+stats-cache.json
+jobs/
