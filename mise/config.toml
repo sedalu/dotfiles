@@ -20,7 +20,7 @@ lt = "eza --all --icons=always --group-directories-first --git --tree --level=1"
 llt = "eza --all --icons=always --group-directories-first --git --long --tree --level=1"
 
 # bat -> cat
-cat = "bat"
+# cat = "bat"
 
 [tools]
 # aqua
@@ -35,6 +35,8 @@ cat = "bat"
 "github:jesseduffield/lazygit" = "latest"
 "github:noworrieseh/macdisp" = "latest"
 "github:rtk-ai/rtk" = "latest"
+# cargo
+"cargo:forgejo-cli" = "latest"
 # go
 "go:golang.org/x/tools/gopls" = "latest"
 # npm
@@ -68,6 +70,9 @@ uv = "latest"
 zoxide = "latest"
 glow = "latest"
 gh = "latest"
+age = "latest"
+hk = "latest"
+pitchfork = "latest"
 
 # Sub-table tools (with postinstall hooks or extra options)
 
@@ -80,10 +85,6 @@ version = "latest"
 asset_pattern = "JetBrainsMono.tar.xz"
 postinstall = "$DOTFILES_DIR/mise/hooks/install-fonts"
 
-[tools."go:github.com/ardanlabs/kronk/cmd/kronk"]
-version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
-
 [tools."go:github.com/go-delve/delve/cmd/dlv"]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
@@ -93,13 +94,14 @@ version = "1.2.3"
 postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
 platforms.macos-arm64.url = "https://release.files.ghostty.org/{{version}}/Ghostty.dmg"
 
+[tools."http:cmux"]
+version = "0.64.4"
+postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
+platforms.macos-arm64.url = "https://github.com/manaflow-ai/cmux/releases/download/v{{version}}/cmux-macos.dmg"
+
 [tools.bat]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --completion {}"
-
-[tools.crush]
-version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
 [tools.fd]
 version = "latest"
@@ -124,10 +126,6 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/helix-postinstall {}"
 
-[tools.localstack]
-version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
-
 # [tools.ollama]
 # version = "latest"
 # postinstall = "$DOTFILES_DIR/mise/hooks/ollama-postinstall"
@@ -149,6 +147,7 @@ version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
 [env]
+FNOX_AGE_KEY_FILE = "~/.config/fnox/age.txt"
 # EDITOR = "hx"
 # VISUAL = "${EDITOR}"
 
