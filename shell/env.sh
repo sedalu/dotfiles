@@ -49,6 +49,13 @@ fi
 # mise shims
 export PATH="$XDG_DATA_HOME/mise/shims:$PATH"
 
+# cmux CLI (macOS app bundle)
+if [[ -d "$HOME/Applications/cmux.app" ]]; then
+    export PATH="$HOME/Applications/cmux.app/Contents/Resources/bin:$PATH"
+elif [[ -d "/Applications/cmux.app" ]]; then
+    export PATH="/Applications/cmux.app/Contents/Resources/bin:$PATH"
+fi
+
 # --- Dotfiles ---------------------------
 
 export DOTFILES_DIR="${DOTFILES_DIR:-$XDG_CONFIG_HOME}"
