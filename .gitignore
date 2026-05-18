@@ -1,2 +1,3 @@
 /go/*
 /.git
+/shell/zsh/.zsh_sessions/

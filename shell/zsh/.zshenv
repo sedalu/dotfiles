@@ -24,3 +24,6 @@ typeset -U PATH path fpath
 [[ -d "$XDG_CACHE_HOME/zsh" ]] || mkdir -p "$XDG_CACHE_HOME/zsh"
 [[ -d "$XDG_STATE_HOME/zsh" ]] || mkdir -p "$XDG_STATE_HOME/zsh"
 export HISTFILE="$XDG_STATE_HOME/zsh/history"
+
+# Disable macOS terminal session restoration (not needed with Ghostty + cmux)
+export SHELL_SESSIONS_DISABLE=1
