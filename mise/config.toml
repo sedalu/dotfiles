@@ -26,7 +26,6 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 # aqua
 "aqua:artempyanykh/marksman" = "latest"
 "aqua:astral-sh/ruff" = "latest"
-"aqua:astral-sh/uv" = "latest"
 "aqua:docker/compose" = "latest"
 "aqua:mvdan/sh" = "latest"
 # github
