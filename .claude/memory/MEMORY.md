@@ -6,3 +6,4 @@
 - [feedback_commit_scope.md](feedback_commit_scope.md) — Only stage files related to the current task when committing
 - [feedback_mise_trust.md](feedback_mise_trust.md) — Run `mise trust` after creating a worktree, clone, or entering a new dir with mise config
 - [project_macos_defaults_todos.md](project_macos_defaults_todos.md) — Future work: automate macos-defaults catalog sync and update tracking
+- [feedback_no_speculation.md](feedback_no_speculation.md) — Never speculate — always investigate with tools before answering
