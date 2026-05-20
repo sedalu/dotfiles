@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #USAGE complete "Update mise managed tools"
 #MISE description="Update mise managed tools"
-#MISE depends=["dotfiles:update:brew"]
 #MISE hide=true
 
 set -euo pipefail
