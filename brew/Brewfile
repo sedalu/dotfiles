@@ -2,6 +2,8 @@
 brew "bash"
 brew "git"
 brew "zsh"
+brew "openssl@3" # required by Python (ssl module) and Rust crates that do networking
+brew "pkgconf"   # helps compilers locate openssl and other libs when building from source
 
 # macOS only
 if OS.mac?
