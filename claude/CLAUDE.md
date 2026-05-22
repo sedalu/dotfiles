@@ -52,6 +52,10 @@
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
+## Reference Checkouts
+
+`~/Projects/ref/` holds upstream git checkouts for source browsing and research. Use these instead of fetching from the internet when possible. Pull when a repo looks stale or when asked. Agents may clone new repos here when a reference checkout would be useful. See `~/Projects/ref/CLAUDE.md` for the full inventory.
+
 ## Shared Dotfiles & Tasks
 
 Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch management and provides shared mise tasks for both worktree operations and dotfiles maintenance.

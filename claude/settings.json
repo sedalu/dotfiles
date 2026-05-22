@@ -43,5 +43,8 @@
     "typescript-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
   },
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "theme": "dark-ansi",
+  "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": true
 }
