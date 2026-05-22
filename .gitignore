@@ -1,3 +1,4 @@
 /go/*
 /.git
 /shell/zsh/.zsh_sessions/
+/claude/projects/
