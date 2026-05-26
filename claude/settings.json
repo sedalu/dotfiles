@@ -1,5 +1,4 @@
 {
-  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -45,6 +44,8 @@
   },
   "tui": "fullscreen",
   "theme": "dark-ansi",
+  "autoCompactEnabled": true,
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "model": "opus"
 }
