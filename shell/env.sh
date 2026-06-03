@@ -50,26 +50,11 @@ elif [[ -d /home/linuxbrew/.linuxbrew ]]; then
 fi
 
 # --- PATH -------------------------------
+# Factored into path.sh so login shells can re-apply it after path_helper
+# (see path.sh header). XDG_CONFIG_HOME is set above; DOTFILES_DIR is not yet,
+# so resolve the same way .zshenv resolves env.sh.
 
-export PATH="${XDG_CONFIG_HOME}/bin:${PATH}"
-export PATH="${HOME}/.local/bin:${PATH}"
-
-# Homebrew
-if [[ -d /opt/homebrew ]]; then
-    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
-elif [[ -d /home/linuxbrew/.linuxbrew ]]; then
-    export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
-fi
-
-# mise shims
-export PATH="$XDG_DATA_HOME/mise/shims:$PATH"
-
-# cmux CLI (macOS app bundle)
-if [[ -d "$HOME/Applications/cmux.app" ]]; then
-    export PATH="$HOME/Applications/cmux.app/Contents/Resources/bin:$PATH"
-elif [[ -d "/Applications/cmux.app" ]]; then
-    export PATH="/Applications/cmux.app/Contents/Resources/bin:$PATH"
-fi
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/path.sh"
 
 # --- Dotfiles ---------------------------
 
