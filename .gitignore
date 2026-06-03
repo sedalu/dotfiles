@@ -2,3 +2,7 @@
 /.git
 /shell/zsh/.zsh_sessions/
 /claude/projects/
+
+# fnox secrets — deny-by-default (age private keys live here); track only config
+/fnox/*
+!/fnox/config.toml
