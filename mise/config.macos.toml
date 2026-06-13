@@ -1,0 +1,9 @@
+# macOS-only system packages, loaded automatically via auto_env (see miserc.toml).
+# mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
+#
+# GUI casks (claude, tailscale-app) stay in homebrew/Brewfile for now: mise
+# 2026.6.6 cask support can't install pkg-type artifacts (tailscale-app) and
+# doesn't reconcile app-type casks already installed by brew. Revisit when mise
+# cask support matures.
+[bootstrap.packages]
+"brew:mas" = "latest" # Mac App Store CLI (formula); apps installed by the mas tasks

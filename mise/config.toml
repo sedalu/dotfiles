@@ -13,9 +13,11 @@ package_manager = "bun"
 # fnox-env = "https://github.com/jdx/mise-env-fnox"
 
 # Machine-global system packages (shared libs and bootstrap tools), poured by
-# mise's built-in Homebrew bottle installer — no `brew` required. Casks and
-# Mac App Store apps still live in homebrew/Brewfile. Install with `mise
-# bootstrap packages install`; see `dotfiles:install:mise:system-packages`.
+# mise's built-in Homebrew bottle installer — no `brew` required. Install with
+# `mise bootstrap packages install`; see `dotfiles:install:mise:system-packages`.
+# Per-OS packages (incl. the mas CLI) live in config.macos.toml; per-machine
+# packages in config.<machine>.toml (both auto-loaded — see miserc.toml). GUI
+# casks still live in homebrew/Brewfile pending mise cask support.
 [bootstrap.packages]
 "brew:bash" = "latest"
 "brew:git" = "latest"

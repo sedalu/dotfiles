@@ -1,10 +1,10 @@
-# Formulae (bash, git, zsh, openssl@3, pkgconf) are managed by mise via
-# [bootstrap.packages] in mise/config.toml. This file is casks + Mac App Store.
+# System formulae (bash, git, zsh, openssl@3, pkgconf) and the mas CLI are
+# managed by mise via [bootstrap.packages] (config.toml + config.macos.toml).
+# This file is GUI casks only — mise 2026.6.6 can't yet install pkg-type or
+# reconcile already-installed app casks, so they stay on Homebrew for now.
 
 # macOS only
 if OS.mac?
-    brew "mas"
-
     cask "claude"
     cask "tailscale-app"
 end

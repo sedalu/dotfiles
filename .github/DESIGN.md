@@ -136,6 +136,7 @@ Each file sources optional layers at the end (Global → OS → Machine):
 | Font installation    | `mise/hooks/install-fonts` (→ `~/Library/Fonts`)    | N/A                                         |
 | ACL handling         | Strips deny-delete ACLs before replacing dirs       | N/A                                         |
 | App Store            | `mas` tasks run only when `DOTFILES_OS=darwin`      | Skipped                                     |
+| System packages      | `config.macos.toml` adds the `mas` CLI to `[bootstrap.packages]` (auto-loaded) | `config.linux.toml` (none yet) |
 
 Homebrew paths are hardcoded in `env.sh` to avoid a `brew shellenv` subprocess on every shell start.
 
@@ -167,8 +168,12 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | `lib/dotfiles/symlinks.sh` | `lib/dotfiles/symlinks.${MACHINE}.sh`      | `symlinks.caladan.sh`          |
 | `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
 | `macos/settings.sh`        | `macos/settings.${MACHINE}.sh`             | `settings.caladan.sh`          |
+| `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.caladan`             |
+| `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
 The base `symlinks.sh` auto-loads its sidecar and appends `dotfiles_machine_symlinks` to the main array.
+
+The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). All `[bootstrap.packages]` tables union across whichever files load — the native equivalent of the `Brewfile.${MACHINE}` sidecar.
 
 Example: `symlinks.caladan.sh` adds `~/Downloads` → iCloud Drive Downloads.
 
@@ -262,7 +267,7 @@ dotfiles:install
 ├── macos            (parallel, darwin only)
 ├── symlinks         (parallel)
 ├── zsh-plugins      (parallel)
-├── mas              (parallel, darwin only)
+├── mas              (depends: mise:system-packages; darwin only)
 └── ssh              (depends: symlinks)
 ```
 

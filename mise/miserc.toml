@@ -1,0 +1,12 @@
+# Early-init config (loaded before mise.toml, OS-level context only).
+#
+# auto_env loads platform config files automatically based on the running
+# machine — config.unix.toml, config.macos.toml, config.macos-arm64.toml, etc.
+# (precedence: unix < {os} < {os}-{arch} < explicit MISE_ENV).
+#
+# DOTFILES_MACHINE (exported by shell/env.sh) selects a per-machine layer:
+# MISE_ENV=<machine> additionally loads config.<machine>.toml. This mirrors the
+# shell/env.${DOTFILES_OS}.sh and shell/env.${DOTFILES_MACHINE}.sh sidecars.
+# All [bootstrap.packages] tables union across whichever files load.
+auto_env = true
+env = ["{{ env.DOTFILES_MACHINE | default(value='') }}"]
