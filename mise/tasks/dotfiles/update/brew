@@ -17,7 +17,7 @@ brew update
 
 # Upgrade only what the Brewfile declares (formulae + sidecar) and all casks.
 # System libraries (bash, git, zsh, openssl@3, pkgconf and their transitive
-# deps) are owned by mise via [system.packages]; a blanket `brew upgrade` would
+# deps) are owned by mise via [bootstrap.packages]; a blanket `brew upgrade` would
 # re-pour them and collide with mise's bottle manager, since both share the
 # same prefix (/opt/homebrew).
 echo ""

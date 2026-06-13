@@ -1,5 +1,5 @@
 # Formulae (bash, git, zsh, openssl@3, pkgconf) are managed by mise via
-# [system.packages] in mise/config.toml. This file is casks + Mac App Store.
+# [bootstrap.packages] in mise/config.toml. This file is casks + Mac App Store.
 
 # macOS only
 if OS.mac?

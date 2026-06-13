@@ -14,8 +14,8 @@ mise self-update --yes
 mise plugins update --yes
 mise upgrade --bump --yes
 
-# System packages declared in [system.packages] (poured Homebrew bottles).
-mise system upgrade --yes
+# System packages declared in [bootstrap.packages] (poured Homebrew bottles).
+mise bootstrap packages upgrade --yes
 
 # --- environment ------------------------
 

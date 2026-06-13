@@ -5,13 +5,13 @@
 #MISE hide=true
 set -euo pipefail
 
-# Hard gate: every package declared in [system.packages] must be installed
+# Hard gate: every package declared in [bootstrap.packages] must be installed
 # (mirrors the brew Brewfile check). `mise doctor` below also surfaces these,
 # but only as a soft warning.
-if mise system status --missing; then
+if mise bootstrap packages status --missing; then
     echo "✅ All system packages installed"
 else
-    echo "❌ System packages out of sync — run mise system install"
+    echo "❌ System packages out of sync — run mise bootstrap packages install"
     exit 1
 fi
 

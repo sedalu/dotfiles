@@ -70,10 +70,10 @@ For CLI tools and runtimes, prefer `mise/config.toml`:
 mise use --global <tool>
 ```
 
-For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`), use `[system.packages]` in `mise/config.toml` — mise pours Homebrew bottles directly:
+For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`), use `[bootstrap.packages]` in `mise/config.toml` — mise pours Homebrew bottles directly:
 
 ```sh
-mise system install
+mise bootstrap packages install
 ```
 
 For GUI apps/casks and the Mac App Store CLI, edit `homebrew/Brewfile`:

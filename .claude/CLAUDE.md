@@ -31,7 +31,7 @@ See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture an
 When adding a new CLI tool or runtime:
 
 1. **Prefer mise** — add it using `mise use --global <tool>`. Perform a fuzzy search for native support using `mise search <tool>`. If not found, it may be supported using the github or gitlab backends, the http backend, or a language backend. This includes many GUI apps and fonts.
-2. **System libraries / build deps** — shared libraries and bootstrap tools (`openssl@3`, `pkgconf`, `bash`, `git`, `zsh`) go in `[system.packages]` in `mise/config.toml`. mise pours Homebrew bottles directly (no `brew` needed); install them with `mise system install` (wired into `dotfiles:install:mise:system-packages`).
+2. **System libraries / build deps** — shared libraries and bootstrap tools (`openssl@3`, `pkgconf`, `bash`, `git`, `zsh`) go in `[bootstrap.packages]` in `mise/config.toml`. mise pours Homebrew bottles directly (no `brew` needed); install them with `mise bootstrap packages install` (wired into `dotfiles:install:mise:system-packages`).
 3. **Fall back to Brew** — use `homebrew/Brewfile` only for things mise cannot manage: casks (GUI apps, fonts) and the Mac App Store CLI (`mas`).
 
 The Brewfile is intentionally small. Most tools live in `mise/config.toml`.
