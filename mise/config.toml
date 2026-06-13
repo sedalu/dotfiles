@@ -12,6 +12,17 @@ package_manager = "bun"
 # [plugins]
 # fnox-env = "https://github.com/jdx/mise-env-fnox"
 
+# Machine-global system packages (shared libs and bootstrap tools), poured by
+# mise's built-in Homebrew bottle installer — no `brew` required. Casks and
+# Mac App Store apps still live in brew/Brewfile. Install with `mise system
+# install`; see `dotfiles:install:mise:system-packages`.
+[system.packages]
+"brew:bash" = "latest"
+"brew:git" = "latest"
+"brew:zsh" = "latest"
+"brew:openssl@3" = "latest" # required by Python (ssl module) and networking Rust crates
+"brew:pkgconf" = "latest"   # helps compilers locate openssl and other libs when building from source
+
 [shell_alias]
 # eza -> ls
 ls = "eza --all --icons=always --group-directories-first --git"

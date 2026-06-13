@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#USAGE complete "Install system packages from [system.packages]"
+#MISE description="Install system packages from [system.packages]"
+#MISE hide=true
+set -euo pipefail
+
+# mise's brew manager pours bottles without requiring Homebrew, creating the
+# prefix (/opt/homebrew) itself if absent — so this runs independently of the
+# brew task. mise-poured and brew-installed kegs coexist in the same prefix.
+
+echo ""
+echo "📦 Installing system packages..."
+mise system install --yes
+echo "✔ Done."
+
+echo ""
+echo "🎉 System packages installed"

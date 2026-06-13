@@ -1,9 +1,5 @@
-# Linux and macOS
-brew "bash"
-brew "git"
-brew "zsh"
-brew "openssl@3" # required by Python (ssl module) and Rust crates that do networking
-brew "pkgconf"   # helps compilers locate openssl and other libs when building from source
+# Formulae (bash, git, zsh, openssl@3, pkgconf) are managed by mise via
+# [system.packages] in mise/config.toml. This file is casks + Mac App Store.
 
 # macOS only
 if OS.mac?

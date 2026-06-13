@@ -257,6 +257,7 @@ dotfiles:install
 ├── brew             (parallel)
 ├── dirs             (parallel)
 ├── mise             (parallel)
+│   └── system-packages  (mise system install)
 ├── go               (parallel)
 ├── macos            (parallel, darwin only)
 ├── symlinks         (parallel)
@@ -270,7 +271,7 @@ dotfiles:install
 ```
 dotfiles:update
 ├── brew
-├── mise             (depends: brew)
+├── mise             (depends: brew; also runs `mise system upgrade`)
 ├── macos            (parallel, darwin only)
 ├── zsh-plugins      (parallel)
 └── mas              (parallel, darwin only)
@@ -282,7 +283,7 @@ dotfiles:update
 dotfiles:doctor
 ├── tools
 ├── brew             (depends: tools)
-├── mise             (depends: tools)
+├── mise             (depends: tools; also checks `mise system status --missing`)
 ├── repo             (depends: tools)
 │   └── symlinks     (depends: repo)
 ├── dirs

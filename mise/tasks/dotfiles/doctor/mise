@@ -5,6 +5,16 @@
 #MISE hide=true
 set -euo pipefail
 
+# Hard gate: every package declared in [system.packages] must be installed
+# (mirrors the brew Brewfile check). `mise doctor` below also surfaces these,
+# but only as a soft warning.
+if mise system status --missing; then
+    echo "✅ All system packages installed"
+else
+    echo "❌ System packages out of sync — run mise system install"
+    exit 1
+fi
+
 if mise doctor 2>&1; then
     echo "✅ mise doctor passed"
 else

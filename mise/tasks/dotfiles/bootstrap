@@ -67,7 +67,7 @@ echo ""
 echo "📦 Installing tools and packages..."
 
 if ! command -v mise &>/dev/null; then
-    "$DOTFILES_DIR/mise/tasks/dotfiles/install/mise"
+    "$DOTFILES_DIR/mise/tasks/dotfiles/install/mise/_default"
 fi
 
 mise run dotfiles:install

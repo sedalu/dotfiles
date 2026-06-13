@@ -7,7 +7,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 | Directory       | Purpose                                               |
 | --------------- | ----------------------------------------------------- |
 | `shell/`        | Bash and Zsh config (env, interactive, completions)   |
-| `brew/`         | Homebrew `Brewfile`                                   |
+| `brew/`         | Homebrew `Brewfile` (casks + Mac App Store)           |
 | `mise/`         | mise config, tasks, and hooks                         |
 | `git/`          | Git config and ignore                                 |
 | `ghostty/`      | Ghostty terminal config                               |
@@ -70,7 +70,13 @@ For CLI tools and runtimes, prefer `mise/config.toml`:
 mise use --global <tool>
 ```
 
-For system-level dependencies and GUI apps/casks, edit `brew/Brewfile`:
+For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`), use `[system.packages]` in `mise/config.toml` — mise pours Homebrew bottles directly:
+
+```sh
+mise system install
+```
+
+For GUI apps/casks and the Mac App Store CLI, edit `brew/Brewfile`:
 
 ```sh
 brew bundle install
