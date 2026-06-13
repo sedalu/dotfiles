@@ -1,0 +1,5 @@
+# Per-machine packages for caladan, auto-loaded via MISE_ENV (see miserc.toml).
+# Empty for now: caladan's per-machine packages are GUI casks (obsidian, steam)
+# which stay in homebrew/Brewfile.caladan until mise cask support matures.
+# Add non-GUI per-machine packages here as "brew:<formula>" / "apt:<pkg>" / etc.
+[bootstrap.packages]
