@@ -76,7 +76,7 @@ For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`)
 mise system install
 ```
 
-For GUI apps/casks and the Mac App Store CLI, edit `brew/Brewfile`:
+For GUI apps/casks and the Mac App Store CLI, edit `homebrew/Brewfile`:
 
 ```sh
 brew bundle install

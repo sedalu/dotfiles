@@ -6,3 +6,6 @@
 # fnox secrets — deny-by-default (age private keys live here); track only config
 /fnox/*
 !/fnox/config.toml
+
+# Homebrew's XDG config dir — track the Brewfile + config, ignore brew's locks
+/homebrew/*.lock

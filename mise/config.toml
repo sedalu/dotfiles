@@ -14,7 +14,7 @@ package_manager = "bun"
 
 # Machine-global system packages (shared libs and bootstrap tools), poured by
 # mise's built-in Homebrew bottle installer — no `brew` required. Casks and
-# Mac App Store apps still live in brew/Brewfile. Install with `mise system
+# Mac App Store apps still live in homebrew/Brewfile. Install with `mise system
 # install`; see `dotfiles:install:mise:system-packages`.
 [system.packages]
 "brew:bash" = "latest"

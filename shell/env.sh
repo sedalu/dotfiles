@@ -72,7 +72,7 @@ export DOTFILES_OS="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
 export DOTFILES_SHELL="${DOTFILES_SHELL:-$(basename "$SHELL")}"
 
 # Homebrew Bundle
-export HOMEBREW_BUNDLE_FILE="$DOTFILES_DIR/brew/Brewfile"
+export HOMEBREW_BUNDLE_FILE="$DOTFILES_DIR/homebrew/Brewfile"
 
 # --- Editor -----------------------------
 
