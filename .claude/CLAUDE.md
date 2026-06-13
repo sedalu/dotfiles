@@ -45,6 +45,7 @@ If installing a font, add a `postinstall` hook in `mise/config.toml` that calls 
 ## Conventions
 
 - **XDG compliance** — configs go in their proper `XDG_CONFIG_HOME` subdirectory. Never pollute `$HOME` with dotfiles.
+- **Symlinks** — declared in mise's `[dotfiles]` tables (`mise/config.toml`, per-machine in `config.<machine>.toml`), applied by `dotfiles:install:symlinks` (`mise dotfiles apply`) and checked by `dotfiles:doctor:symlinks` (`mise dotfiles status`). Add a symlink by adding a `[dotfiles."~/target"]` entry, not by editing a shell library.
 - **Commit messages** — conventional commits: `type(scope): description` (e.g., `feature(brew): add Brewfile`, `fix(zsh): override HISTFILE`).
 - **Shell config split** — `shell/env.sh` holds environment variables (sourced by both `.zshenv` and `bash_env`). `shell/interactive.sh` holds aliases, functions, and interactive setup (sourced by `.zshrc` and `.bashrc`). Bash- and zsh-specific files live under `shell/bash/` and `shell/zsh/`.
 - **Performance** — expensive shell activations (direnv, fzf, starship, zoxide) are cached. Homebrew paths are hardcoded in `env.sh` to avoid `brew shellenv` overhead.

@@ -165,17 +165,14 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | -------------------------- | ------------------------------------------ | ------------------------------ |
 | `shell/env.sh`             | `shell/env.${MACHINE}.sh`                  | `env.caladan.sh`               |
 | `shell/interactive.sh`     | `shell/interactive.${MACHINE}.sh`          | `interactive.caladan.sh`       |
-| `lib/dotfiles/symlinks.sh` | `lib/dotfiles/symlinks.${MACHINE}.sh`      | `symlinks.caladan.sh`          |
 | `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
 | `macos/settings.sh`        | `macos/settings.${MACHINE}.sh`             | `settings.caladan.sh`          |
 | `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.caladan`             |
 | `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
-The base `symlinks.sh` auto-loads its sidecar and appends `dotfiles_machine_symlinks` to the main array.
+The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). Both `[bootstrap.packages]` and `[dotfiles]` tables union across whichever files load — the native equivalent of the old `Brewfile.${MACHINE}` and `symlinks.${MACHINE}.sh` sidecars.
 
-The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). All `[bootstrap.packages]` tables union across whichever files load — the native equivalent of the `Brewfile.${MACHINE}` sidecar.
-
-Example: `symlinks.caladan.sh` adds `~/Downloads` → iCloud Drive Downloads.
+Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`.
 
 ## 6. Shell-Specific Variations
 
@@ -208,7 +205,6 @@ The `lib/dotfiles/` directory contains shared definitions sourced by multiple ta
 
 | Library file        | Defines                                     | Used by                                  |
 | ------------------- | ------------------------------------------- | ---------------------------------------- |
-| `symlinks.sh`       | Base symlink `link:target` pairs            | install:symlinks, doctor:symlinks        |
 | `dirs.sh`           | XDG directories to create/verify            | install:dirs, doctor:dirs                |
 | `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, install:mas, env.sh             |
 | `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
@@ -221,35 +217,34 @@ macOS settings live in `macos/` (not `lib/`). Each line is a real `defaults writ
 | `macos/settings.sh`     | `defaults write` commands + `killall_targets` mapping | install:macos, doctor:macos  |
 | `lib/dotfiles/macos.sh` | Shared parsing and comparison helpers       | install:macos, doctor:macos              |
 
-Machine-specific sidecars (e.g., `symlinks.caladan.sh`, `settings.caladan.sh`) extend the base definitions automatically.
+Machine-specific sidecars (e.g., `settings.caladan.sh`) extend the base definitions automatically. Symlinks are no longer library-driven — they are declared in `[dotfiles]` (see §8).
 
 ## 8. Symlink System
 
-### Base Symlinks
+Symlinks are declared in mise's `[dotfiles]` tables and applied by `mise dotfiles apply` (an experimental mise feature). The base set lives in `mise/config.toml`; per-machine entries in `config.${MACHINE}.toml` union with it (see §5).
 
-Defined in `lib/dotfiles/symlinks.sh` as `link:target` pairs:
+### Declared Symlinks
 
-| Link                    | Target                                   |
+Base (`mise/config.toml`), all `mode = "symlink"`:
+
+| Link                    | Source                                   |
 | ----------------------- | ---------------------------------------- |
-| `~/.claude`             | `$DOTFILES_DIR/claude`                   |
-| `~/.bash_profile`       | `$DOTFILES_DIR/shell/bash/.bash_profile` |
-| `~/.bashrc`             | `$DOTFILES_DIR/shell/bash/.bashrc`       |
-| `~/.zshenv`             | `$DOTFILES_DIR/shell/zsh/.zshenv`        |
-| `~/.ssh/config`         | `$DOTFILES_DIR/ssh/config`               |
+| `~/.claude`             | `~/.config/claude`                       |
+| `~/.bash_profile`       | `~/.config/shell/bash/.bash_profile`     |
+| `~/.bashrc`             | `~/.config/shell/bash/.bashrc`           |
+| `~/.zshenv`             | `~/.config/shell/zsh/.zshenv`            |
+| `~/.ssh/config`         | `~/.config/ssh/config`                   |
 
-### Conflict Resolution
+Per-machine (`config.caladan.toml`): the Claude project-memory symlink and `~/Downloads` → iCloud Drive Downloads (a non-repo source — `[dotfiles]` symlink mode accepts any existing path).
 
-The symlink installer (`mise/tasks/dotfiles/install/symlinks`) handles conflicts:
+### Apply & Conflict Resolution
 
-| Existing state         | Action                                              |
-| ---------------------- | --------------------------------------------------- |
-| Correct symlink        | Skip                                                |
-| Wrong symlink          | Remove and recreate                                 |
-| Empty directory        | Remove and replace with symlink                     |
-| Non-empty directory    | Rename to `.bak`, create symlink                    |
-| Regular file           | Rename to `.bak`, create symlink                    |
+`mise/tasks/dotfiles/install/symlinks` drives the apply:
 
-For macOS protected directories (e.g., `~/Downloads` with deny-delete ACLs), the installer strips the ACL before removal and restores it on failure.
+1. **Backup pre-flight.** `mise dotfiles apply --force` overwrites conflicting targets but keeps no backup, and plain `rm` can't remove a macOS deny-delete directory (e.g. a pristine `~/Downloads`). For every declared target that exists as a real, non-symlink file/dir, the task strips any deny-delete ACL and moves it to `.bak`, preserving the user's data. Wrong symlinks and missing targets need no pre-flight.
+2. **Apply.** `mise dotfiles apply --force --yes` creates/repairs every symlink. Already-correct entries are no-ops.
+
+`dotfiles:doctor:symlinks` gates on `mise dotfiles status --missing`, which exits non-zero on any drift (missing, source missing, or differs).
 
 ## 9. Mise Task Orchestration
 

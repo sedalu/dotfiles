@@ -1,88 +1,46 @@
 #!/usr/bin/env bash
-#USAGE complete "Create symlinks for shell config files"
-#MISE description="Create symlinks for shell config files"
+#USAGE complete "Symlink config files declared in [dotfiles]"
+#MISE description="Symlink config files declared in [dotfiles]"
 #MISE hide=true
 set -euo pipefail
-shopt -s extglob nullglob
-
-# shellcheck source=../../../../lib/dotfiles/symlinks.sh
-. "$DOTFILES_DIR/lib/dotfiles/symlinks.sh"
 
 echo ""
 echo "⚙️ Configuring..."
 echo "→ DOTFILES_DIR=$DOTFILES_DIR"
 
-# --- install ---------------------------
+echo ""
+echo "🔗 Applying [dotfiles] symlinks..."
+
+# `mise dotfiles apply --force` overwrites a conflicting target but keeps no backup of its own,
+# and plain rm can't remove a macOS deny-delete directory (e.g. a pristine ~/Downloads).
+# Pre-flight every declared target:
+# if a real, non-symlink file/dir sits where a symlink belongs,
+# strip any deny-delete ACL and move it to .bak
+# so apply can recreate it cleanly and the user keeps their data.
+# Targets are field 1 of `status` (no spaces);
+# we decide per-target by inspecting the filesystem,
+# so we need neither jq nor the state column.
+while read -r target; do
+    [[ "$target" == \~* || "$target" == /* ]] || continue
+    path="${target/#\~/$HOME}"
+    # A wrong symlink is safe for apply to replace;
+    # only real files/dirs need a backup.
+    # Missing targets need nothing.
+    [[ -e "$path" && ! -L "$path" ]] || continue
+    name="${path##*/}"
+    # macOS protects some dirs (e.g. ~/Downloads) with a deny-delete ACL;
+    # strip it so the move can proceed.
+    # `ls -led` is the standard way to read an ACL.
+    acl="$(ls -led "$path" 2>/dev/null)"
+    if [[ "$acl" == *"deny delete"* ]]; then
+        chmod -N "$path" 2>/dev/null || true
+    fi
+    rm -rf "${path}.bak"
+    mv "$path" "${path}.bak"
+    echo "⚠️ $name existed as a real ${path}; backed up to ${name}.bak"
+done < <(mise dotfiles status 2>/dev/null | awk '{ print $1 }')
+
+mise dotfiles apply --force --yes
 
 echo ""
-echo "🔗 Installing symlinks..."
-
-failed=0
-for pair in "${dotfiles_symlinks[@]}"; do
-    link="${pair%%:*}"
-    target="${pair#*:}"
-    target="${target/#\~/$HOME}"
-    name="${link##*/}"
-
-    mkdir -p "${link%/*}"
-
-    if [[ -L "$link" ]]; then
-        current="$(readlink "$link")"
-        if [[ "$current" == "$target" ]]; then
-            echo "⏭️ $name already correct, skipping"
-            continue
-        fi
-        echo "⚠️ $name points to $current, updating..."
-        rm "$link"
-    elif [[ -d "$link" ]]; then
-        # Directory exists where we need a symlink. If it's empty (or only
-        # contains .localized), remove it; otherwise back it up.
-        _contents=("$link"/!(.|..|.localized))
-        if [[ ${#_contents[@]} -eq 0 || ("${#_contents[@]}" -eq 1 && ! -e "${_contents[0]}") ]]; then
-            echo "⚠️ $name is an empty directory, removing..."
-            # macOS protects some dirs (e.g. ~/Downloads) with a deny-delete ACL.
-            # Save and strip the ACL so we can remove the dir, then restore it
-            # if the symlink creation fails.
-            _acl="$(ls -led "$link" 2>/dev/null | sed -n '2s/^ *[0-9]*: //p')"
-            if [[ -n "$_acl" ]]; then
-                chmod -N "$link"
-            fi
-            rm -rf "$link"
-            if ! ln -s "$target" "$link"; then
-                echo "🛑 Error: Failed to create $name symlink, restoring directory" >&2
-                mkdir -p "$link"
-                [[ -n "$_acl" ]] && chmod +a "$_acl" "$link"
-                failed=$((failed + 1))
-            else
-                echo "✔ $name → $target"
-            fi
-            unset _acl
-            continue
-        elif mv "$link" "${link}.bak" 2>/dev/null; then
-            echo "⚠️ $name exists as a directory, backed up to ${link}.bak"
-        else
-            echo "🛑 Error: cannot move $link (try removing it manually)" >&2
-            failed=$((failed + 1))
-            continue
-        fi
-    elif [[ -e "$link" ]]; then
-        echo "⚠️ $name exists as a regular file, backing up to ${link}.bak"
-        mv "$link" "${link}.bak"
-    fi
-
-    if ln -s "$target" "$link"; then
-        echo "✔ $name → $target"
-    else
-        echo "🛑 Error: Failed to create $name symlink" >&2
-        failed=$((failed + 1))
-    fi
-done
-
-if [[ "$failed" -gt 0 ]]; then
-    echo ""
-    echo "🛑 Error: $failed symlink(s) failed" >&2
-    exit 1
-fi
-
-echo ""
-echo "🎉 All symlinks installed"
+echo "🎉 [dotfiles] symlinks applied"

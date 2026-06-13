@@ -25,6 +25,32 @@ package_manager = "bun"
 "brew:openssl@3" = "latest" # required by Python (ssl module) and networking Rust crates
 "brew:pkgconf" = "latest"   # helps compilers locate openssl and other libs when building from source
 
+# Declarative symlinks for repo-sourced config files,
+# applied by `mise dotfiles apply` (wired into `dotfiles:install:symlinks`).
+# Per-machine entries live in config.<machine>.toml;
+# all [dotfiles] tables union across loaded files (see miserc.toml).
+# The install task backs up any conflicting non-symlink target to .bak first,
+# since `apply --force` overwrites without a backup of its own.
+[dotfiles."~/.claude"]
+source = "~/.config/claude"
+mode = "symlink"
+
+[dotfiles."~/.bash_profile"]
+source = "~/.config/shell/bash/.bash_profile"
+mode = "symlink"
+
+[dotfiles."~/.bashrc"]
+source = "~/.config/shell/bash/.bashrc"
+mode = "symlink"
+
+[dotfiles."~/.zshenv"]
+source = "~/.config/shell/zsh/.zshenv"
+mode = "symlink"
+
+[dotfiles."~/.ssh/config"]
+source = "~/.config/ssh/config"
+mode = "symlink"
+
 [shell_alias]
 # eza -> ls
 ls = "eza --all --icons=always --group-directories-first --git"

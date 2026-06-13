@@ -1,38 +1,16 @@
 #!/usr/bin/env bash
-#USAGE complete "Check symlinks point to correct targets"
-#MISE description="Check symlinks point to correct targets"
+#USAGE complete "Check [dotfiles] symlinks point to correct targets"
+#MISE description="Check [dotfiles] symlinks point to correct targets"
 #MISE depends=["dotfiles:doctor:repo"]
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=../../../../lib/dotfiles/symlinks.sh
-. "$DOTFILES_DIR/lib/dotfiles/symlinks.sh"
-
-fail=0
-for entry in "${dotfiles_symlinks[@]}"; do
-    link="${entry%%:*}"
-    target="${entry#*:}"
-    name="${link##*/}"
-
-    if [[ ! -L "$link" ]]; then
-        echo "❌ $name is not a symlink (expected $link)"
-        ((fail++)) || true
-        continue
-    fi
-
-    current="$(readlink "$link")"
-    if [[ "$current" != "$target" ]]; then
-        echo "❌ $name points to $current (expected $target)"
-        ((fail++)) || true
-    else
-        echo "✅ $name → $target"
-    fi
-done
-
-if ((fail > 0)); then
-    echo ""
-    echo "❌ $fail symlink(s) failed"
+# Hard gate: every entry in [dotfiles] must be applied
+# (symlink present and pointing at the declared source).
+# `status --missing` exits 1 on any drift — missing, source missing, or differs.
+if mise dotfiles status --missing; then
+    echo "✅ All [dotfiles] symlinks correct"
+else
+    echo "❌ Symlinks out of sync — run mise run dotfiles:install:symlinks"
     exit 1
 fi
-echo ""
-echo "✅ All symlinks correct"
