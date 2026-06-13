@@ -9,3 +9,6 @@
 
 # Homebrew's XDG config dir — track the Brewfile + config, ignore brew's locks
 /homebrew/*.lock
+
+# Colima runtime state (VM disk images, sockets) — not config
+/colima/
