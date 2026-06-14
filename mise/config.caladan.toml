@@ -17,3 +17,43 @@ mode = "symlink"
 [dotfiles."~/Downloads"]
 source = "~/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
 mode = "symlink"
+
+# Per-machine scalar macOS preferences for caladan,
+# unioned with the base [bootstrap.macos.defaults] in config.toml via MISE_ENV.
+# Settings with no `defaults write` equivalent (Tips, Mail, Spotlight categories)
+# are documented in macos/manual.md.
+[bootstrap.macos.defaults."io.tailscale.ipn.macsys"]
+# Hide the Tailscale menu-bar app's Dock icon.
+HideDockIcon = true
+
+[bootstrap.macos.defaults.NSGlobalDomain]
+# Use 24-hour time system-wide.
+AppleICUForce24HourTime = true
+# Always show scrollbars (overrides the default "Automatic").
+AppleShowScrollBars = "Always"
+# Finder sidebar icon size (1=small, 2=medium, 3=large).
+NSTableViewDefaultSizeMode = 1
+
+[bootstrap.macos.defaults."com.apple.menuextra.clock"]
+# Show the date in the menu-bar clock.
+ShowDate = true
+# Hide the day of week.
+ShowDayOfWeek = false
+# Digital clock (not analog).
+IsAnalog = false
+# Flash the colon separator each second.
+FlashDateSeparators = true
+# Do not show seconds.
+ShowSeconds = false
+
+[bootstrap.macos.defaults."com.apple.Passwords"]
+# Show Passwords in the menu bar.
+EnableMenuBarExtra = true
+
+[bootstrap.macos.defaults."com.apple.Safari.SandboxBroker"]
+# Enable the Develop menu in Safari.
+ShowDevelopMenu = true
+
+[bootstrap.macos.defaults."com.apple.assistant.support"]
+# Disable "Help Apple Improve Search" (2 = opted out).
+"Search Queries Data Sharing Status" = 2

@@ -51,6 +51,52 @@ mode = "symlink"
 source = "~/.config/ssh/config"
 mode = "symlink"
 
+# Scalar macOS `defaults write` preferences,
+# applied by `mise bootstrap macos-defaults apply` (wired into `dotfiles:install:macos`).
+# Per-machine entries live in config.<machine>.toml and union via MISE_ENV (see miserc.toml).
+# Only scalar writes belong here;
+# the `defaults delete` reset-catalog and killall restart logic stay in macos/settings.sh,
+# since mise can express neither an absent key nor an app restart.
+[bootstrap.macos.defaults."com.apple.dock"]
+# Dock position.
+# https://macos-defaults.com/dock/orientation.html
+orientation = "bottom"
+# Icon size of Dock items, in pixels.
+# https://macos-defaults.com/dock/tilesize.html
+tilesize = 36
+# Autohide the Dock (toggle with ⌥⌘d).
+# https://macos-defaults.com/dock/autohide.html
+autohide = true
+# Dock open/close animation time (0 = instant).
+# https://macos-defaults.com/dock/autohide-time-modifier.html
+autohide-time-modifier = 0.0
+# Dock open delay (0 = none).
+# https://macos-defaults.com/dock/autohide-delay.html
+autohide-delay = 0.0
+
+[bootstrap.macos.defaults."com.apple.finder"]
+# View style: clmv=column, icnv=icon, Nlsv=list, Flwv=gallery.
+# https://macos-defaults.com/finder/fxpreferredviewstyle.html
+FXPreferredViewStyle = "clmv"
+# https://macos-defaults.com/desktop/showexternalharddrivesondesktop.html
+ShowExternalHardDrivesOnDesktop = true
+# https://macos-defaults.com/desktop/showharddrivesondesktop.html
+ShowHardDrivesOnDesktop = false
+# https://macos-defaults.com/desktop/showremovablemediaondesktop.html
+ShowRemovableMediaOnDesktop = true
+
+[bootstrap.macos.defaults.NSGlobalDomain]
+# Disable the window minimize-on-double-click gesture.
+AppleMiniaturizeOnDoubleClick = false
+# Add a period when you type a double-space.
+# https://macos-defaults.com/keyboard/applekeyboardaddperiodwithdoublespace.html
+NSAutomaticPeriodSubstitutionEnabled = true
+# Spring-loading delay for folders, in seconds.
+"com.apple.springing.delay" = 0.5
+# Use F1–F12 as standard function keys.
+# https://macos-defaults.com/keyboard/applekeyboardfnstate.html
+"com.apple.keyboard.fnState" = true
+
 [shell_alias]
 # eza -> ls
 ls = "eza --all --icons=always --group-directories-first --git"

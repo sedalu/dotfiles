@@ -166,13 +166,12 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | `shell/env.sh`             | `shell/env.${MACHINE}.sh`                  | `env.caladan.sh`               |
 | `shell/interactive.sh`     | `shell/interactive.${MACHINE}.sh`          | `interactive.caladan.sh`       |
 | `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
-| `macos/settings.sh`        | `macos/settings.${MACHINE}.sh`             | `settings.caladan.sh`          |
 | `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.caladan`             |
 | `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
-The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). Both `[bootstrap.packages]` and `[dotfiles]` tables union across whichever files load — the native equivalent of the old `Brewfile.${MACHINE}` and `symlinks.${MACHINE}.sh` sidecars.
+The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). The `[bootstrap.packages]`, `[dotfiles]`, and `[bootstrap.macos.defaults]` tables all union across whichever files load — the native equivalent of the old `Brewfile.${MACHINE}`, `symlinks.${MACHINE}.sh`, and `settings.${MACHINE}.sh` sidecars.
 
-Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`.
+Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`, and caladan's scalar preferences (24-hour clock, menu-bar clock options, …) to `[bootstrap.macos.defaults]`.
 
 ## 6. Shell-Specific Variations
 
@@ -210,14 +209,19 @@ The `lib/dotfiles/` directory contains shared definitions sourced by multiple ta
 | `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
 | `go.sh`             | Go XDG-compliant paths                      | install:go, doctor:go                    |
 
-macOS settings live in `macos/` (not `lib/`). Each line is a real `defaults write` command — no DSL or array parsing needed. Shared helpers in `lib/dotfiles/macos.sh` handle parsing and comparison for both tasks:
+macOS configuration is split by what mise can express:
 
-| Config file             | Defines                                     | Used by                                  |
-| ----------------------- | ------------------------------------------- | ---------------------------------------- |
-| `macos/settings.sh`     | `defaults write` commands + `killall_targets` mapping | install:macos, doctor:macos  |
-| `lib/dotfiles/macos.sh` | Shared parsing and comparison helpers       | install:macos, doctor:macos              |
+- **Scalar preferences** (`defaults write` values) are declared in `[bootstrap.macos.defaults]` (`mise/config.toml` + per-machine `config.${MACHINE}.toml`) and applied/verified by mise itself — `mise bootstrap macos-defaults apply` and `status --missing`.
+- **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map — stays in `macos/settings.sh`, because mise can express neither an absent key nor an app restart. It is synced from macos-defaults.com by `dotfiles:catalog:macos`.
+- **Manual-only settings** with no `defaults` equivalent (Tips, Mail, Spotlight categories) are documented in `macos/manual.md`.
 
-Machine-specific sidecars (e.g., `settings.caladan.sh`) extend the base definitions automatically. Symlinks are no longer library-driven — they are declared in `[dotfiles]` (see §8).
+| Config file                         | Defines                                                  | Used by                                     |
+| ----------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
+| `[bootstrap.macos.defaults]`        | Scalar `defaults write` preferences (base + per-machine) | install:macos, doctor:macos                 |
+| `macos/settings.sh`                 | `defaults delete` reset-catalog + `killall_targets` map  | install:macos, doctor:macos, catalog:macos  |
+| `lib/dotfiles/macos.sh`             | Reset-catalog parsing helpers                            | install:macos, doctor:macos, catalog:macos  |
+
+`install:macos` applies the preferences via mise, sources the reset-catalog for the deletes, and restarts only the apps whose domains actually changed — write-domains from mise `status` (taken before apply), delete-domains from a before/after snapshot. `doctor:macos` gates on `status --missing`, then checks each catalog key is absent. Per-machine reset-catalog deletes are still supported via an optional `macos/settings.${MACHINE}.sh` sidecar (none currently). Symlinks are likewise declared in `[dotfiles]` (see §8).
 
 ## 8. Symlink System
 

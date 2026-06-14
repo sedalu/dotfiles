@@ -16,7 +16,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 | `bat/`          | Bat syntax highlighting config                        |
 | `lazygit/`      | Lazygit TUI config                                    |
 | `claude/`       | Claude Code config: settings, hooks, statusline       |
-| `macos/`        | macOS defaults settings (global + per-machine)        |
+| `macos/`        | macOS reset-catalog + manual notes (`manual.md`)      |
 | `mas/`          | Mac App Store app list                                |
 | `fnox/`         | Secret management config (macOS Keychain)             |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
@@ -81,3 +81,14 @@ For GUI casks (which mise cannot yet install cleanly), edit `homebrew/Brewfile`:
 ```sh
 brew bundle install
 ```
+
+## macOS Settings
+
+Scalar `defaults write` preferences live in `[bootstrap.macos.defaults]` (`mise/config.toml`, per-machine in `mise/config.<machine>.toml`); apply and verify with mise:
+
+```sh
+mise run dotfiles:install:macos   # apply preferences + reset-catalog
+mise run dotfiles:doctor:macos    # check for drift
+```
+
+Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`; settings with no `defaults` equivalent are documented in `macos/manual.md`.

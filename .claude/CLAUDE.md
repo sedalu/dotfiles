@@ -17,7 +17,7 @@ See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture an
 | `gh/`           | GitHub CLI config and hosts                                     |
 | `bat/`          | Bat syntax highlighting config and themes                       |
 | `claude/`       | Claude Code config: settings, hooks, statusline (symlinked to `~/.claude`) |
-| `macos/`        | macOS defaults settings (`settings.sh`, per-machine sidecars, `catalog.sh`) |
+| `macos/`        | macOS reset-catalog (`settings.sh`) + manual notes (`manual.md`); scalar prefs live in `[bootstrap.macos.defaults]` |
 | `fnox/`         | fnox secret management config (macOS Keychain)                  |
 | `lazygit/`      | Lazygit TUI config and Catppuccin theme                         |
 | `lib/`          | Shell helper libraries                                          |
@@ -46,6 +46,7 @@ If installing a font, add a `postinstall` hook in `mise/config.toml` that calls 
 
 - **XDG compliance** — configs go in their proper `XDG_CONFIG_HOME` subdirectory. Never pollute `$HOME` with dotfiles.
 - **Symlinks** — declared in mise's `[dotfiles]` tables (`mise/config.toml`, per-machine in `config.<machine>.toml`), applied by `dotfiles:install:symlinks` (`mise dotfiles apply`) and checked by `dotfiles:doctor:symlinks` (`mise dotfiles status`). Add a symlink by adding a `[dotfiles."~/target"]` entry, not by editing a shell library.
+- **macOS defaults** — scalar `defaults write` preferences go in `[bootstrap.macos.defaults]` (`mise/config.toml`, per-machine in `config.<machine>.toml`). Keys you want kept at the macOS default (`defaults delete`) and the `killall_targets` restart map stay in `macos/settings.sh`; settings with no `defaults` equivalent are documented in `macos/manual.md`. mise can't express absent keys, arrays, or app restarts, so those never go in the TOML.
 - **Commit messages** — conventional commits: `type(scope): description` (e.g., `feature(brew): add Brewfile`, `fix(zsh): override HISTFILE`).
 - **Shell config split** — `shell/env.sh` holds environment variables (sourced by both `.zshenv` and `bash_env`). `shell/interactive.sh` holds aliases, functions, and interactive setup (sourced by `.zshrc` and `.bashrc`). Bash- and zsh-specific files live under `shell/bash/` and `shell/zsh/`.
 - **Performance** — expensive shell activations (direnv, fzf, starship, zoxide) are cached. Homebrew paths are hardcoded in `env.sh` to avoid `brew shellenv` overhead.

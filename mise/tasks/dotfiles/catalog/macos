@@ -26,7 +26,7 @@ fi
 # shellcheck source=../../../../../lib/dotfiles/macos.sh
 source "$DOTFILES_DIR/lib/dotfiles/macos.sh"
 
-_dw_domains=() _dw_keys=() _dw_types=() _dw_values=()
+_dw_domains=() _dw_keys=()
 while IFS= read -r file; do
     macos_parse_defaults "$file"
 done < <(macos_settings_files)
@@ -36,6 +36,16 @@ _tracked=()
 for i in "${!_dw_domains[@]}"; do
     _tracked+=("${_dw_domains[$i]}|${_dw_keys[$i]}")
 done
+
+# Also treat scalar preferences managed in [bootstrap.macos.defaults] as tracked,
+# so the sync never re-adds a `defaults delete` for a key we actively write
+# (e.g. it must not add `defaults delete com.apple.dock tilesize`).
+# status fields are domain key desired current state;
+# the rare space-containing key is approximated by its first token,
+# which is acceptable since such keys don't collide with upstream delete pages.
+while read -r domain key; do
+    [[ -n "$domain" && -n "$key" ]] && _tracked+=("${domain}|${key}")
+done < <(mise bootstrap macos-defaults status 2>/dev/null | awk '{ print $1, $2 }')
 
 _in_set() {
     local needle="$1" ; shift

@@ -1,7 +1,9 @@
-# macos/settings.sh — macOS defaults inventory
+# macos/settings.sh — macOS reset-catalog + restart targets
 #
-# Full catalog of tracked macOS defaults from macos-defaults.com
-# Values are either our preference or the expected macOS default.
+# `defaults delete` entries track keys we keep at their macOS default,
+# synced from macos-defaults.com by `mise run dotfiles:catalog:macos`.
+# Scalar preferences live in [bootstrap.macos.defaults] (mise/config*.toml);
+# settings with no defaults equivalent are documented in macos/manual.md.
 # Apply:  mise run dotfiles:install:macos
 # Check:  mise run dotfiles:doctor:macos
 
@@ -25,21 +27,6 @@ killall_targets=(
 )
 
 # --- Dock ---
-# Set the Dock position
-# https://macos-defaults.com/dock/orientation.html
-defaults write com.apple.dock "orientation" -string "bottom"
-# Set the icon size of Dock items in pixels.
-# https://macos-defaults.com/dock/tilesize.html
-defaults write com.apple.dock "tilesize" -int "36"
-# Autohides the Dock. You can toggle the Dock using ⌥⌘d.
-# https://macos-defaults.com/dock/autohide.html
-defaults write com.apple.dock "autohide" -bool "true"
-# Change the Dock opening and closing animation times.
-# https://macos-defaults.com/dock/autohide-time-modifier.html
-defaults write com.apple.dock "autohide-time-modifier" -float "0"
-# Change the Dock opening delay.
-# https://macos-defaults.com/dock/autohide-delay.html
-defaults write com.apple.dock "autohide-delay" -float "0"
 # Show recently used apps in a separate section of the Dock.
 # https://macos-defaults.com/dock/show-recents.html
 defaults delete com.apple.dock "show-recents"
@@ -54,15 +41,6 @@ defaults delete com.apple.dock "static-only"
 defaults delete com.apple.dock "scroll-to-open"
 
 # --- Finder ---
-# View style: clmv=column, icnv=icon, Nlsv=list, Flwv=gallery
-# https://macos-defaults.com/finder/fxpreferredviewstyle.html
-defaults write com.apple.finder FXPreferredViewStyle -string clmv
-# https://macos-defaults.com/desktop/showexternalharddrivesondesktop.html
-defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-# https://macos-defaults.com/desktop/showharddrivesondesktop.html
-defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
-# https://macos-defaults.com/desktop/showremovablemediaondesktop.html
-defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
 # Automatically adjust column widths in column view to fit content.
 # https://macos-defaults.com/finder/_fxenablecolumnautosizing.html
 defaults delete com.apple.finder "_FXEnableColumnAutoSizing"
@@ -90,9 +68,8 @@ defaults delete com.apple.finder "FXRemoveOldTrashItems"
 # Choose whether the default file save location is on disk or iCloud
 # https://macos-defaults.com/finder/nsdocumentsavenewdocumentstocloud.html
 defaults delete NSGlobalDomain "NSDocumentSaveNewDocumentsToCloud"
-# Choose the size of Finder sidebar icons
-# https://macos-defaults.com/finder/nstableviewdefaultsizemode.html
-defaults delete NSGlobalDomain "NSTableViewDefaultSizeMode"
+# NSTableViewDefaultSizeMode is a managed preference in [bootstrap.macos.defaults]
+# (caladan sets the Finder sidebar icon size), so it is not reset here.
 # Choose the delay of the auto-hidden document-proxy icon.
 # https://macos-defaults.com/finder/nstoolbartitleviewrolloverdelay.html
 defaults delete NSGlobalDomain "NSToolbarTitleViewRolloverDelay"
@@ -111,20 +88,14 @@ defaults delete com.apple.universalaccess "showWindowTitlebarIcons"
 
 # --- Appearance ---
 # stale: defaults write NSGlobalDomain AppleInterfaceStyle -string Dark
-defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool false
 
 # --- Input ---
 # stale: defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true
-# https://macos-defaults.com/keyboard/applekeyboardaddperiodwithdoublespace.html
-defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool true
 # stale: defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true
 
 # --- Behavior ---
 # stale: defaults write NSGlobalDomain com.apple.springing.enabled -bool true
-defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
 # stale: defaults write NSGlobalDomain com.apple.sound.beep.flash -int 0
-# https://macos-defaults.com/keyboard/applekeyboardfnstate.html
-defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true
 
 # --- Activity Monitor ---
 # Choose what information should be shown in the app's Dock icon, if any.
@@ -168,9 +139,8 @@ defaults delete kCFPreferencesAnyApplication TSMLanguageIndicatorEnabled
 # This setting configures the time and date format for the Menu Bar digital clock.
 # https://macos-defaults.com/menubar/dateformat.html
 defaults delete com.apple.menuextra.clock "DateFormat"
-# When enabled, the clock indicator (which by default is the colon) will flash on and off each second.
-# https://macos-defaults.com/menubar/flashdateseparators.html
-defaults delete com.apple.menuextra.clock "FlashDateSeparators"
+# FlashDateSeparators is a managed preference in [bootstrap.macos.defaults]
+# (caladan flashes the clock's colon separator), so it is not reset here.
 
 # --- Messages ---
 # Show the subject field which appears above the iMessage/Text Message field in Messages. Text entered in the subject field will be sent in bold (unless there is no text in the iMessage/Text Message field; in this case, the text in the subject field will be sent without the bold effect).

@@ -12,48 +12,46 @@ fi
 # shellcheck source=../../../../../lib/dotfiles/macos.sh
 source "$DOTFILES_DIR/lib/dotfiles/macos.sh"
 
-_dw_domains=() _dw_keys=() _dw_types=() _dw_values=()
+fail=0
 
+# --- Preferences: gate on mise's own status ---
+# `status --missing` prints a desired/current/state table
+# and exits 1 if any [bootstrap.macos.defaults] value drifts.
+echo "🔧 Preferences ([bootstrap.macos.defaults]):"
+if mise bootstrap macos-defaults status --missing; then
+    echo "✅ All preferences correct"
+else
+    echo "❌ Preferences out of sync — run 'mise run dotfiles:install:macos'"
+    fail=1
+fi
+
+# --- Reset-catalog: each tracked key must be absent ---
+echo ""
+echo "🧹 Reset-catalog (macos/settings.sh):"
+_dw_domains=() _dw_keys=()
 while IFS= read -r file; do
     macos_parse_defaults "$file"
 done < <(macos_settings_files)
 
-fail=0
-
+cat_fail=0
 for i in "${!_dw_domains[@]}"; do
     domain="${_dw_domains[$i]}"
     key="${_dw_keys[$i]}"
-    type="${_dw_types[$i]}"
-    value="${_dw_values[$i]}"
-
-    if [[ "$type" == "__delete__" ]]; then
-        if defaults read "$domain" "$key" &>/dev/null; then
-            current="$(defaults read "$domain" "$key")"
-            echo "❌ $domain $key = $current (expected: deleted)"
-            ((fail++)) || true
-        else
-            echo "✅ $domain $key (deleted)"
-        fi
-        continue
-    fi
-
-    current="$(defaults read "$domain" "$key" 2>/dev/null)" || {
-        echo "❌ $domain $key — not set (expected: $value)"
-        ((fail++)) || true
-        continue
-    }
-
-    if macos_values_match "$type" "$value" "$current"; then
-        echo "✅ $domain $key = $current"
-    else
-        echo "❌ $domain $key = $current (expected: $value)"
-        ((fail++)) || true
+    if current="$(defaults read "$domain" "$key" 2>/dev/null)"; then
+        echo "❌ $domain $key = $current (expected: deleted)"
+        ((cat_fail++)) || true
     fi
 done
 
+if ((cat_fail > 0)); then
+    echo "❌ $cat_fail catalog key(s) still set — run 'mise run dotfiles:install:macos'"
+    fail=1
+else
+    echo "✅ All catalog keys at macOS default"
+fi
+
 echo ""
 if ((fail > 0)); then
-    echo "❌ $fail setting(s) out of sync — run 'mise run dotfiles:install:macos'"
     exit 1
 fi
 echo "✅ All macOS settings correct"
