@@ -220,8 +220,11 @@ macOS configuration is split by what mise can express:
 | `[bootstrap.macos.defaults]`        | Scalar `defaults write` preferences (base + per-machine) | install:macos, doctor:macos                 |
 | `macos/settings.sh`                 | `defaults delete` reset-catalog + `killall_targets` map  | install:macos, doctor:macos, catalog:macos  |
 | `lib/dotfiles/macos.sh`             | Reset-catalog parsing helpers                            | install:macos, doctor:macos, catalog:macos  |
+| `[bootstrap.user].login_shell`      | Login shell (Homebrew zsh), per macOS machine            | install:login-shell, doctor:login-shell     |
 
 `install:macos` applies the preferences via mise, sources the reset-catalog for the deletes, and restarts only the apps whose domains actually changed — write-domains from mise `status` (taken before apply), delete-domains from a before/after snapshot. `doctor:macos` gates on `status --missing`, then checks each catalog key is absent. Per-machine reset-catalog deletes are still supported via an optional `macos/settings.${MACHINE}.sh` sidecar (none currently). Symlinks are likewise declared in `[dotfiles]` (see §8).
+
+The **login shell** is a separate `[bootstrap.user]` concern, declared in `config.macos.toml` (`login_shell = "/opt/homebrew/bin/zsh"` — the Homebrew zsh installed via `[bootstrap.packages]`, in place of the system `/bin/zsh`). `mise bootstrap user apply` converges it: it registers the shell in `/etc/shells` (a one-time `sudo` append) then `chsh`'s the account. `install:login-shell` wraps `apply`; `doctor:login-shell` gates on `status --missing`. Both skip when no `[bootstrap.user]` entry loads (non-macOS), so the path stays macOS-only.
 
 ## 8. Symlink System
 
@@ -264,6 +267,7 @@ dotfiles:install
 │   └── system-packages  (mise bootstrap packages install)
 ├── go               (parallel)
 ├── macos            (parallel, darwin only)
+├── login-shell      (parallel, macOS only via config)
 ├── symlinks         (parallel)
 ├── zsh-plugins      (parallel)
 ├── mas              (depends: mise:system-packages; darwin only)
@@ -295,6 +299,7 @@ dotfiles:doctor
 │   └── zsh-plugins  (depends: dirs)
 ├── go               (parallel)
 ├── macos            (parallel, darwin only)
+├── login-shell      (parallel, macOS only via config)
 ├── ssh              (parallel)
 ├── machine          (parallel)
 └── mas              (parallel, darwin only)

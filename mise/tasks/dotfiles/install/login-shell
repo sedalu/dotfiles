@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#USAGE complete "Set the login shell"
+#MISE description="Set the login shell"
+#MISE hide=true
+set -euo pipefail
+
+# [bootstrap.user].login_shell is only configured on macOS (Homebrew zsh path),
+# so on a machine with no entry mise's status is empty and we skip.
+if [[ -z "$(mise bootstrap user status 2>/dev/null)" ]]; then
+    echo "⏭️  No login shell configured for this machine, skipping"
+    exit 0
+fi
+
+echo ""
+echo "🐚 Configuring login shell..."
+mise bootstrap user status
+
+# apply converges: registers the shell in /etc/shells (one-time sudo) and chsh's
+# this account. Already-correct state is a no-op — no sudo prompt on re-runs.
+mise bootstrap user apply --yes
+
+echo "✔ Done."
+echo "ℹ️  Open a new login shell (or re-login) for the change to take effect"

@@ -92,3 +92,14 @@ mise run dotfiles:doctor:macos    # check for drift
 ```
 
 Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`; settings with no `defaults` equivalent are documented in `macos/manual.md`.
+
+## Login Shell
+
+The login shell is declared in `[bootstrap.user].login_shell` (`mise/config.macos.toml` — Homebrew zsh, `/opt/homebrew/bin/zsh`), applied and verified with mise:
+
+```sh
+mise run dotfiles:install:login-shell   # register in /etc/shells (sudo) + chsh
+mise run dotfiles:doctor:login-shell    # check for drift
+```
+
+The first apply prompts once for `sudo` to add the shell to `/etc/shells`; afterwards it converges to a no-op. Open a new login shell for the change to take effect.
