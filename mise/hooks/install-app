@@ -78,9 +78,11 @@ fi
 
 echo "→ dmg=$dmg"
 
-# Unmount the volume on exit to ensure cleanup even on error.
+# Unmount the volume and clear any leftover staging dir on exit, even on error.
 volume=""
+staging=""
 cleanup() {
+    [[ -n "$staging" && -e "$staging" ]] && rm -rf "$staging"
     if [[ -n "$volume" ]]; then
         if ! hdiutil detach "$volume" -quiet 2>/dev/null; then
             true
@@ -135,14 +137,30 @@ app_name="${app_path##*/}"
 # Ensure the destination directory exists.
 mkdir -p "$dest"
 
-# Copy the .app bundle to the destination.
+# Install by staging a fresh copy then swapping it into place,
+# so a re-install or version upgrade REPLACES the bundle instead of nesting inside it
+# (`cp -R foo.app dir/foo.app` copies *into* an existing foo.app).
+# `ditto` preserves bundle metadata (resource forks, ACLs) more faithfully than `cp -R`.
 echo "→ dest=$dest/$app_name"
-cp -R "$app_path" "$dest/$app_name"
+staging="$dest/.${app_name}.new.$$"
+rm -rf "$staging"
+ditto "$app_path" "$staging"
+
+# Drop the quarantine flag
+# so the notarized bundle launches without the "downloaded from the internet" prompt.
+xattr -dr com.apple.quarantine "$staging" 2>/dev/null || true
+
+# Swap into place: remove any existing bundle, then move the staged copy over.
+# `${var:?}` guards against ever expanding toward / on an unset/empty var.
+rm -rf "${dest:?}/${app_name:?}"
+mv "$staging" "$dest/$app_name"
 
 # --- verify -----------------------------
 
-if [[ ! -d "$dest/$app_name" ]]; then
-    echo "🛑 Error: $app_name was not found at $dest after install." >&2
+# Check the bundle exists AND is a real app (has Contents/) —
+# the latter catches a nested or partial copy that a bare directory check would miss.
+if [[ ! -d "$dest/$app_name/Contents" ]]; then
+    echo "🛑 Error: $app_name was not correctly installed at $dest." >&2
     exit 1
 fi
 
