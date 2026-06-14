@@ -241,12 +241,6 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
 [env]
 FNOX_AGE_KEY_FILE = "~/.config/fnox/age.txt"
-# EDITOR = "hx"
-# VISUAL = "${EDITOR}"
-
-# PAGER = "bat --paging=always"
-# GIT_PAGER = "delta"
-# MANPAGER = "sh -c 'col -bx | bat --language man --paging=always'"
 
 # KRONK_LIB_PATH = "${XDG_DATA_HOME}/kronk/libraries"
 # KRONK_PROCESSOR = "metal"
