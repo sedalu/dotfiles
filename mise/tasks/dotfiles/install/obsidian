@@ -4,30 +4,39 @@
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=../../../../lib/dotfiles/hostname.sh
-source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname.sh"
-
-# --- gate: only run if obsidian is in this machine's Brewfile ---
-
-brewfile_dir="$(dirname "${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/brew/Brewfile}")"
-machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
-
-has_obsidian=false
-for bf in "$brewfile_dir/Brewfile" "$brewfile_dir/Brewfile.${machine}"; do
-    if [[ -f "$bf" ]] && grep -q 'obsidian' "$bf"; then
-        has_obsidian=true
-        break
-    fi
-done
-
-if [[ "$has_obsidian" != true ]]; then
+# --- gate: only run where Obsidian is declared for this machine ---
+# Obsidian is a per-machine mise tool (config.caladan.toml), not a global one.
+# `mise ls` lists a declared tool whether or not it is installed yet,
+# so this mirrors the old "is obsidian in this machine's Brewfile" check
+# without coupling to tool-install order.
+if [[ -z "$(mise ls "github:obsidianmd/obsidian-releases" 2>/dev/null)" ]]; then
     echo ""
-    echo "⏭️  Obsidian not in Brewfile for ${machine}, skipping"
+    echo "⏭️  Obsidian not configured for this machine, skipping"
     exit 0
 fi
 
-# shellcheck source=../../../../lib/dotfiles/obsidian.sh
-source "$DOTFILES_DIR/lib/dotfiles/obsidian.sh"
+# --- vault layout (inlined; formerly lib/dotfiles/obsidian.sh) ---
+OBSIDIAN_VAULT="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/PersonalVault"
+
+# Vault directories to create.
+obsidian_dirs=(
+    "$OBSIDIAN_VAULT/Journal"
+    "$OBSIDIAN_VAULT/Projects"
+    "$OBSIDIAN_VAULT/Goals"
+    "$OBSIDIAN_VAULT/Notes"
+    "$OBSIDIAN_VAULT/Reference/Recipes"
+    "$OBSIDIAN_VAULT/Reference/Manuals"
+    "$OBSIDIAN_VAULT/Reference/Home"
+    "$OBSIDIAN_VAULT/Archive"
+    "$OBSIDIAN_VAULT/Templates"
+)
+
+# Templates to seed, as "source (under obsidian/):destination".
+# {{year}} is substituted with the current year in both path and content.
+obsidian_templates=(
+    "templates/journal.md:$OBSIDIAN_VAULT/Templates/journal.md"
+    "templates/goals.md:$OBSIDIAN_VAULT/Goals/{{year}}.md"
+)
 
 current_year="$(date +%Y)"
 
@@ -36,7 +45,7 @@ current_year="$(date +%Y)"
 echo ""
 echo "📁 Creating Obsidian vault directories..."
 
-for dir in "${dotfiles_obsidian_dirs[@]}"; do
+for dir in "${obsidian_dirs[@]}"; do
     mkdir -p "$dir"
 done
 echo "✔ Done."
@@ -46,11 +55,11 @@ echo "✔ Done."
 echo ""
 echo "📄 Copying Obsidian templates..."
 
-for entry in "${dotfiles_obsidian_templates[@]}"; do
+for entry in "${obsidian_templates[@]}"; do
     src="${entry%%:*}"
     dst="${entry#*:}"
 
-    # Substitute {{year}} in destination path and content
+    # Substitute {{year}} in the destination path.
     dst="${dst//\{\{year\}\}/$current_year}"
 
     src_path="$DOTFILES_DIR/obsidian/$src"

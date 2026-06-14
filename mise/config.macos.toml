@@ -1,14 +1,14 @@
 # macOS-only system packages, loaded automatically via auto_env (see miserc.toml).
 # mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
 #
-# GUI casks stay in homebrew/Brewfile — mise 2026.6.6 cask support is not yet
-# usable for our apps:
+# A couple of GUI casks still can't migrate off homebrew/Brewfile —
+# brew-cask: can't handle their artifact types on mise 2026.6.6:
 #   - tailscale-app: pkg-type artifact — unsupported (hard error).
-#   - obsidian: binary-type artifact — unsupported (hard error).
-#   - claude / steam: app-type casks install, but mise mangles nested Electron
-#     frameworks so the bundle fails Gatekeeper ("App is damaged"). brew's
-#     install of the same version is notarization-valid. (Verified 2026-06-13.)
-# Revisit when mise cask support matures.
+#   - claude: app-type cask installs, but mise mangles nested Electron frameworks
+#     so the bundle fails Gatekeeper ("App is damaged"); brew's install is valid.
+# (Verified 2026-06-13; revisit as brew-cask: support matures.)
+# GUI apps that ship a plain notarized .app in a DMG (obsidian, steam) instead
+# install via the http:/github: backend + install-app hook — see config.caladan.toml.
 [bootstrap.packages]
 "brew:mas" = "latest" # Mac App Store CLI (formula); apps installed by the mas tasks
 

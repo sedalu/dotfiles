@@ -1,8 +1,20 @@
 # Per-machine packages for caladan, auto-loaded via MISE_ENV (see miserc.toml).
-# Empty for now: caladan's per-machine packages are GUI casks (obsidian, steam)
-# which stay in homebrew/Brewfile.caladan until mise cask support matures.
 # Add non-GUI per-machine packages here as "brew:<formula>" / "apt:<pkg>" / etc.
 [bootstrap.packages]
+
+# Per-machine GUI apps for caladan.
+# GUI .app bundles can't ride brew-cask: (mise mangles app bundles, failing Gatekeeper),
+# so they install from the vendor DMG via the http:/github: backend + the install-app hook
+# (mount the DMG, copy the notarized .app to ~/Applications) — the ghostty/cmux pattern.
+[tools."github:obsidianmd/obsidian-releases"]
+version = "latest"
+asset_pattern = "*.dmg" # the release ships a single universal .dmg
+postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
+
+[tools."http:steam"]
+version = "1.0.0" # rolling installer; Steam.app self-updates on launch
+platforms.macos-arm64.url = "https://cdn.fastly.steamstatic.com/client/installer/steam.dmg"
+postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
 
 # Per-machine symlinks for caladan,
 # unioned with the base [dotfiles] in config.toml
