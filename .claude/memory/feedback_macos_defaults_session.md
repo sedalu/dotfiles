@@ -1,7 +1,8 @@
 ---
-name: macOS defaults snapshot/diff workflow
+name: feedback_macos_defaults_session
 description: Feedback from the macos-defaults-diff skill creation session — workflow approach and project skill location
-type: feedback
+metadata:
+  type: feedback
 ---
 
 Use `defaults read > file` for snapshots (one file per snapshot, not per-domain). Then `diff before after` for comparison. Add a noise-filter pass before showing to Claude for analysis. Raw diff is too noisy to be useful on its own — the analysis pass is essential.
