@@ -9,9 +9,6 @@ verbose = false
 [settings.npm]
 package_manager = "bun"
 
-# [plugins]
-# fnox-env = "https://github.com/jdx/mise-env-fnox"
-
 # Machine-global system packages (shared libs and bootstrap tools), poured by
 # mise's built-in Homebrew bottle installer — no `brew` required. Install with
 # `mise bootstrap packages install`; see `dotfiles:install:mise:system-packages`.
@@ -244,6 +241,3 @@ FNOX_AGE_KEY_FILE = "~/.config/fnox/age.txt"
 
 # KRONK_LIB_PATH = "${XDG_DATA_HOME}/kronk/libraries"
 # KRONK_PROCESSOR = "metal"
-
-# [env._.fnox-env]
-# tools = true

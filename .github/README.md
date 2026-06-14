@@ -62,6 +62,10 @@ mise run dotfiles:doctor    # run health checks
 | `dotfiles:update`  | Update dotfiles (brew, mise, zsh-plugins)  |
 | `dotfiles:doctor`  | Run all dotfiles health checks             |
 
+See [`TASKS.md`](TASKS.md) for the complete, auto-generated reference of every task
+(including the `worktree:` namespace);
+regenerate it with `mise run dotfiles:catalog:tasks`.
+
 ## Adding Packages
 
 For CLI tools and runtimes, prefer `mise/config.toml`:

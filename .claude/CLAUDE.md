@@ -64,6 +64,11 @@ Automation uses `mise run` with tasks defined in `mise/tasks/`. Key tasks:
 
 | Task               | Purpose                                    |
 | ------------------ | ------------------------------------------ |
-| `dotfiles:install` | Install dotfiles (brew, system packages, symlinks, plugins) |
-| `dotfiles:update`  | Update dotfiles (brew, mise, system packages, zsh-plugins)  |
-| `dotfiles:doctor`  | Run all dotfiles health checks             |
+| `dotfiles:install`      | Install dotfiles (brew, system packages, symlinks, plugins) |
+| `dotfiles:update`       | Update dotfiles (brew, mise, system packages, zsh-plugins)  |
+| `dotfiles:doctor`       | Run all dotfiles health checks             |
+| `dotfiles:catalog:tasks` | Regenerate `.github/TASKS.md` from task Usage specs       |
+
+User-facing tasks carry `#USAGE`/`#MISE description`;
+internal subtasks set `#MISE hide=true` so only top-level tasks surface in `mise tasks` and the generated reference.
+`.github/TASKS.md` is the full auto-generated listing — regenerate it with `dotfiles:catalog:tasks`, never by hand.
