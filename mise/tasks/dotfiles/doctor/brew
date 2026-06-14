@@ -9,7 +9,7 @@ set -euo pipefail
 source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname.sh"
 
 # Brewfile location — falls back to the standard dotfiles path if not set in the environment.
-brewfile="${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/brew/Brewfile}"
+brewfile="${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/homebrew/Brewfile}"
 
 if [[ ! -f "$brewfile" ]]; then
     echo "❌ Brewfile not found at $brewfile"
