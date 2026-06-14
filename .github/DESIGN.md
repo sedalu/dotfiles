@@ -166,12 +166,12 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | `shell/env.sh`             | `shell/env.${MACHINE}.sh`                  | `env.caladan.sh`               |
 | `shell/interactive.sh`     | `shell/interactive.${MACHINE}.sh`          | `interactive.caladan.sh`       |
 | `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
-| `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.caladan`             |
+| `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.<machine>`           |
 | `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
 The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). The `[bootstrap.packages]`, `[dotfiles]`, and `[bootstrap.macos.defaults]` tables all union across whichever files load — the native equivalent of the old `Brewfile.${MACHINE}`, `symlinks.${MACHINE}.sh`, and `settings.${MACHINE}.sh` sidecars.
 
-Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`, and caladan's scalar preferences (24-hour clock, menu-bar clock options, …) to `[bootstrap.macos.defaults]`.
+Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`, the Obsidian and Steam GUI apps to `[tools]` (installed from their DMGs via the `install-app` hook), and caladan's scalar preferences (24-hour clock, menu-bar clock options, …) to `[bootstrap.macos.defaults]`.
 
 ## 6. Shell-Specific Variations
 
@@ -207,7 +207,8 @@ The `lib/dotfiles/` directory contains shared definitions sourced by multiple ta
 | `dirs.sh`           | XDG directories to create/verify            | install:dirs, doctor:dirs                |
 | `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, install:mas, env.sh             |
 | `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
-| `go.sh`             | Go XDG-compliant paths                      | install:go, doctor:go                    |
+
+Go's environment file, formerly defined here via `go.sh` and written by `go env -w`, is now a declarative `[dotfiles]` template (§8) — so `go` reads it natively in every context, not just mise-activated shells.
 
 macOS configuration is split by what mise can express:
 
@@ -232,7 +233,7 @@ Symlinks are declared in mise's `[dotfiles]` tables and applied by `mise dotfile
 
 ### Declared Symlinks
 
-Base (`mise/config.toml`), all `mode = "symlink"`:
+Base (`mise/config.toml`), `mode = "symlink"`:
 
 | Link                    | Source                                   |
 | ----------------------- | ---------------------------------------- |
@@ -241,6 +242,8 @@ Base (`mise/config.toml`), all `mode = "symlink"`:
 | `~/.bashrc`             | `~/.config/shell/bash/.bashrc`           |
 | `~/.zshenv`             | `~/.config/shell/zsh/.zshenv`            |
 | `~/.ssh/config`         | `~/.config/ssh/config`                   |
+
+One base entry uses `mode = "template"` instead: `~/.config/go/env` is rendered from `~/.config/go/env.tmpl`, substituting XDG paths into Go's `GOPATH`/`GOMODCACHE`/`GOCACHE` env file. A template, not a symlink, so a stray `go env -w` can't write back into the repo.
 
 Per-machine (`config.caladan.toml`): the Claude project-memory symlink and `~/Downloads` → iCloud Drive Downloads (a non-repo source — `[dotfiles]` symlink mode accepts any existing path).
 
@@ -265,7 +268,6 @@ dotfiles:install
 ├── dirs             (parallel)
 ├── mise             (parallel)
 │   └── system-packages  (mise bootstrap packages install)
-├── go               (parallel)
 ├── macos            (parallel, darwin only)
 ├── login-shell      (parallel, macOS only via config)
 ├── symlinks         (parallel)
@@ -297,7 +299,6 @@ dotfiles:doctor
 ├── dirs
 │   ├── completions  (depends: dirs)
 │   └── zsh-plugins  (depends: dirs)
-├── go               (parallel)
 ├── macos            (parallel, darwin only)
 ├── login-shell      (parallel, macOS only via config)
 ├── ssh              (parallel)

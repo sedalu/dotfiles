@@ -32,7 +32,7 @@ When adding a new CLI tool or runtime:
 
 1. **Prefer mise** — add it using `mise use --global <tool>`. Perform a fuzzy search for native support using `mise search <tool>`. If not found, it may be supported using the github or gitlab backends, the http backend, or a language backend. This includes many GUI apps and fonts.
 2. **System libraries / build deps** — shared libraries and bootstrap tools (`openssl@3`, `pkgconf`, `bash`, `git`, `zsh`) go in `[bootstrap.packages]`. Machine-global packages live in `mise/config.toml`; macOS-only packages (including the `mas` CLI) in `mise/config.macos.toml`; per-machine packages in `mise/config.<machine>.toml` (both auto-loaded via `auto_env`/`MISE_ENV` — see `mise/miserc.toml`). mise pours Homebrew bottles directly (no `brew` needed); install with `mise bootstrap packages install` (wired into `dotfiles:install:mise:system-packages`).
-3. **Fall back to Brew** — use `homebrew/Brewfile` only for things mise cannot manage: GUI casks. (mise 2026.6.6 can't install pkg-type casks or reconcile app casks brew already owns; revisit as cask support matures.)
+3. **Fall back to Brew** — use `homebrew/Brewfile` only for casks `brew-cask:` can't handle: `pkg` installers and Electron `app` bundles mise mangles into a failed-Gatekeeper state (mise 2026.6.6; revisit as `brew-cask:` matures). A GUI app that ships a notarized `.app` in a DMG does *not* need brew — install it as a `github:`/`http:` tool with the `install-app` hook (see below), as obsidian and steam do in `config.caladan.toml`.
 
 The Brewfile is intentionally small. Most tools live in `mise/config.toml`.
 

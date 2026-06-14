@@ -76,7 +76,7 @@ For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`)
 mise bootstrap packages install
 ```
 
-For GUI casks (which mise cannot yet install cleanly), edit `homebrew/Brewfile`:
+GUI apps that ship a notarized `.app` in a DMG (e.g. Obsidian, Steam) install via mise — a `github:`/`http:` tool in `mise/config.<machine>.toml` with the `install-app` hook (mounts the DMG, copies the `.app` to `~/Applications`). Only casks `brew-cask:` can't handle — pkg installers and Electron app bundles it mangles — stay in `homebrew/Brewfile`:
 
 ```sh
 brew bundle install
