@@ -1,4 +1,7 @@
+# Go config dir — the env file is rendered from go/env.tmpl by mise [dotfiles];
+# track the template, ignore the rendered env file and everything else
 /go/*
+!/go/env.tmpl
 /.git
 /shell/zsh/.zsh_sessions/
 /claude/projects/

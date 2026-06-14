@@ -89,9 +89,9 @@ export LESSHISTFILE="$XDG_STATE_HOME/less_history"
 # Cargo
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 
-# Go — GOPATH, GOMODCACHE, and GOCACHE are managed via `go env -w`
-# through mise tasks (see dotfiles:install:go). GOENV must be set
-# here so Go knows where to find its env file before reading it.
+# Go — GOPATH, GOMODCACHE, and GOCACHE live in the env file at $GOENV,
+# rendered from go/env.tmpl by mise [dotfiles] (see config.toml).
+# GOENV must be set here so Go finds that file before reading it.
 export GOENV="$XDG_CONFIG_HOME/go/env"
 
 # Bun

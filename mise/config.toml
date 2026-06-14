@@ -51,6 +51,15 @@ mode = "symlink"
 source = "~/.config/ssh/config"
 mode = "symlink"
 
+# Go environment file (GOPATH/GOMODCACHE/GOCACHE), rendered from go/env.tmpl.
+# Declarative replacement for the old `go env -w` install task:
+# `go` reads this file natively in every context (interactive or not, mise or not),
+# which a mise [env] block — scoped to mise-activated shells only — would miss.
+# template mode (not symlink) so a stray `go env -w` can't write back into the repo.
+[dotfiles."~/.config/go/env"]
+source = "~/.config/go/env.tmpl"
+mode = "template"
+
 # Scalar macOS `defaults write` preferences,
 # applied by `mise bootstrap macos-defaults apply` (wired into `dotfiles:install:macos`).
 # Per-machine entries live in config.<machine>.toml and union via MISE_ENV (see miserc.toml).
