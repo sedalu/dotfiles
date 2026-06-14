@@ -164,6 +164,11 @@ age = "latest"
 hk = "latest"
 pitchfork = "latest"
 
+# hk linters (see hk.pkl); typos/yamlfmt ship no shell completions, so they stay bare.
+# gitleaks and rumdl get completion postinstall hooks below.
+typos = "latest"
+yamlfmt = "latest"
+
 # Sub-table tools (with postinstall hooks or extra options)
 
 [tools."aqua:tamasfe/taplo"]
@@ -208,6 +213,10 @@ rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init/fnox.zsh ${XDG_CACHE_HOME:-$HOME/
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --{}"
 
+[tools.gitleaks]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+
 [tools.golangci-lint]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
@@ -223,6 +232,10 @@ postinstall = "$DOTFILES_DIR/mise/hooks/helix-postinstall {}"
 [tools.ripgrep]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --tool rg --generate complete-{}"
+
+[tools.rumdl]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
 
 [tools.starship]
 version = "latest"

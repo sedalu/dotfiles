@@ -17,13 +17,13 @@ mas_dir="${DOTFILES_DIR}/mas"
 machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
 
 install_from_file() {
-    local file="${1}"
-    [[ -f "${file}" ]] || return 0
-    while IFS= read -r line; do
-        [[ "${line}" =~ ^[[:space:]]*$ ]] && continue
-        [[ "${line}" =~ ^[[:space:]]*# ]] && continue
-        mas install "${line%% *}"
-    done <"${file}"
+	local file="${1}"
+	[[ -f "${file}" ]] || return 0
+	while IFS= read -r line; do
+		[[ "${line}" =~ ^[[:space:]]*$ ]] && continue
+		[[ "${line}" =~ ^[[:space:]]*# ]] && continue
+		mas install "${line%% *}"
+	done <"${file}"
 }
 
 echo ""

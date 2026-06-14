@@ -15,20 +15,20 @@ version=""
 args=()
 
 while [[ $# -gt 0 ]]; do
-    case "$1" in
-    --tool)
-        tool="${2:?--tool requires a value}"
-        shift 2
-        ;;
-    --version)
-        version="${2:?--version requires a value}"
-        shift 2
-        ;;
-    *)
-        args+=("$1")
-        shift
-        ;;
-    esac
+	case "$1" in
+	--tool)
+		tool="${2:?--tool requires a value}"
+		shift 2
+		;;
+	--version)
+		version="${2:?--version requires a value}"
+		shift 2
+		;;
+	*)
+		args+=("$1")
+		shift
+		;;
+	esac
 done
 
 # Resolve final values: CLI flag takes precedence over environment variable.
@@ -36,19 +36,19 @@ tool="${tool:-${MISE_TOOL_NAME:-}}"
 version="${version:-${MISE_TOOL_VERSION:-}}"
 
 if [[ ${#args[@]} -eq 0 ]]; then
-    echo "🛑 Error: completion args required" >&2
-    exit 1
+	echo "🛑 Error: completion args required" >&2
+	exit 1
 fi
 
 # ${args[*]} joins into a single string — intentional for glob matching.
 if [[ ! "${args[*]}" == *"{}"* ]]; then
-    echo "🛑 Error: args must contain {} as shell name placeholder" >&2
-    exit 1
+	echo "🛑 Error: args must contain {} as shell name placeholder" >&2
+	exit 1
 fi
 
 if [[ -z "${tool}" ]]; then
-    echo "🛑 Error: --tool or \$MISE_TOOL_NAME must be set" >&2
-    exit 1
+	echo "🛑 Error: --tool or \$MISE_TOOL_NAME must be set" >&2
+	exit 1
 fi
 
 # Bash completion output directory.
@@ -76,8 +76,8 @@ zsh_args=()
 pattern='{}'
 
 for arg in "${args[@]}"; do
-    bash_args+=("${arg//$pattern/bash}")
-    zsh_args+=("${arg//$pattern/zsh}")
+	bash_args+=("${arg//$pattern/bash}")
+	zsh_args+=("${arg//$pattern/zsh}")
 done
 
 unset pattern
@@ -87,24 +87,24 @@ failed=0
 
 echo "→ ${bash_dir}/${tool}"
 if ! "${tool}" "${bash_args[@]}" >"${bash_dir}/${tool}"; then
-    echo "🛑 Error: bash completion command failed for ${tool}" >&2
-    rm -f "${bash_dir}/${tool}"
-    failed=1
+	echo "🛑 Error: bash completion command failed for ${tool}" >&2
+	rm -f "${bash_dir}/${tool}"
+	failed=1
 fi
 
 echo "→ ${zsh_dir}/_${tool}"
 if ! "${tool}" "${zsh_args[@]}" >"${zsh_dir}/_${tool}"; then
-    echo "🛑 Error: zsh completion command failed for ${tool}" >&2
-    rm -f "${zsh_dir}/_${tool}"
-    failed=1
+	echo "🛑 Error: zsh completion command failed for ${tool}" >&2
+	rm -f "${zsh_dir}/_${tool}"
+	failed=1
 fi
 
 # --- verify -----------------------------
 
 if [[ "${failed}" -eq 1 ]]; then
-    echo ""
-    echo "⚠️ Some completions failed to generate for ${tool}."
-    exit 1
+	echo ""
+	echo "⚠️ Some completions failed to generate for ${tool}."
+	exit 1
 fi
 
 echo "✅ Completions installed for ${tool}."

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ~/.bash_logout -> $DOTFILES_DIR/shell/bash/.bash_logout
 #
 # Bash login shell load order:

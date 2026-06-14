@@ -118,4 +118,3 @@
 | **Wayfarers** (Chambers)                | Wayfarer     | Ship    | Tunneling ship boring wormholes through space         |
 | **A Fire Upon the Deep** (Vinge)        | Outofband    | Ship    | Out of Band II, rescue vessel to Tines' World         |
 | **A Fire Upon the Deep** (Vinge)        | Skroderider  | Ship    | Sentient plant-on-wheels' mobile platform             |
-

@@ -4,7 +4,7 @@
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=../../../../lib/dotfiles/zsh-plugins.sh
+# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/zsh-plugins.sh
 . "$DOTFILES_DIR/lib/dotfiles/zsh-plugins.sh"
 
 echo ""
@@ -20,27 +20,27 @@ echo "📦 Cloning zsh plugins..."
 
 failed=0
 for pair in "${dotfiles_zsh_plugins[@]}"; do
-    name="${pair%%:*}"
-    url="${pair#*:}"
-    dest="$ZSH_PLUGINS_DIR/$name"
+	name="${pair%%:*}"
+	url="${pair#*:}"
+	dest="$ZSH_PLUGINS_DIR/$name"
 
-    if [[ -d "$dest" ]]; then
-        echo "⏭️ $name already exists, skipping"
-        continue
-    fi
+	if [[ -d "$dest" ]]; then
+		echo "⏭️ $name already exists, skipping"
+		continue
+	fi
 
-    if git clone --depth 1 "$url" "$dest"; then
-        echo "✔ $name installed"
-    else
-        echo "🛑 Error: Failed to clone $name" >&2
-        failed=$((failed + 1))
-    fi
+	if git clone --depth 1 "$url" "$dest"; then
+		echo "✔ $name installed"
+	else
+		echo "🛑 Error: Failed to clone $name" >&2
+		failed=$((failed + 1))
+	fi
 done
 
 if [[ "$failed" -gt 0 ]]; then
-    echo ""
-    echo "🛑 Error: $failed plugin(s) failed" >&2
-    exit 1
+	echo ""
+	echo "🛑 Error: $failed plugin(s) failed" >&2
+	exit 1
 fi
 
 echo ""

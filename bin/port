@@ -12,7 +12,7 @@ port="${1:-}"
 # --- list ----------------------------------
 
 if [[ -z "$port" ]]; then
-    lsof -iTCP -sTCP:LISTEN -nP
+	lsof -iTCP -sTCP:LISTEN -nP
 else
-    lsof -iTCP:"$port" -sTCP:LISTEN -nP
+	lsof -iTCP:"$port" -sTCP:LISTEN -nP
 fi

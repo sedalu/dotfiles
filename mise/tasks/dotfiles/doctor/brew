@@ -12,16 +12,16 @@ source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname
 brewfile="${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/homebrew/Brewfile}"
 
 if [[ ! -f "$brewfile" ]]; then
-    echo "❌ Brewfile not found at $brewfile"
-    exit 1
+	echo "❌ Brewfile not found at $brewfile"
+	exit 1
 fi
 echo "✅ $brewfile"
 
 if brew bundle check --file="$brewfile" 2>&1; then
-    echo "✅ All Brewfile packages installed"
+	echo "✅ All Brewfile packages installed"
 else
-    echo "❌ Brewfile packages out of sync — run brew bundle install"
-    exit 1
+	echo "❌ Brewfile packages out of sync — run brew bundle install"
+	exit 1
 fi
 
 # Machine-specific Brewfile sidecar
@@ -29,11 +29,11 @@ brewfile_dir="$(dirname "$brewfile")"
 machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
 machine_brewfile="${brewfile_dir}/Brewfile.${machine}"
 if [[ -f "$machine_brewfile" ]]; then
-    echo "✅ $machine_brewfile"
-    if brew bundle check --file="$machine_brewfile" 2>&1; then
-        echo "✅ All machine Brewfile packages installed"
-    else
-        echo "❌ Machine Brewfile packages out of sync — run brew bundle install --file=$machine_brewfile"
-        exit 1
-    fi
+	echo "✅ $machine_brewfile"
+	if brew bundle check --file="$machine_brewfile" 2>&1; then
+		echo "✅ All machine Brewfile packages installed"
+	else
+		echo "❌ Machine Brewfile packages out of sync — run brew bundle install --file=$machine_brewfile"
+		exit 1
+	fi
 fi

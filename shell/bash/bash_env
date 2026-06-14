@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # $DOTFILES_DIR/shell/bash/bash_env
 # Bash environment — sourced by .bash_profile, .bashrc, and $BASH_ENV.
 # Equivalent to zsh's .zshenv: loads shared env vars for all bash contexts.

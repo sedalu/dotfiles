@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ~/.bashrc -> $DOTFILES_DIR/shell/bash/.bashrc
 #
 # Bash interactive non-login load order:
@@ -19,39 +20,41 @@
 # covers the edge case of a non-login bash shell in a clean environment
 # (containers, `env -i bash`, etc.).
 if [[ -z "$HOMEBREW_PREFIX" ]]; then
-    if [[ -f "$HOME/.dotfiles" ]]; then
-        source "$HOME/.dotfiles"
-    fi
-    source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/bash/bash_env"
+	if [[ -f "$HOME/.dotfiles" ]]; then
+		# shellcheck source=/dev/null  # machine-local overrides, not part of the repo
+		source "$HOME/.dotfiles"
+	fi
+	source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/bash/bash_env"
 fi
 
 # --- Activations ------------------------
 
 if command -v mise &>/dev/null; then
-    eval "$(mise activate bash)"
+	eval "$(mise activate bash)"
 fi
 
 # Generic caching function — regenerates init script if binary is newer than cache.
 _cached_source() {
-    local name="$1"
-    shift
-    local cmd="$1"
-    local cache="$XDG_CACHE_HOME/bash/init/${name}.bash"
-    local bin_path
-    bin_path="$(command -v "$cmd" 2>/dev/null)"
+	local name="$1"
+	shift
+	local cmd="$1"
+	local cache="$XDG_CACHE_HOME/bash/init/${name}.bash"
+	local bin_path
+	bin_path="$(command -v "$cmd" 2>/dev/null)"
 
-    if [[ ! -s "$cache" || "$bin_path" -nt "$cache" ]]; then
-        mkdir -p "${cache%/*}"
-        "$@" > "$cache" 2>/dev/null
-    fi
+	if [[ ! -s "$cache" || "$bin_path" -nt "$cache" ]]; then
+		mkdir -p "${cache%/*}"
+		"$@" >"$cache" 2>/dev/null
+	fi
 
-    source "$cache"
+	# shellcheck source=/dev/null  # runtime-generated cache, no static target
+	source "$cache"
 }
 
-command -v fnox    &>/dev/null && _cached_source fnox fnox activate bash
-command -v fzf     &>/dev/null && _cached_source fzf fzf --bash
+command -v fnox &>/dev/null && _cached_source fnox fnox activate bash
+command -v fzf &>/dev/null && _cached_source fzf fzf --bash
 command -v starship &>/dev/null && _cached_source starship starship init bash
-command -v zoxide  &>/dev/null && _cached_source zoxide zoxide init bash
+command -v zoxide &>/dev/null && _cached_source zoxide zoxide init bash
 
 # --- History ----------------------------
 
@@ -68,7 +71,8 @@ PROMPT_COMMAND="history -a; history -c; history -r${PROMPT_COMMAND:+; $PROMPT_CO
 # --- Completions ------------------------
 
 if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
-    source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+	# shellcheck source=/dev/null  # Homebrew-provided file, not part of the repo
+	source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
 fi
 
 # --- General ----------------------------

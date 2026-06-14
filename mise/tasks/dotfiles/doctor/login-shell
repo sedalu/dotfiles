@@ -8,14 +8,14 @@ echo "🐚 Login shell ([bootstrap.user]):"
 
 # No [bootstrap.user] config for this machine (e.g. non-macOS) → nothing to check.
 if [[ -z "$(mise bootstrap user status 2>/dev/null)" ]]; then
-    echo "⏭️  No login shell configured for this machine, skipping"
-    exit 0
+	echo "⏭️  No login shell configured for this machine, skipping"
+	exit 0
 fi
 
 # `status --missing` prints a desired/current/state line and exits 1 on drift.
 if mise bootstrap user status --missing; then
-    echo "✅ Login shell correct"
+	echo "✅ Login shell correct"
 else
-    echo "❌ Login shell out of sync — run 'mise run dotfiles:install:login-shell'"
-    exit 1
+	echo "❌ Login shell out of sync — run 'mise run dotfiles:install:login-shell'"
+	exit 1
 fi

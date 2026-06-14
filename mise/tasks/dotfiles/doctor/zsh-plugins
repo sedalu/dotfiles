@@ -5,23 +5,23 @@
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=../../../../lib/dotfiles/zsh-plugins.sh
+# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/zsh-plugins.sh
 . "$DOTFILES_DIR/lib/dotfiles/zsh-plugins.sh"
 
 missing=0
 for pair in "${dotfiles_zsh_plugins[@]}"; do
-    plugin="${pair%%:*}"
-    if [[ -d "$ZSH_PLUGINS_DIR/$plugin" ]]; then
-        echo "✅ $plugin"
-    else
-        echo "⚠️ $plugin not found"
-        ((missing++)) || true
-    fi
+	plugin="${pair%%:*}"
+	if [[ -d "$ZSH_PLUGINS_DIR/$plugin" ]]; then
+		echo "✅ $plugin"
+	else
+		echo "⚠️ $plugin not found"
+		((missing++)) || true
+	fi
 done
 
 if ((missing > 0)); then
-    echo ""
-    echo "⚠️ $missing plugin(s) missing — run mise run dotfiles:install:zsh-plugins"
+	echo ""
+	echo "⚠️ $missing plugin(s) missing — run mise run dotfiles:install:zsh-plugins"
 fi
 
 exit 0

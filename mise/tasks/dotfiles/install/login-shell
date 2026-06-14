@@ -7,8 +7,8 @@ set -euo pipefail
 # [bootstrap.user].login_shell is only configured on macOS (Homebrew zsh path),
 # so on a machine with no entry mise's status is empty and we skip.
 if [[ -z "$(mise bootstrap user status 2>/dev/null)" ]]; then
-    echo "⏭️  No login shell configured for this machine, skipping"
-    exit 0
+	echo "⏭️  No login shell configured for this machine, skipping"
+	exit 0
 fi
 
 echo ""

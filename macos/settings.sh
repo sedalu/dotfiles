@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # macos/settings.sh — macOS reset-catalog + restart targets
 #
 # `defaults delete` entries track keys we keep at their macOS default,
@@ -10,20 +11,21 @@
 # --- Restart targets ---
 # Maps domains to the app that must be restarted when settings change.
 # Format: "domain:target" — install task only killalls targets whose domains changed.
+# shellcheck disable=SC2034  # consumed by dotfiles:install:macos, which sources this file
 killall_targets=(
-    "com.apple.dock:Dock"
-    "com.apple.finder:Finder"
-    "com.apple.ActivityMonitor:Activity Monitor"
-    "com.apple.universalaccess:Finder"
-    "com.apple.menuextra.clock:SystemUIServer"
-    "com.apple.MobileSMS:Messages"
-    "com.apple.Music:Music"
-    "com.apple.spaces:SystemUIServer"
-    "com.apple.Terminal:Terminal"
-    "com.apple.Safari:Safari"
-    "com.apple.screencapture:SystemUIServer"
-    "com.apple.TextEdit:TextEdit"
-    "com.apple.dt.Xcode:Xcode"
+	"com.apple.dock:Dock"
+	"com.apple.finder:Finder"
+	"com.apple.ActivityMonitor:Activity Monitor"
+	"com.apple.universalaccess:Finder"
+	"com.apple.menuextra.clock:SystemUIServer"
+	"com.apple.MobileSMS:Messages"
+	"com.apple.Music:Music"
+	"com.apple.spaces:SystemUIServer"
+	"com.apple.Terminal:Terminal"
+	"com.apple.Safari:Safari"
+	"com.apple.screencapture:SystemUIServer"
+	"com.apple.TextEdit:TextEdit"
+	"com.apple.dt.Xcode:Xcode"
 )
 
 # --- Dock ---

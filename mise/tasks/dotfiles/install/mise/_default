@@ -19,10 +19,10 @@ echo ""
 echo "📦 Installing mise..."
 
 if command -v mise &>/dev/null; then
-    echo "⏭️ mise already on PATH, skipping"
+	echo "⏭️ mise already on PATH, skipping"
 else
-    curl https://mise.run | MISE_INSTALL_PATH="$MISE_INSTALL_PATH" sh
-    echo "✔ Done."
+	curl https://mise.run | MISE_INSTALL_PATH="$MISE_INSTALL_PATH" sh
+	echo "✔ Done."
 fi
 
 echo ""

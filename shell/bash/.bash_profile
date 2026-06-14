@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ~/.bash_profile -> $DOTFILES_DIR/shell/bash/.bash_profile
 #
 # Bash login shell load order:
@@ -18,7 +19,8 @@
 #       (e.g. macOS Terminal.app, which opens login shells) get interactive config.
 
 if [[ -f "$HOME/.dotfiles" ]]; then
-    source "$HOME/.dotfiles"
+	# shellcheck source=/dev/null  # machine-local overrides, not part of the repo
+	source "$HOME/.dotfiles"
 fi
 source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/bash/bash_env"
 
@@ -31,5 +33,5 @@ export BASH_ENV="$DOTFILES_DIR/shell/bash/bash_env"
 
 # Source .bashrc for interactive login shells.
 if [[ -f "$DOTFILES_DIR/shell/bash/.bashrc" ]]; then
-    source "$DOTFILES_DIR/shell/bash/.bashrc"
+	source "$DOTFILES_DIR/shell/bash/.bashrc"
 fi

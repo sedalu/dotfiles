@@ -1,0 +1,17 @@
+# typos spell-checker config.
+# Passed explicitly via `typos --config .config/typos.toml` in .config/hk.pkl.
+# Seed the allow-list as false positives surface from `hk check --all`.
+
+[default.extend-words]
+# Words typos misreads, e.g.:
+# "caladan" = "caladan"
+# Asimov "Foundation" worldbuilding name in .github/TODO.md (not "Zone"/"Xeon").
+"Zeon" = "Zeon"
+
+[default.extend-identifiers]
+# Exact identifiers to leave alone, e.g.:
+# "WROTE" = "WROTE"
+
+[files]
+# Path-level excludes are handled by hk's per-step `exclude` (see hk.pkl);
+# add patterns here only for typos-specific skips.

@@ -27,8 +27,8 @@ name="${input:-$default_name}"
 name="$(normalize_hostname "$name")"
 
 if [[ -z "$name" ]]; then
-    echo "❌ Name cannot be empty after normalization."
-    exit 1
+	echo "❌ Name cannot be empty after normalization."
+	exit 1
 fi
 
 echo ""
@@ -37,68 +37,68 @@ echo "  Will set machine name to: $name"
 # Show what will change
 changes=()
 if [[ "$name" != "$current_normalized" ]]; then
-    changes+=("OS hostname: $current_hostname → $name")
+	changes+=("OS hostname: $current_hostname → $name")
 fi
 if [[ "$name" != "$current_machine" ]]; then
-    changes+=("DOTFILES_MACHINE: ${current_machine:-<unset>} → $name")
+	changes+=("DOTFILES_MACHINE: ${current_machine:-<unset>} → $name")
 fi
 
 if [[ ${#changes[@]} -eq 0 ]]; then
-    echo "  Nothing to change."
-    exit 0
+	echo "  Nothing to change."
+	exit 0
 fi
 
 for c in "${changes[@]}"; do
-    echo "  • $c"
+	echo "  • $c"
 done
 
 echo ""
 read -rp "Proceed? [Y/n] " confirm
 confirm="${confirm:-y}"
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "Aborted."
-    exit 0
+	echo "Aborted."
+	exit 0
 fi
 
 # --- set OS hostname -----------------------
 
 if [[ "$name" != "$current_normalized" ]]; then
-    echo ""
-    os="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
-    case "$os" in
-        darwin)
-            echo "Setting macOS hostname (requires sudo)..."
-            if sudo scutil --set ComputerName "$name" && \
-               sudo scutil --set LocalHostName "$name" && \
-               sudo scutil --set HostName "$name"; then
-                echo "✔ OS hostname set."
-            else
-                echo "⚠️  Failed to set OS hostname (sudo declined?). Continuing..."
-            fi
-            ;;
-        linux)
-            echo "Setting Linux hostname (requires sudo)..."
-            if sudo hostnamectl set-hostname "$name"; then
-                echo "✔ OS hostname set."
-            else
-                echo "⚠️  Failed to set OS hostname (sudo declined?). Continuing..."
-            fi
-            ;;
-        *)
-            echo "⚠️  Unknown OS '$os' — skipping OS hostname change."
-            ;;
-    esac
+	echo ""
+	os="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
+	case "$os" in
+	darwin)
+		echo "Setting macOS hostname (requires sudo)..."
+		if sudo scutil --set ComputerName "$name" &&
+			sudo scutil --set LocalHostName "$name" &&
+			sudo scutil --set HostName "$name"; then
+			echo "✔ OS hostname set."
+		else
+			echo "⚠️  Failed to set OS hostname (sudo declined?). Continuing..."
+		fi
+		;;
+	linux)
+		echo "Setting Linux hostname (requires sudo)..."
+		if sudo hostnamectl set-hostname "$name"; then
+			echo "✔ OS hostname set."
+		else
+			echo "⚠️  Failed to set OS hostname (sudo declined?). Continuing..."
+		fi
+		;;
+	*)
+		echo "⚠️  Unknown OS '$os' — skipping OS hostname change."
+		;;
+	esac
 fi
 
 # --- persist DOTFILES_MACHINE --------------
 
 touch "$dotfiles_file"
 if grep -q '^DOTFILES_MACHINE=' "$dotfiles_file"; then
-    tmp="$(mktemp)"
-    sed "s|^DOTFILES_MACHINE=.*|DOTFILES_MACHINE=\"$name\"|" "$dotfiles_file" > "$tmp"
-    mv "$tmp" "$dotfiles_file"
+	tmp="$(mktemp)"
+	sed "s|^DOTFILES_MACHINE=.*|DOTFILES_MACHINE=\"$name\"|" "$dotfiles_file" >"$tmp"
+	mv "$tmp" "$dotfiles_file"
 else
-    echo "DOTFILES_MACHINE=\"$name\"" >> "$dotfiles_file"
+	echo "DOTFILES_MACHINE=\"$name\"" >>"$dotfiles_file"
 fi
 echo "✔ DOTFILES_MACHINE=\"$name\" written to ~/.dotfiles"
 

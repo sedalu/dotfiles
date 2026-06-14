@@ -9,16 +9,16 @@ set -euo pipefail
 # (mirrors the brew Brewfile check). `mise doctor` below also surfaces these,
 # but only as a soft warning.
 if mise bootstrap packages status --missing; then
-    echo "✅ All system packages installed"
+	echo "✅ All system packages installed"
 else
-    echo "❌ System packages out of sync — run mise bootstrap packages install"
-    exit 1
+	echo "❌ System packages out of sync — run mise bootstrap packages install"
+	exit 1
 fi
 
 if mise doctor 2>&1; then
-    echo "✅ mise doctor passed"
+	echo "✅ mise doctor passed"
 else
-    echo "⚠️ mise doctor reported issues (non-fatal)"
+	echo "⚠️ mise doctor reported issues (non-fatal)"
 fi
 
 exit 0

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # $DOTFILES_DIR/shell/interactive.sh
 # Shared interactive config — sourced by .zshrc and .bashrc.
 # Contains: pager, fzf, functions.
@@ -36,13 +37,14 @@ export FZF_ALT_C_COMMAND='zoxide query --list'
 export FZF_ALT_C_OPTS="--preview 'eza --tree --level=2 --color=always {}'"
 
 rg-fzf() {
-    rg --color=always --line-number --no-heading --smart-case "${*:--}" |
-        fzf --ansi \
-            --color "hl:-1:underline,hl+:-1:underline:reverse" \
-            --delimiter ':' \
-            --preview 'bat --color=always {1} --highlight-line {2}' \
-            --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
-            --bind 'enter:become($EDITOR {1}:{2})'
+	# shellcheck disable=SC2016  # $EDITOR is expanded by fzf's become() at runtime, not now
+	rg --color=always --line-number --no-heading --smart-case "${*:--}" |
+		fzf --ansi \
+			--color "hl:-1:underline,hl+:-1:underline:reverse" \
+			--delimiter ':' \
+			--preview 'bat --color=always {1} --highlight-line {2}' \
+			--preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
+			--bind 'enter:become($EDITOR {1}:{2})'
 }
 
 # --- Functions --------------------------
@@ -51,19 +53,21 @@ rg-fzf() {
 
 # Create a directory and cd into it.
 mkcd() {
-    mkdir -p "$1" && cd "$1"
+	mkdir -p "$1" && cd "$1" || return
 }
 
 # Replace the current shell process with a fresh instance.
 reload() {
-    if [[ -n "$ZSH_VERSION" ]]; then
-        exec zsh
-    elif [[ -n "$BASH_VERSION" ]]; then
-        exec bash
-    fi
+	if [[ -n "$ZSH_VERSION" ]]; then
+		exec zsh
+	elif [[ -n "$BASH_VERSION" ]]; then
+		exec bash
+	fi
 }
 
 # --- OS & Machine Layers ------------------
 
+# shellcheck source=/dev/null  # path resolved at runtime from $DOTFILES_OS
 [[ -f "$DOTFILES_DIR/shell/interactive.${DOTFILES_OS}.sh" ]] && source "$DOTFILES_DIR/shell/interactive.${DOTFILES_OS}.sh"
+# shellcheck source=/dev/null  # path resolved at runtime from $DOTFILES_MACHINE
 [[ -f "$DOTFILES_DIR/shell/interactive.${DOTFILES_MACHINE}.sh" ]] && source "$DOTFILES_DIR/shell/interactive.${DOTFILES_MACHINE}.sh"

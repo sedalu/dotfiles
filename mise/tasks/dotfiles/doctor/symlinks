@@ -9,8 +9,8 @@ set -euo pipefail
 # (symlink present and pointing at the declared source).
 # `status --missing` exits 1 on any drift — missing, source missing, or differs.
 if mise dotfiles status --missing; then
-    echo "✅ All [dotfiles] symlinks correct"
+	echo "✅ All [dotfiles] symlinks correct"
 else
-    echo "❌ Symlinks out of sync — run mise run dotfiles:install:symlinks"
-    exit 1
+	echo "❌ Symlinks out of sync — run mise run dotfiles:install:symlinks"
+	exit 1
 fi

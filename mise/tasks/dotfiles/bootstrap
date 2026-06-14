@@ -7,9 +7,10 @@ set -euo pipefail
 # --- config ----------------------------
 # Load user overrides for DOTFILES_REPO, DOTFILES_DIR, etc. if present.
 if [[ -f "$HOME/.dotfiles" ]]; then
-    source "$HOME/.dotfiles"
-    echo "Loaded overrides from ~/.dotfiles."
-    echo ""
+	# shellcheck source=/dev/null  # machine-local overrides, not part of the repo
+	source "$HOME/.dotfiles"
+	echo "Loaded overrides from ~/.dotfiles."
+	echo ""
 fi
 
 # Git repository URL for the dotfiles.
@@ -31,18 +32,18 @@ echo "→ MISE_INSTALL_PATH=$MISE_INSTALL_PATH"
 echo ""
 echo "⬇️ Cloning dotfiles repository..."
 if [[ -d "$DOTFILES_GIT" ]]; then
-    echo "Repository already exists at $DOTFILES_GIT."
-    echo "✖ Skipped."
+	echo "Repository already exists at $DOTFILES_GIT."
+	echo "✖ Skipped."
 else
-    mkdir -p "$(dirname "$DOTFILES_GIT")"
-    git clone --separate-git-dir "$DOTFILES_GIT" "$DOTFILES_REPO" "$DOTFILES_DIR"
-#    git --git-dir="$DOTFILES_GIT" config core.worktree "$DOTFILES_DIR"
-#    git --git-dir="$DOTFILES_GIT" checkout
-    echo "✔ Done."
+	mkdir -p "$(dirname "$DOTFILES_GIT")"
+	git clone --separate-git-dir "$DOTFILES_GIT" "$DOTFILES_REPO" "$DOTFILES_DIR"
+	#    git --git-dir="$DOTFILES_GIT" config core.worktree "$DOTFILES_DIR"
+	#    git --git-dir="$DOTFILES_GIT" checkout
+	echo "✔ Done."
 fi
 
 # Wire up $DOTFILES_DIR/.git so plain git commands work without --git-dir.
-echo "gitdir: $DOTFILES_GIT" > "$DOTFILES_DIR/.git"
+echo "gitdir: $DOTFILES_GIT" >"$DOTFILES_DIR/.git"
 
 # Suppress "ignored file" warnings — the dotfiles .gitignore uses * (ignore all)
 # so every `git add` would otherwise print a noisy hint.
@@ -50,16 +51,16 @@ git --git-dir="$DOTFILES_GIT" config advice.addIgnoredFile false
 
 # --- environment -----------------------
 # Source env.sh directly from the checkout (symlinks don't exist yet).
-# shellcheck source=shell/env.sh
+# shellcheck source=SCRIPTDIR/../../../shell/env.sh
 source "$DOTFILES_DIR/shell/env.sh"
 
 # --- machine name ----------------------
 echo ""
 echo "🖥  Setting machine name..."
 if command -v mise &>/dev/null; then
-    mise run dotfiles:machine
+	mise run dotfiles:machine
 else
-    "$DOTFILES_DIR/mise/tasks/dotfiles/machine"
+	"$DOTFILES_DIR/mise/tasks/dotfiles/machine"
 fi
 
 # --- install ---------------------------
@@ -67,7 +68,7 @@ echo ""
 echo "📦 Installing tools and packages..."
 
 if ! command -v mise &>/dev/null; then
-    "$DOTFILES_DIR/mise/tasks/dotfiles/install/mise/_default"
+	"$DOTFILES_DIR/mise/tasks/dotfiles/install/mise/_default"
 fi
 
 mise run dotfiles:install
@@ -77,10 +78,10 @@ echo "✔ Done."
 echo ""
 echo "Running health checks..."
 if mise run dotfiles:doctor; then
-    echo ""
-    echo "✅ Bootstrap complete. Open a new shell to pick up the environment."
+	echo ""
+	echo "✅ Bootstrap complete. Open a new shell to pick up the environment."
 else
-    echo ""
-    echo "⚠️ Bootstrap finished but some health checks failed."
-    echo "   Run 'mise run dotfiles:doctor' to investigate."
+	echo ""
+	echo "⚠️ Bootstrap finished but some health checks failed."
+	echo "   Run 'mise run dotfiles:doctor' to investigate."
 fi

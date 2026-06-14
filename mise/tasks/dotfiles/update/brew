@@ -29,16 +29,16 @@ machine_brewfile="$(dirname "$brewfile")/Brewfile.${machine}"
 
 formulae=()
 while IFS= read -r f; do
-    [[ -n $f ]] && formulae+=("$f")
+	[[ -n $f ]] && formulae+=("$f")
 done < <(brew bundle list --formula --file="$brewfile" 2>/dev/null)
 if [[ -f $machine_brewfile ]]; then
-    while IFS= read -r f; do
-        [[ -n $f ]] && formulae+=("$f")
-    done < <(brew bundle list --formula --file="$machine_brewfile" 2>/dev/null)
+	while IFS= read -r f; do
+		[[ -n $f ]] && formulae+=("$f")
+	done < <(brew bundle list --formula --file="$machine_brewfile" 2>/dev/null)
 fi
 
 if ((${#formulae[@]})); then
-    brew upgrade "${formulae[@]}"
+	brew upgrade "${formulae[@]}"
 fi
 brew upgrade --cask
 brew cleanup

@@ -2,7 +2,7 @@
 
 XDG-compliant dotfiles managed as a bare git repo. The worktree is `$DOTFILES_DIR` (typically `$XDG_CONFIG_HOME` or `~/.config`) and the git directory lives at `$DOTFILES_GIT` (typically `$XDG_DATA_DIR/dotfiles.git` or `~/.local/share/dotfiles.git`). Use `git` directly from the worktree for repo operations.
 
-See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture and design rationale.
+See [`.github/DESIGN.md`](../.github/DESIGN.md) for detailed system architecture and design rationale.
 
 ## Directory layout
 
@@ -24,6 +24,7 @@ See [`.github/DESIGN.md`](.github/DESIGN.md) for detailed system architecture an
 | `mas/`          | Mac App Store app list                                          |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)              |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)           |
+| `.config/`      | hk pipeline (`hk.pkl`) + linter sidecars (shellcheck, rumdl, typos) |
 | `starship.toml` | Starship prompt config                                          |
 
 ## Tooling: mise-first approach
@@ -52,11 +53,26 @@ If installing a font, add a `postinstall` hook in `mise/config.toml` that calls 
 - **Shell config split** — `shell/env.sh` holds environment variables (sourced by both `.zshenv` and `bash_env`). `shell/interactive.sh` holds aliases, functions, and interactive setup (sourced by `.zshrc` and `.bashrc`). Bash- and zsh-specific files live under `shell/bash/` and `shell/zsh/`.
 - **Performance** — expensive shell activations (direnv, fzf, starship, zoxide) are cached. Homebrew paths are hardcoded in `env.sh` to avoid `brew shellenv` overhead.
 
+## Code quality (hk)
+
+[hk](https://hk.jdx.dev) runs the formatters, linters, and secret scanning. Config lives in `.config/` (passed explicitly — hk/tool auto-discovery doesn't look in this subdir):
+
+- **`hk.pkl`** — pipeline definition (steps + `check`/`fix`/`pre-commit`/`pre-push` hooks), pkl amending hk's `Config.pkl`.
+- **`shellcheckrc`, `rumdl.toml`, `typos.toml`** — per-tool sidecars.
+
+Every tool (`hk`, `shellcheck`, `shfmt`, `taplo`, `rumdl`, `yamlfmt`, `typos`, `gitleaks`) installs via mise. `hk check` lints staged files and `hk fix` auto-formats them (default scope); add `--all` to sweep the whole tree (drift check / CI). Git hooks are wired in `git/config` (`[hook]` entries → `hk run <event> --from-hook`); export `HK=0` to bypass.
+
+- **Scope is only files we own** — formatters and linters carry an `exclude` list (`notOurs` in `hk.pkl`): app-managed and generated files (`gh/hosts.yml`, `claude/settings.json`, Claude memory, `obsidian/`, `.github/TASKS.md`, …) are skipped so we don't fight the owning app or churn generated output. Shell steps use an explicit glob (extensionless `bin/`, mise tasks/hooks). zsh is excluded — shfmt/shellcheck don't support it.
+- **Secret scanning is the exception — it scans everything.** `gitleaks` runs in `git` mode (reads committed blobs), so it's structurally blind to the multi-GB gitignored/untracked trees under the worktree while still covering every committed line.
+- **shellcheck overrides go at the call site, not the rcfile.** `shellcheckrc` carries only `external-sources=true` (illegal in-file). Everything else stays a local directive so the check stays live elsewhere: `# shellcheck source=SCRIPTDIR/…` (or `=/dev/null`) before each `source`, `# shellcheck shell=bash` atop shebang-less sourced files, and targeted `# shellcheck disable=` with a reason.
+
+See [`.github/DESIGN.md`](../.github/DESIGN.md) §10 for the full rationale.
+
 ## Sensitive files
 
 Never commit secrets. Use `.gitignore` to exclude them.
 
-Secrets are managed at runtime through `fnox` (macOS Keychain).
+Secrets are managed at runtime through `fnox` (macOS Keychain), and `gitleaks` (via hk) blocks committed/pushed secrets — see [Code quality (hk)](#code-quality-hk).
 
 ## Mise tasks
 

@@ -4,23 +4,23 @@
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=../../../../lib/dotfiles/dirs.sh
+# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/dirs.sh
 . "$DOTFILES_DIR/lib/dotfiles/dirs.sh"
 
 fail=0
 for dir in "${dotfiles_dirs[@]}"; do
-    if [[ -d "$dir" ]]; then
-        echo "✅ $dir"
-    else
-        echo "❌ $dir does not exist"
-        ((fail++)) || true
-    fi
+	if [[ -d "$dir" ]]; then
+		echo "✅ $dir"
+	else
+		echo "❌ $dir does not exist"
+		((fail++)) || true
+	fi
 done
 
 if ((fail > 0)); then
-    echo ""
-    echo "❌ $fail directory check(s) failed"
-    exit 1
+	echo ""
+	echo "❌ $fail directory check(s) failed"
+	exit 1
 fi
 echo ""
 echo "✅ All required directories exist"

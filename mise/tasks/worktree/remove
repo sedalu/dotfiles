@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #MISE description="Remove a worktree and prune stale references"
 #USAGE arg "<n>"
+# shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
+# shellcheck source=SCRIPTDIR/_bare_root
 source "$(dirname "$0")/_bare_root"
 
 git -C "$BARE" worktree remove "$ROOT/${usage_n}"

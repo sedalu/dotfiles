@@ -14,20 +14,20 @@ echo "🩺 Checking mas..."
 
 failed=0
 
-if ! command -v mas > /dev/null 2>&1; then
-    echo "🛑 Error: mas is not installed" >&2
-    failed=$((failed + 1))
+if ! command -v mas >/dev/null 2>&1; then
+	echo "🛑 Error: mas is not installed" >&2
+	failed=$((failed + 1))
 fi
 
-if ! mas outdated > /dev/null 2>&1; then
-    echo "🛑 Error: mas cannot communicate with the App Store" >&2
-    failed=$((failed + 1))
+if ! mas outdated >/dev/null 2>&1; then
+	echo "🛑 Error: mas cannot communicate with the App Store" >&2
+	failed=$((failed + 1))
 fi
 
 if [[ "${failed}" -gt 0 ]]; then
-    echo ""
-    echo "🛑 ${failed} check(s) failed" >&2
-    exit 1
+	echo ""
+	echo "🛑 ${failed} check(s) failed" >&2
+	exit 1
 fi
 
 echo ""

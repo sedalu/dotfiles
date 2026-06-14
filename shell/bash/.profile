@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ~/.profile -> $DOTFILES_DIR/shell/bash/.profile
 #
 # Bash login shell load order:

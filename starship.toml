@@ -72,10 +72,10 @@ symbol = "🐍 "
 style = "yellow"
 format = "[$symbol$version]($style) "
 detect_files = [
-    "requirements.txt",
-    "Pipfile",
-    "pyproject.toml",
-    ".python-version",
+  "requirements.txt",
+  "Pipfile",
+  "pyproject.toml",
+  ".python-version",
 ]
 
 # =============================================================================

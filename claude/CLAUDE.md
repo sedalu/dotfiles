@@ -45,7 +45,6 @@
 4. **Explain Changes**: High-level summary at each step
 5. **Document Results**: Add review section to `tasks/todo.md`
 
-
 ## Core Principles
 
 - **Simplicity First**: Make every change as simple as possible. Impact minimal code.
@@ -61,12 +60,14 @@
 Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch management and provides shared mise tasks for both worktree operations and dotfiles maintenance.
 
 **Common daily-use tasks:**
+
 - `worktree:branch [branch-name]` — Create a worktree for development on a new or existing branch
 - `worktree:status` — Monitor all worktrees for dirty state and ahead/behind remote
 - `worktree:sync [branch]` — Keep worktree in sync with remote
 - `worktree:list` — View all active worktrees and branches
 
 **Bootstrap & maintenance tasks:**
+
 - `dotfiles:install` — Full installation (one-time)
 - `dotfiles:update` — Update tools and configurations
 - `dotfiles:doctor` — Health check

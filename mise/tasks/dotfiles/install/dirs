@@ -4,7 +4,7 @@
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=../../../../lib/dotfiles/dirs.sh
+# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/dirs.sh
 . "$DOTFILES_DIR/lib/dotfiles/dirs.sh"
 
 # --- install ---------------------------
@@ -13,7 +13,7 @@ echo ""
 echo "📁 Creating XDG directories..."
 
 for dir in "${dotfiles_dirs[@]}"; do
-    mkdir -p "$dir"
+	mkdir -p "$dir"
 done
 echo "✔ Done."
 

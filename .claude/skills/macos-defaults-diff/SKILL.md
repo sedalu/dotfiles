@@ -6,6 +6,7 @@ description: Capture before/after snapshots of ALL macOS defaults, diff them to 
 ## Context
 
 The dotfiles have two macOS settings files:
+
 - `~/.config/macos/settings.sh` — global defaults, organized by section (used on all machines)
 - `~/.config/macos/settings.caladan.sh` — machine-specific overrides for this machine
 
@@ -18,6 +19,7 @@ Follow these steps in sequence. The key interaction point is pausing after the b
 ### Step 1: Before Snapshot
 
 Run:
+
 ```bash
 macos-snapshot
 ```
@@ -31,6 +33,7 @@ Save the output path. Tell the user the path and ask them to make their changes:
 ### Step 2: After Snapshot
 
 Once the user confirms, immediately run:
+
 ```bash
 macos-snapshot
 ```
@@ -40,6 +43,7 @@ Save this path as `AFTER`.
 ### Step 3: Filtered Diff
 
 Run:
+
 ```bash
 macos-snapshot-diff <BEFORE> <AFTER>
 ```
@@ -51,7 +55,8 @@ If the output is empty, tell the user no meaningful defaults changes were detect
 ### Step 4: Analysis Pass
 
 The `defaults read` output format groups keys under domain blocks:
-```
+
+```text
     "com.apple.dock" =     {
         autohide = 1;
         "tilesize" = 48;
@@ -59,12 +64,15 @@ The `defaults read` output format groups keys under domain blocks:
 ```
 
 The filtered diff only shows changed lines without their domain context. Reconstruct context by running:
+
 ```bash
 diff <BEFORE> <AFTER>
 ```
+
 and scanning the surrounding context lines to find which `"domain" = {` block each changed key belongs to. The domain is always the nearest preceding line that matches `"..." =     {`.
 
 **For each changed key, determine:**
+
 - **Domain** — e.g., `com.apple.dock`
 - **Key name** — strip surrounding quotes if present
 - **Change type**: `ADDED` (only in after), `CHANGED` (different value in before vs after), `DELETED` (only in before)
@@ -72,7 +80,7 @@ and scanning the surrounding context lines to find which `"domain" = {` block ea
 
 **Group by domain and present a clean summary:**
 
-```
+```text
 com.apple.dock
   CHANGED  tilesize          48 → 36
   ADDED    autohide-delay    0.5
@@ -84,12 +92,14 @@ com.apple.finder
 If there are more than 10 changes, present one domain at a time.
 
 **Flag as likely noise (suggest skip, but let the user decide):**
+
 - Keys containing `Count`, `Recent`, `Cache`, `Index`, `Sequence`, `Token`, `Nonce`
 - Values that are large blobs of encoded data
 
 ### Step 5: Track / Skip Prompts
 
 For each domain's changes, ask the user to choose one of:
+
 1. **Track globally** → add to `~/.config/macos/settings.sh`
 2. **Track as machine-specific** → add to `~/.config/macos/settings.caladan.sh`
 3. **Skip** → don't record
@@ -103,10 +113,13 @@ If the user wants to track some keys from a domain but not others, handle them i
 For each confirmed change:
 
 **1. Get the type:**
+
 ```bash
 defaults read-type <domain> <key>
 ```
+
 Map the output to the `defaults write` flag:
+
 - `Type is string` → `-string`
 - `Type is boolean` → `-bool`
 - `Type is integer` → `-int`
@@ -116,11 +129,13 @@ Map the output to the `defaults write` flag:
 **2. Format the command:**
 
 For changed/added values:
+
 ```bash
 defaults write <domain> <key> -<type> <value>
 ```
 
 For deleted keys (reset to system default):
+
 ```bash
 defaults delete <domain> <key>
 ```
@@ -134,6 +149,7 @@ defaults delete <domain> <key>
 - If no matching section exists, append at the bottom of the file under `# --- Captured ---` (create it if needed)
 
 **Example entry to append:**
+
 ```bash
 # Dock tile size in pixels.
 defaults write com.apple.dock tilesize -int 36

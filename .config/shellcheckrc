@@ -1,0 +1,13 @@
+# ShellCheck configuration for the dotfiles repo.
+# Passed explicitly via `shellcheck --rcfile .config/shellcheckrc` in .config/hk.pkl
+# (auto-discovery looks beside each script, not in this subdir).
+
+# Follow `# shellcheck source=...` directives so sourced libraries resolve.
+# This is the only setting that *must* live here: external-sources is rejected
+# (SC1144) inside individual files. Everything else is handled at the call site:
+#   SC1090/SC1091 (sourced path) → `# shellcheck source=...` before each `source`
+#   SC2148 (no shebang)          → `# shellcheck shell=bash` atop each sourced file
+#   SC2154 (mise usage_* vars)   → file-level `# shellcheck disable=SC2154` in tasks
+#   SC2034 (export-for-sourcing) → targeted `# shellcheck disable=SC2034`
+# keeping every check live everywhere except the specific, documented site.
+external-sources=true

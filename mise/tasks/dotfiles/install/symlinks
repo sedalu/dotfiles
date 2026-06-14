@@ -21,23 +21,23 @@ echo "🔗 Applying [dotfiles] symlinks..."
 # we decide per-target by inspecting the filesystem,
 # so we need neither jq nor the state column.
 while read -r target; do
-    [[ "$target" == \~* || "$target" == /* ]] || continue
-    path="${target/#\~/$HOME}"
-    # A wrong symlink is safe for apply to replace;
-    # only real files/dirs need a backup.
-    # Missing targets need nothing.
-    [[ -e "$path" && ! -L "$path" ]] || continue
-    name="${path##*/}"
-    # macOS protects some dirs (e.g. ~/Downloads) with a deny-delete ACL;
-    # strip it so the move can proceed.
-    # `ls -led` is the standard way to read an ACL.
-    acl="$(ls -led "$path" 2>/dev/null)"
-    if [[ "$acl" == *"deny delete"* ]]; then
-        chmod -N "$path" 2>/dev/null || true
-    fi
-    rm -rf "${path}.bak"
-    mv "$path" "${path}.bak"
-    echo "⚠️ $name existed as a real ${path}; backed up to ${name}.bak"
+	[[ "$target" == \~* || "$target" == /* ]] || continue
+	path="${target/#\~/$HOME}"
+	# A wrong symlink is safe for apply to replace;
+	# only real files/dirs need a backup.
+	# Missing targets need nothing.
+	[[ -e "$path" && ! -L "$path" ]] || continue
+	name="${path##*/}"
+	# macOS protects some dirs (e.g. ~/Downloads) with a deny-delete ACL;
+	# strip it so the move can proceed.
+	# `ls -led` is the standard way to read an ACL.
+	acl="$(ls -led "$path" 2>/dev/null)"
+	if [[ "$acl" == *"deny delete"* ]]; then
+		chmod -N "$path" 2>/dev/null || true
+	fi
+	rm -rf "${path}.bak"
+	mv "$path" "${path}.bak"
+	echo "⚠️ $name existed as a real ${path}; backed up to ${name}.bak"
 done < <(mise dotfiles status 2>/dev/null | awk '{ print $1 }')
 
 mise dotfiles apply --force --yes

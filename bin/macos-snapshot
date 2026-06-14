@@ -4,5 +4,5 @@
 set -euo pipefail
 
 out="${1:-/tmp/macos-snapshot-$(date +%Y%m%d-%H%M%S)-$$.txt}"
-defaults read > "$out"
+defaults read >"$out"
 echo "$out"

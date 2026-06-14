@@ -10,9 +10,9 @@ set -euo pipefail
 # so this mirrors the old "is obsidian in this machine's Brewfile" check
 # without coupling to tool-install order.
 if [[ -z "$(mise ls "github:obsidianmd/obsidian-releases" 2>/dev/null)" ]]; then
-    echo ""
-    echo "⏭️  Obsidian not configured for this machine, skipping"
-    exit 0
+	echo ""
+	echo "⏭️  Obsidian not configured for this machine, skipping"
+	exit 0
 fi
 
 # --- vault layout (inlined; formerly lib/dotfiles/obsidian.sh) ---
@@ -20,22 +20,22 @@ OBSIDIAN_VAULT="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Pers
 
 # Vault directories to create.
 obsidian_dirs=(
-    "$OBSIDIAN_VAULT/Journal"
-    "$OBSIDIAN_VAULT/Projects"
-    "$OBSIDIAN_VAULT/Goals"
-    "$OBSIDIAN_VAULT/Notes"
-    "$OBSIDIAN_VAULT/Reference/Recipes"
-    "$OBSIDIAN_VAULT/Reference/Manuals"
-    "$OBSIDIAN_VAULT/Reference/Home"
-    "$OBSIDIAN_VAULT/Archive"
-    "$OBSIDIAN_VAULT/Templates"
+	"$OBSIDIAN_VAULT/Journal"
+	"$OBSIDIAN_VAULT/Projects"
+	"$OBSIDIAN_VAULT/Goals"
+	"$OBSIDIAN_VAULT/Notes"
+	"$OBSIDIAN_VAULT/Reference/Recipes"
+	"$OBSIDIAN_VAULT/Reference/Manuals"
+	"$OBSIDIAN_VAULT/Reference/Home"
+	"$OBSIDIAN_VAULT/Archive"
+	"$OBSIDIAN_VAULT/Templates"
 )
 
 # Templates to seed, as "source (under obsidian/):destination".
 # {{year}} is substituted with the current year in both path and content.
 obsidian_templates=(
-    "templates/journal.md:$OBSIDIAN_VAULT/Templates/journal.md"
-    "templates/goals.md:$OBSIDIAN_VAULT/Goals/{{year}}.md"
+	"templates/journal.md:$OBSIDIAN_VAULT/Templates/journal.md"
+	"templates/goals.md:$OBSIDIAN_VAULT/Goals/{{year}}.md"
 )
 
 current_year="$(date +%Y)"
@@ -46,7 +46,7 @@ echo ""
 echo "📁 Creating Obsidian vault directories..."
 
 for dir in "${obsidian_dirs[@]}"; do
-    mkdir -p "$dir"
+	mkdir -p "$dir"
 done
 echo "✔ Done."
 
@@ -56,21 +56,21 @@ echo ""
 echo "📄 Copying Obsidian templates..."
 
 for entry in "${obsidian_templates[@]}"; do
-    src="${entry%%:*}"
-    dst="${entry#*:}"
+	src="${entry%%:*}"
+	dst="${entry#*:}"
 
-    # Substitute {{year}} in the destination path.
-    dst="${dst//\{\{year\}\}/$current_year}"
+	# Substitute {{year}} in the destination path.
+	dst="${dst//\{\{year\}\}/$current_year}"
 
-    src_path="$DOTFILES_DIR/obsidian/$src"
+	src_path="$DOTFILES_DIR/obsidian/$src"
 
-    if [[ -f "$dst" ]]; then
-        echo "⏭️  ${dst##*/} already exists, skipping"
-        continue
-    fi
+	if [[ -f "$dst" ]]; then
+		echo "⏭️  ${dst##*/} already exists, skipping"
+		continue
+	fi
 
-    sed "s/{{year}}/$current_year/g" "$src_path" > "$dst"
-    echo "✔ ${dst##*/}"
+	sed "s/{{year}}/$current_year/g" "$src_path" >"$dst"
+	echo "✔ ${dst##*/}"
 done
 
 echo ""

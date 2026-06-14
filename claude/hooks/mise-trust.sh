@@ -23,38 +23,38 @@ main_worktree=$(git worktree list --porcelain 2>/dev/null | awk '/^worktree /{pr
 
 # All locations mise searches for config files (relative to a directory root)
 MISE_CONFIGS=(
-    "mise.toml"
-    "mise.local.toml"
-    ".mise.toml"
-    "mise/config.toml"
-    ".mise/config.toml"
-    ".config/mise.toml"
-    ".config/mise/config.toml"
+	"mise.toml"
+	"mise.local.toml"
+	".mise.toml"
+	"mise/config.toml"
+	".mise/config.toml"
+	".config/mise.toml"
+	".config/mise/config.toml"
 )
 
 # Returns 0 if any mise config in DIR has its exact content in the trust store.
 # mise stores trusted configs as copies, so content-matching is reliable.
 is_trusted() {
-    local dir="$1"
-    [ -d "$TRUSTED_DIR" ] || return 1
-    for rel in "${MISE_CONFIGS[@]}"; do
-        local path="$dir/$rel"
-        [ -f "$path" ] || continue
-        local hash
-        hash=$(shasum -a 256 "$path" 2>/dev/null | awk '{print $1}')
-        [ -z "$hash" ] && continue
-        if find "$TRUSTED_DIR" -type f -exec shasum -a 256 {} \; 2>/dev/null \
-                | grep -q "^$hash"; then
-            return 0
-        fi
-    done
-    return 1
+	local dir="$1"
+	[ -d "$TRUSTED_DIR" ] || return 1
+	for rel in "${MISE_CONFIGS[@]}"; do
+		local path="$dir/$rel"
+		[ -f "$path" ] || continue
+		local hash
+		hash=$(shasum -a 256 "$path" 2>/dev/null | awk '{print $1}')
+		[ -z "$hash" ] && continue
+		if find "$TRUSTED_DIR" -type f -exec shasum -a 256 {} \; 2>/dev/null |
+			grep -q "^$hash"; then
+			return 0
+		fi
+	done
+	return 1
 }
 
 if [ "$git_root" = "$main_worktree" ]; then
-    # Main worktree: only trust if this config was previously trusted by the user
-    is_trusted "$git_root" && mise trust -y --quiet 2>/dev/null || true
+	# Main worktree: only trust if this config was previously trusted by the user
+	is_trusted "$git_root" && mise trust -y --quiet 2>/dev/null || true
 else
-    # Secondary worktree: only trust if the main worktree's config is trusted
-    is_trusted "$main_worktree" && mise trust -y --quiet 2>/dev/null || true
+	# Secondary worktree: only trust if the main worktree's config is trusted
+	is_trusted "$main_worktree" && mise trust -y --quiet 2>/dev/null || true
 fi

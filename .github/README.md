@@ -21,6 +21,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XD
 | `fnox/`         | Secret management config (macOS Keychain)             |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`) |
+| `.config/`      | hk pipeline + linter sidecars (shellcheck, rumdl, …)  |
 | `starship.toml` | Starship prompt config                                |
 | `DESIGN.md`     | [System architecture and design rationale](DESIGN.md) |
 
@@ -96,6 +97,21 @@ mise run dotfiles:doctor:macos    # check for drift
 ```
 
 Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`; settings with no `defaults` equivalent are documented in `macos/manual.md`.
+
+## Linting & Git Hooks
+
+[hk](https://hk.jdx.dev) orchestrates formatting, linting, and secret scanning. Config lives in `.config/` (`hk.pkl` plus `shellcheckrc`, `rumdl.toml`, `typos.toml` sidecars); every tool installs via mise.
+
+```sh
+hk check         # lint staged files, non-destructive (default scope)
+hk fix           # auto-format staged files
+hk check --all   # lint the whole tree — drift check / CI
+hk fix --all     # format the whole tree
+```
+
+Git hooks delegate to hk via `git/config`: `pre-commit` formats and lints staged files, and `pre-push` runs the secret scan. Export `HK=0` to bypass a hook.
+
+Formatters and linters only touch files we own (app-managed and generated files are excluded), but secret scanning (`gitleaks`, in `git` mode) covers every committed line. See [`DESIGN.md`](DESIGN.md#10-linting-formatting--secret-scanning-hk) for the full design.
 
 ## Login Shell
 

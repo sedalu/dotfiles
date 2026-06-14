@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 #MISE description="Fetch origin and pull all worktrees"
+# shellcheck source=SCRIPTDIR/_list_worktrees
 set -euo pipefail
 
 echo "Fetching origin..."
 mise run worktree:fetch
 
 while read -r WT; do
-  NAME="${WT##*/}"
-  echo "Pulling $NAME..."
-  git -C "$WT" pull --ff-only 2>&1 | sed "s/^/  /"
+	NAME="${WT##*/}"
+	echo "Pulling $NAME..."
+	git -C "$WT" pull --ff-only 2>&1 | sed "s/^/  /"
 done < <(source "$(dirname "$0")/_list_worktrees")

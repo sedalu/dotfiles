@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # $DOTFILES_DIR/shell/path.sh
 # PATH construction — sourced by env.sh (every shell, via .zshenv) and again by
 # $ZDOTDIR/.zprofile on login shells AFTER /etc/zprofile runs path_helper.
@@ -17,9 +18,9 @@ export PATH="${HOME}/.local/bin:${PATH}"
 
 # Homebrew
 if [[ -d /opt/homebrew ]]; then
-    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
+	export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
 elif [[ -d /home/linuxbrew/.linuxbrew ]]; then
-    export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+	export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 fi
 
 # mise shims
@@ -27,7 +28,7 @@ export PATH="$XDG_DATA_HOME/mise/shims:$PATH"
 
 # cmux CLI (macOS app bundle)
 if [[ -d "$HOME/Applications/cmux.app" ]]; then
-    export PATH="$HOME/Applications/cmux.app/Contents/Resources/bin:$PATH"
+	export PATH="$HOME/Applications/cmux.app/Contents/Resources/bin:$PATH"
 elif [[ -d "/Applications/cmux.app" ]]; then
-    export PATH="/Applications/cmux.app/Contents/Resources/bin:$PATH"
+	export PATH="/Applications/cmux.app/Contents/Resources/bin:$PATH"
 fi

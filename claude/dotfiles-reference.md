@@ -120,6 +120,7 @@ Use `echo $DOTFILES_DIR` to confirm the dotfiles location in your current shell.
 ### Dotfiles Structure
 
 The dotfiles repo contains:
+
 - **Shell config** (`shell/`) — environment variables, aliases, functions
 - **Tool configs** (`mise/`, `brew/`, `git/`, `ghostty/`, etc.)
 - **Custom scripts** (`bin/`) — `extract`, `genpass`, `path`, `port`
