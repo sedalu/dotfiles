@@ -51,13 +51,36 @@
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
+## Authoring Style: Semantic Line Breaks
+
+When writing or editing prose and comments,
+break lines at semantic boundaries — one clause or sentence per line —
+rather than greedy-wrapping to a fixed column width.
+This applies to Markdown prose and to comments in every file type (shell, TOML, pkl, YAML, …).
+
+- Break after sentences and at major clause boundaries
+  (before coordinating / subordinating conjunctions, after colons and semicolons).
+- Do not hard-wrap at a column count;
+  let a line run as long as its one semantic unit requires.
+- One idea per line keeps future edits to single-line changes and diffs clean.
+- If a project clearly uses fixed-width wrapping, match that instead.
+
+Before finishing any prose or comment,
+re-read it and confirm each line ends at a clause/sentence boundary, not a wrap point.
+See <https://sembr.org>.
+
 ## Reference Checkouts
 
-`~/Projects/ref/` holds upstream git checkouts for source browsing and research. Use these instead of fetching from the internet when possible. Pull when a repo looks stale or when asked. Agents may clone new repos here when a reference checkout would be useful. See `~/Projects/ref/CLAUDE.md` for the full inventory.
+`~/Projects/ref/` holds upstream git checkouts for source browsing and research.
+Use these instead of fetching from the internet when possible.
+Pull when a repo looks stale or when asked.
+Agents may clone new repos here when a reference checkout would be useful.
+See `~/Projects/ref/CLAUDE.md` for the full inventory.
 
 ## Shared Dotfiles & Tasks
 
-Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch management and provides mise tasks for both worktree operations and dotfiles maintenance.
+Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch management
+and provides mise tasks for both worktree operations and dotfiles maintenance.
 
 **Common daily-use tasks** (global — run from anywhere):
 
@@ -72,4 +95,5 @@ Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch man
 - `update` — Update tools and configurations
 - `doctor` — Health check
 
-See `/Users/seth/.claude/dotfiles-reference.md` for detailed worktree workflows, environment variables, and complete task documentation.
+See `/Users/seth/.claude/dotfiles-reference.md` for detailed worktree workflows,
+environment variables, and complete task documentation.

@@ -15,9 +15,10 @@
 # Exit if not interactive.
 [[ $- != *i* ]] && return
 
-# Ensure environment is loaded. In login shells, .bash_profile already sourced
-# bash_env. In non-login shells spawned from zsh, env vars are inherited. This
-# covers the edge case of a non-login bash shell in a clean environment
+# Ensure environment is loaded.
+# In login shells, .bash_profile already sourced bash_env.
+# In non-login shells spawned from zsh, env vars are inherited.
+# This covers the edge case of a non-login bash shell in a clean environment
 # (containers, `env -i bash`, etc.).
 if [[ -z "$HOMEBREW_PREFIX" ]]; then
 	if [[ -f "$HOME/.dotfiles" ]]; then

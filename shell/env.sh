@@ -52,9 +52,9 @@ elif [[ -d /home/linuxbrew/.linuxbrew ]]; then
 fi
 
 # --- PATH -------------------------------
-# Factored into path.sh so login shells can re-apply it after path_helper
-# (see path.sh header). XDG_CONFIG_HOME is set above; DOTFILES_DIR is not yet,
-# so resolve the same way .zshenv resolves env.sh.
+# Factored into path.sh so login shells can re-apply it after path_helper (see path.sh header).
+# XDG_CONFIG_HOME is set above;
+# DOTFILES_DIR is not yet, so resolve the same way .zshenv resolves env.sh.
 
 source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/path.sh"
 
@@ -111,12 +111,15 @@ export GOENV="$XDG_CONFIG_HOME/go/env"
 # Bun
 export BUN_INSTALL="$XDG_DATA_HOME/bun"
 
-# Docker — the config dir is machine state (current context, context metadata,
-# mise-symlinked cli-plugins), not portable config, so it lives in state.
+# Docker — the config dir is machine state
+# (current context, context metadata, mise-symlinked cli-plugins),
+# not portable config, so it lives in state.
 export DOCKER_CONFIG="$XDG_STATE_HOME/docker"
 
-# npm — no native XDG support. Cache is regenerable; userconfig (.npmrc) is real
-# config but npm writes auth tokens there, so it's deny-by-default in .gitignore.
+# npm — no native XDG support.
+# Cache is regenerable;
+# userconfig (.npmrc) is real config but npm writes auth tokens there,
+# so it's deny-by-default in .gitignore.
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 # Silence npm's update-notifier banner.

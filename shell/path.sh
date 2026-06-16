@@ -1,17 +1,18 @@
 # shellcheck shell=bash
 # $DOTFILES_DIR/shell/path.sh
-# PATH construction — sourced by env.sh (every shell, via .zshenv) and again by
-# $ZDOTDIR/.zprofile on login shells AFTER /etc/zprofile runs path_helper.
+# PATH construction — sourced by env.sh (every shell, via .zshenv)
+# and again by $ZDOTDIR/.zprofile on login shells AFTER /etc/zprofile runs path_helper.
 #
-# path_helper (login shells only) re-prepends the system dirs (/usr/bin, /bin,
-# …) to the FRONT of PATH, which would otherwise shadow Homebrew and mise with
-# macOS's stock tools (e.g. git 2.50 instead of brew's 2.54, breaking git 2.54+
-# config-based hooks). Re-sourcing this file after path_helper restores the
-# intended order. `typeset -U PATH path` (set in .zshenv) dedups, so the
-# re-prepend just moves these entries back to the front. mise activation runs
-# later in .zshrc and still prepends tool dirs ahead of everything.
+# path_helper (login shells only) re-prepends the system dirs (/usr/bin, /bin, …) to the FRONT of PATH,
+# which would otherwise shadow Homebrew and mise with macOS's stock tools
+# (e.g. git 2.50 instead of brew's 2.54, breaking git 2.54+ config-based hooks).
+# Re-sourcing this file after path_helper restores the intended order.
+# `typeset -U PATH path` (set in .zshenv) dedups,
+# so the re-prepend just moves these entries back to the front.
+# mise activation runs later in .zshrc and still prepends tool dirs ahead of everything.
 #
-# Requires bash or zsh (uses [[ ]] syntax). Assumes XDG_* are already exported.
+# Requires bash or zsh (uses [[ ]] syntax).
+# Assumes XDG_* are already exported.
 
 export PATH="${XDG_CONFIG_HOME}/bin:${PATH}"
 export PATH="${HOME}/.local/bin:${PATH}"

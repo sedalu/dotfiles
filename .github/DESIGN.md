@@ -4,7 +4,9 @@ System architecture and design rationale for the dotfiles repo.
 
 ## 1. Bare Git Repo Pattern
 
-The repo uses git's `--separate-git-dir` feature: the **worktree** lives at `$DOTFILES_DIR` (typically `~/.config`) and the **git directory** lives at `$DOTFILES_GIT` (typically `~/.local/share/dotfiles.git`).
+The repo uses git's `--separate-git-dir` feature:
+the **worktree** lives at `$DOTFILES_DIR` (typically `~/.config`)
+and the **git directory** lives at `$DOTFILES_GIT` (typically `~/.local/share/dotfiles.git`).
 
 A `.git` *file* (not directory) at `$DOTFILES_DIR/.git` contains:
 
@@ -14,7 +16,9 @@ gitdir: /Users/<user>/.local/share/dotfiles.git
 
 This means plain `git` commands work from the worktree without `--git-dir`/`--work-tree` flags.
 
-The `.gitignore` is `*` (ignore everything). Files are added explicitly with `git add -f`. The config `advice.addIgnoredFile = false` suppresses the resulting warnings.
+The `.gitignore` is `*` (ignore everything).
+Files are added explicitly with `git add -f`.
+The config `advice.addIgnoredFile = false` suppresses the resulting warnings.
 
 **Why this approach:**
 
@@ -38,7 +42,8 @@ Set unconditionally in `shell/env.sh` — always `$HOME/.config`, etc.
 
 ### DOTFILES_* Variables
 
-Set conditionally in `shell/env.sh` using `${VAR:-default}`, so values from `~/.dotfiles` take precedence.
+Set conditionally in `shell/env.sh` using `${VAR:-default}`,
+so values from `~/.dotfiles` take precedence.
 
 | Variable           | Default                                          | Purpose                |
 | ------------------ | ------------------------------------------------ | ---------------------- |
@@ -50,20 +55,24 @@ Set conditionally in `shell/env.sh` using `${VAR:-default}`, so values from `~/.
 
 ### Override Mechanism
 
-`~/.dotfiles` is sourced at the top of `env.sh` (and at the top of `.bash_profile` / `.zshenv`). The layering is:
+`~/.dotfiles` is sourced at the top of `env.sh` (and at the top of `.bash_profile` / `.zshenv`).
+The layering is:
 
 1. `~/.dotfiles` — user overrides (optional file)
 2. XDG vars — set unconditionally (not overridable)
 3. `DOTFILES_*` vars — conditional (`${VAR:-default}`), reference XDG values
 
-Example: setting `DOTFILES_DIR=/other/path` in `~/.dotfiles` works because the `${DOTFILES_DIR:-$XDG_CONFIG_HOME}` expression sees it's already set and skips the default.
+Example: setting `DOTFILES_DIR=/other/path` in `~/.dotfiles` works
+because the `${DOTFILES_DIR:-$XDG_CONFIG_HOME}` expression sees it's already set and skips the default.
 
 ## 3. Shell Load Order
 
 The shell config is split into two shared files, each with optional OS and machine layers:
 
-- **`shell/env.sh`** — environment variables only (sourced by both `.zshenv` and `bash_env`)
-- **`shell/interactive.sh`** — aliases, functions, pager/fzf config (sourced by both `.zshrc` and `.bashrc`)
+- **`shell/env.sh`** — environment variables only
+  (sourced by both `.zshenv` and `bash_env`)
+- **`shell/interactive.sh`** — aliases, functions, pager/fzf config
+  (sourced by both `.zshrc` and `.bashrc`)
 
 Each file sources optional layers at the end (Global → OS → Machine):
 
@@ -118,11 +127,15 @@ Each file sources optional layers at the end (Global → OS → Machine):
 
 ### Key Mechanisms
 
-**`BASH_ENV` trick:** `.bash_profile` exports `BASH_ENV` pointing to `bash_env`, so non-interactive bash processes (cron, `env -i bash -c '...'`) inherit the full environment.
+**`BASH_ENV` trick:** `.bash_profile` exports `BASH_ENV` pointing to `bash_env`,
+so non-interactive bash processes (cron, `env -i bash -c '...'`) inherit the full environment.
 
-**`.bashrc` fallback:** Re-sources env if `HOMEBREW_PREFIX` is unset — covers the edge case of a non-login bash shell in a clean environment (containers, `env -i bash`).
+**`.bashrc` fallback:** Re-sources env if `HOMEBREW_PREFIX` is unset —
+covers the edge case of a non-login bash shell in a clean environment (containers, `env -i bash`).
 
-**`_cached_source`:** Regenerates activation scripts only when the binary is newer than the cached output. Caches live at `$XDG_CACHE_HOME/{bash,zsh}/init/`. Avoids subprocess overhead on every shell start.
+**`_cached_source`:** Regenerates activation scripts only when the binary is newer than the cached output.
+Caches live at `$XDG_CACHE_HOME/{bash,zsh}/init/`.
+Avoids subprocess overhead on every shell start.
 
 ## 4. OS-Specific Variations
 
@@ -141,7 +154,9 @@ Each file sources optional layers at the end (Global → OS → Machine):
 
 Homebrew paths are hardcoded in `env.sh` to avoid a `brew shellenv` subprocess on every shell start.
 
-OS-specific shell layers (`shell/env.${DOTFILES_OS}.sh`, `shell/interactive.${DOTFILES_OS}.sh`) are sourced at the end of their base files when present. See §3 for the full load order.
+OS-specific shell layers (`shell/env.${DOTFILES_OS}.sh`, `shell/interactive.${DOTFILES_OS}.sh`)
+are sourced at the end of their base files when present.
+See §3 for the full load order.
 
 ## 5. Machine-Specific Variations
 
@@ -170,9 +185,15 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.<machine>`           |
 | `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
-The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`: `mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`, and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`). The `[bootstrap.packages]`, `[dotfiles]`, and `[bootstrap.macos.defaults]` tables all union across whichever files load — the native equivalent of the old `Brewfile.${MACHINE}`, `symlinks.${MACHINE}.sh`, and `settings.${MACHINE}.sh` sidecars.
+The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`:
+`mise/miserc.toml` sets `env = ["{{ env.DOTFILES_MACHINE }}"]` so mise loads `config.<machine>.toml`,
+and `auto_env = true` additionally loads the per-OS `config.${DOTFILES_OS}.toml` (e.g. `config.macos.toml`).
+The `[bootstrap.packages]`, `[dotfiles]`, and `[bootstrap.macos.defaults]` tables all union across whichever files load —
+the native equivalent of the old `Brewfile.${MACHINE}`, `symlinks.${MACHINE}.sh`, and `settings.${MACHINE}.sh` sidecars.
 
-Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`, the Obsidian and Steam GUI apps to `[tools]` (installed from their DMGs via the `install-app` hook), and caladan's scalar preferences (24-hour clock, menu-bar clock options, …) to `[bootstrap.macos.defaults]`.
+Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (and the Claude memory symlink) to `[dotfiles]`,
+the Obsidian and Steam GUI apps to `[tools]` (installed from their DMGs via the `install-app` hook),
+and caladan's scalar preferences (24-hour clock, menu-bar clock options, …) to `[bootstrap.macos.defaults]`.
 
 ## 6. Shell-Specific Variations
 
@@ -197,11 +218,13 @@ Created by `lib/dotfiles/dirs.sh` and verified by `doctor:dirs`:
 
 ### Activation Caches
 
-`_cached_source` writes per-shell extensions: `*.bash` in `$XDG_CACHE_HOME/bash/init/`, `*.zsh` in `$XDG_CACHE_HOME/zsh/init/`.
+`_cached_source` writes per-shell extensions:
+`*.bash` in `$XDG_CACHE_HOME/bash/init/`, `*.zsh` in `$XDG_CACHE_HOME/zsh/init/`.
 
 ## 7. Library-Driven Configuration
 
-The `lib/dotfiles/` directory contains shared definitions sourced by multiple tasks. This ensures install tasks create exactly what doctor tasks verify — same definitions, different operations.
+The `lib/dotfiles/` directory contains shared definitions sourced by multiple tasks.
+This ensures install tasks create exactly what doctor tasks verify — same definitions, different operations.
 
 | Library file        | Defines                                     | Used by                                  |
 | ------------------- | ------------------------------------------- | ---------------------------------------- |
@@ -209,13 +232,20 @@ The `lib/dotfiles/` directory contains shared definitions sourced by multiple ta
 | `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, install:mas, env.sh             |
 | `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
 
-Go's environment file, formerly defined here via `go.sh` and written by `go env -w`, is now a declarative `[dotfiles]` template (§8) — so `go` reads it natively in every context, not just mise-activated shells.
+Go's environment file, formerly defined here via `go.sh` and written by `go env -w`,
+is now a declarative `[dotfiles]` template (§8) —
+so `go` reads it natively in every context, not just mise-activated shells.
 
 macOS configuration is split by what mise can express:
 
-- **Scalar preferences** (`defaults write` values) are declared in `[bootstrap.macos.defaults]` (`mise/config.toml` + per-machine `config.${MACHINE}.toml`) and applied/verified by mise itself — `mise bootstrap macos-defaults apply` and `status --missing`.
-- **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map — stays in `macos/settings.sh`, because mise can express neither an absent key nor an app restart. It is synced from macos-defaults.com by `catalog:macos`.
-- **Manual-only settings** with no `defaults` equivalent (Tips, Mail, Spotlight categories) are documented in `macos/manual.md`.
+- **Scalar preferences** (`defaults write` values) are declared in `[bootstrap.macos.defaults]`
+  (`mise/config.toml` + per-machine `config.${MACHINE}.toml`)
+  and applied/verified by mise itself — `mise bootstrap macos-defaults apply` and `status --missing`.
+- **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map —
+  stays in `macos/settings.sh`, because mise can express neither an absent key nor an app restart.
+  It is synced from macos-defaults.com by `catalog:macos`.
+- **Manual-only settings** with no `defaults` equivalent (Tips, Mail, Spotlight categories)
+  are documented in `macos/manual.md`.
 
 | Config file                         | Defines                                                  | Used by                                     |
 | ----------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
@@ -224,13 +254,25 @@ macOS configuration is split by what mise can express:
 | `lib/dotfiles/macos.sh`             | Reset-catalog parsing helpers                            | install:macos, doctor:macos, catalog:macos  |
 | `[bootstrap.user].login_shell`      | Login shell (Homebrew zsh), per macOS machine            | install:login-shell, doctor:login-shell     |
 
-`install:macos` applies the preferences via mise, sources the reset-catalog for the deletes, and restarts only the apps whose domains actually changed — write-domains from mise `status` (taken before apply), delete-domains from a before/after snapshot. `doctor:macos` gates on `status --missing`, then checks each catalog key is absent. Per-machine reset-catalog deletes are still supported via an optional `macos/settings.${MACHINE}.sh` sidecar (none currently). Symlinks are likewise declared in `[dotfiles]` (see §8).
+`install:macos` applies the preferences via mise, sources the reset-catalog for the deletes,
+and restarts only the apps whose domains actually changed —
+write-domains from mise `status` (taken before apply), delete-domains from a before/after snapshot.
+`doctor:macos` gates on `status --missing`, then checks each catalog key is absent.
+Per-machine reset-catalog deletes are still supported via an optional `macos/settings.${MACHINE}.sh` sidecar (none currently).
+Symlinks are likewise declared in `[dotfiles]` (see §8).
 
-The **login shell** is a separate `[bootstrap.user]` concern, declared in `config.macos.toml` (`login_shell = "/opt/homebrew/bin/zsh"` — the Homebrew zsh installed via `[bootstrap.packages]`, in place of the system `/bin/zsh`). `mise bootstrap user apply` converges it: it registers the shell in `/etc/shells` (a one-time `sudo` append) then `chsh`'s the account. `install:login-shell` wraps `apply`; `doctor:login-shell` gates on `status --missing`. Both skip when no `[bootstrap.user]` entry loads (non-macOS), so the path stays macOS-only.
+The **login shell** is a separate `[bootstrap.user]` concern, declared in `config.macos.toml`
+(`login_shell = "/opt/homebrew/bin/zsh"` — the Homebrew zsh installed via `[bootstrap.packages]`, in place of the system `/bin/zsh`).
+`mise bootstrap user apply` converges it:
+it registers the shell in `/etc/shells` (a one-time `sudo` append) then `chsh`'s the account.
+`install:login-shell` wraps `apply`; `doctor:login-shell` gates on `status --missing`.
+Both skip when no `[bootstrap.user]` entry loads (non-macOS), so the path stays macOS-only.
 
 ## 8. Symlink System
 
-Symlinks are declared in mise's `[dotfiles]` tables and applied by `mise dotfiles apply` (an experimental mise feature). The base set lives in `mise/config.toml`; per-machine entries in `config.${MACHINE}.toml` union with it (see §5).
+Symlinks are declared in mise's `[dotfiles]` tables and applied by `mise dotfiles apply` (an experimental mise feature).
+The base set lives in `mise/config.toml`;
+per-machine entries in `config.${MACHINE}.toml` union with it (see §5).
 
 ### Declared Symlinks
 
@@ -244,24 +286,43 @@ Base (`mise/config.toml`), `mode = "symlink"`:
 | `~/.zshenv`             | `~/.config/shell/zsh/.zshenv`            |
 | `~/.ssh/config`         | `~/.config/ssh/config`                   |
 
-One base entry uses `mode = "template"` instead: `~/.config/go/env` is rendered from `~/.config/go/env.tmpl`, substituting XDG paths into Go's `GOPATH`/`GOMODCACHE`/`GOCACHE` env file. A template, not a symlink, so a stray `go env -w` can't write back into the repo.
+One base entry uses `mode = "template"` instead:
+`~/.config/go/env` is rendered from `~/.config/go/env.tmpl`,
+substituting XDG paths into Go's `GOPATH`/`GOMODCACHE`/`GOCACHE` env file.
+A template, not a symlink, so a stray `go env -w` can't write back into the repo.
 
-Per-machine (`config.caladan.toml`): the Claude project-memory symlink and `~/Downloads` → iCloud Drive Downloads (a non-repo source — `[dotfiles]` symlink mode accepts any existing path).
+Per-machine (`config.caladan.toml`): the Claude project-memory symlink
+and `~/Downloads` → iCloud Drive Downloads
+(a non-repo source — `[dotfiles]` symlink mode accepts any existing path).
 
 ### Apply & Conflict Resolution
 
 `.config/mise/tasks/install/symlinks` drives the apply:
 
-1. **Backup pre-flight.** `mise dotfiles apply --force` overwrites conflicting targets but keeps no backup, and plain `rm` can't remove a macOS deny-delete directory (e.g. a pristine `~/Downloads`). For every declared target that exists as a real, non-symlink file/dir, the task strips any deny-delete ACL and moves it to `.bak`, preserving the user's data. Wrong symlinks and missing targets need no pre-flight.
-2. **Apply.** `mise dotfiles apply --force --yes` creates/repairs every symlink. Already-correct entries are no-ops.
+1. **Backup pre-flight.** `mise dotfiles apply --force` overwrites conflicting targets but keeps no backup,
+   and plain `rm` can't remove a macOS deny-delete directory (e.g. a pristine `~/Downloads`).
+   For every declared target that exists as a real, non-symlink file/dir,
+   the task strips any deny-delete ACL and moves it to `.bak`, preserving the user's data.
+   Wrong symlinks and missing targets need no pre-flight.
+2. **Apply.** `mise dotfiles apply --force --yes` creates/repairs every symlink.
+   Already-correct entries are no-ops.
 
-`doctor:symlinks` gates on `mise dotfiles status --missing`, which exits non-zero on any drift (missing, source missing, or differs).
+`doctor:symlinks` gates on `mise dotfiles status --missing`,
+which exits non-zero on any drift (missing, source missing, or differs).
 
 ## 9. Mise Task Orchestration
 
 All automation runs through `mise run` with tasks in `.config/mise/tasks/`.
 
-These live in a **project-local** mise scope, not the global config dir. The worktree root is `$DOTFILES_DIR` (`$XDG_CONFIG_HOME`), which is also mise's *global* config dir (`mise/config.toml`), so tasks placed under `mise/tasks/` are visible from every directory on the machine. Moving the dotfiles tasks to `.config/mise/tasks/` — one of mise's default file-task dirs, discovered by walking up from the cwd — scopes them to the `$DOTFILES_DIR` subtree without leaking into the global task namespace. mise won't load a non-global config until it's trusted, so `shell/env.sh` exports `MISE_TRUSTED_CONFIG_PATHS="$DOTFILES_DIR/.config/mise"`; this can't live in the global `config.toml`, since `trusted_config_paths` there is parsed before variables expand. The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
+These live in a **project-local** mise scope, not the global config dir.
+The worktree root is `$DOTFILES_DIR` (`$XDG_CONFIG_HOME`), which is also mise's *global* config dir (`mise/config.toml`),
+so tasks placed under `mise/tasks/` are visible from every directory on the machine.
+Moving the dotfiles tasks to `.config/mise/tasks/` — one of mise's default file-task dirs, discovered by walking up from the cwd —
+scopes them to the `$DOTFILES_DIR` subtree without leaking into the global task namespace.
+mise won't load a non-global config until it's trusted,
+so `shell/env.sh` exports `MISE_TRUSTED_CONFIG_PATHS="$DOTFILES_DIR/.config/mise"`;
+this can't live in the global `config.toml`, since `trusted_config_paths` there is parsed before variables expand.
+The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
 
 ### Install Dependencies
 
@@ -325,7 +386,12 @@ Full fresh-machine sequence (`.config/mise/tasks/bootstrap`):
 
 ## 10. Linting, Formatting & Secret Scanning (hk)
 
-[hk](https://hk.jdx.dev) drives all code quality. The pipeline is declared in `.config/hk.pkl` (pkl, amending hk's `Config.pkl`); per-tool sidecars (`shellcheckrc`, `rumdl.toml`, `typos.toml`) live beside it and are passed explicitly, since each tool's auto-discovery looks beside the target file, not in `.config/`. Every tool — `hk` itself plus `shellcheck`, `shfmt`, `taplo`, `rumdl`, `yamlfmt`, `typos`, and `gitleaks` — installs via mise, so the pipeline is reproducible from `mise/config.toml`.
+[hk](https://hk.jdx.dev) drives all code quality.
+The pipeline is declared in `.config/hk.pkl` (pkl, amending hk's `Config.pkl`);
+per-tool sidecars (`shellcheckrc`, `rumdl.toml`, `typos.toml`) live beside it and are passed explicitly,
+since each tool's auto-discovery looks beside the target file, not in `.config/`.
+Every tool — `hk` itself plus `shellcheck`, `shfmt`, `taplo`, `rumdl`, `yamlfmt`, `typos`, and `gitleaks` — installs via mise,
+so the pipeline is reproducible from `mise/config.toml`.
 
 ### Step Classes
 
@@ -339,15 +405,33 @@ Full fresh-machine sequence (`.config/mise/tasks/bootstrap`):
 
 ### Owned-Files Scope
 
-Formatters and linters carry an `exclude` list (`notOurs`): files written by another app or generated by a task — `gh/hosts.yml`, `gh/config.yml`, `claude/settings.json`, Claude auto-memory, `obsidian/`, `cmux/`, `.github/TASKS.md`. Excluding them keeps the pipeline from fighting the owning tool or churning generated output. Because our shell scripts include many extensionless files (`bin/`, mise tasks/hooks), the shell steps use an explicit `shellGlob` (`**/*.sh`, `**/*.bash`, `bin/**`, `.config/mise/tasks/**`, `mise/tasks/**`, `mise/hooks/**`, `shell/bash/**`) rather than the builtin `**/*.sh`. zsh is deliberately absent — shfmt/shellcheck don't support it.
+Formatters and linters carry an `exclude` list (`notOurs`):
+files written by another app or generated by a task —
+`gh/hosts.yml`, `gh/config.yml`, `claude/settings.json`, Claude auto-memory, `obsidian/`, `cmux/`, `.github/TASKS.md`.
+Excluding them keeps the pipeline from fighting the owning tool or churning generated output.
+Because our shell scripts include many extensionless files (`bin/`, mise tasks/hooks),
+the shell steps use an explicit `shellGlob`
+(`**/*.sh`, `**/*.bash`, `bin/**`, `.config/mise/tasks/**`, `mise/tasks/**`, `mise/hooks/**`, `shell/bash/**`)
+rather than the builtin `**/*.sh`.
+zsh is deliberately absent — shfmt/shellcheck don't support it.
 
 ### Secrets See Everything
 
-The guards and the secret scanner deliberately skip the `exclude` list — a leaked credential must be caught wherever it lands. `gitleaks` runs in **`git` mode** (`gitleaks git`, reading blobs from history) rather than the builtin `dir` mode. `gitleaks dir` walks the filesystem: it ignores `.gitignore` and, given many path args, falls back to scanning `.`, which would drag in the multi-GB gitignored trees under the worktree (colima VM state, Claude runtime data). `git` mode is structurally blind to gitignored/untracked/symlinked files while scanning every committed line — and is faster (~100 ms over full history).
+The guards and the secret scanner deliberately skip the `exclude` list —
+a leaked credential must be caught wherever it lands.
+`gitleaks` runs in **`git` mode** (`gitleaks git`, reading blobs from history) rather than the builtin `dir` mode.
+`gitleaks dir` walks the filesystem:
+it ignores `.gitignore` and, given many path args, falls back to scanning `.`,
+which would drag in the multi-GB gitignored trees under the worktree (colima VM state, Claude runtime data).
+`git` mode is structurally blind to gitignored/untracked/symlinked files while scanning every committed line —
+and is faster (~100 ms over full history).
 
 ### shellcheck Directives at the Call Site
 
-`shellcheckrc` carries a single setting — `external-sources=true` — because that is the one directive shellcheck rejects inside a file (SC1144), and it is required so `# shellcheck source=` directives resolve across files. Everything else is a *local* directive at the point it applies, keeping each check live everywhere else:
+`shellcheckrc` carries a single setting — `external-sources=true` —
+because that is the one directive shellcheck rejects inside a file (SC1144),
+and it is required so `# shellcheck source=` directives resolve across files.
+Everything else is a *local* directive at the point it applies, keeping each check live everywhere else:
 
 | Finding                           | Fix                                                                                                              |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -355,10 +439,19 @@ The guards and the secret scanner deliberately skip the `exclude` list — a lea
 | SC2148 (no shebang)               | `# shellcheck shell=bash` atop each shebang-less sourced file (declares the dialect rather than disabling)       |
 | SC2154 / SC2034 / SC2016 / SC2329 | targeted `# shellcheck disable=` with a documented reason                                                        |
 
-`source=` paths resolve against the *caller's* CWD (the repo root under hk), so the robust form is the `SCRIPTDIR` token, which shellcheck expands to each script's own directory.
+`source=` paths resolve against the *caller's* CWD (the repo root under hk),
+so the robust form is the `SCRIPTDIR` token, which shellcheck expands to each script's own directory.
 
 ### Git Hooks
 
-`git/config` registers hk for each git event via `[hook]` entries that run `mise x -- hk run <event> --from-hook`, gated on `${HK:-1}` (export `HK=0` to bypass). `pre-commit` runs guards + formatters (fix + restage) + linters; `commit-msg` enforces conventional commits; `pre-push` runs the secret scan.
+`git/config` registers hk for each git event via `[hook]` entries that run `mise x -- hk run <event> --from-hook`,
+gated on `${HK:-1}` (export `HK=0` to bypass).
+`pre-commit` runs guards + formatters (fix + restage) + linters;
+`commit-msg` enforces conventional commits;
+`pre-push` runs the secret scan.
 
-Outside the hooks, `hk check` (lint) and `hk fix` (format) operate on **staged files** by default — the everyday manual commands. The `check` hook maps to the same suite; `hk check --all` widens the scope to every tracked file, which is how a full drift check or CI run invokes it non-destructively.
+Outside the hooks, `hk check` (lint) and `hk fix` (format) operate on **staged files** by default —
+the everyday manual commands.
+The `check` hook maps to the same suite;
+`hk check --all` widens the scope to every tracked file,
+which is how a full drift check or CI run invokes it non-destructively.

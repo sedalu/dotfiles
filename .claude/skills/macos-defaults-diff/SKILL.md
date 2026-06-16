@@ -10,11 +10,14 @@ The dotfiles have two macOS settings files:
 - `~/.config/macos/settings.sh` — global defaults, organized by section (used on all machines)
 - `~/.config/macos/settings.caladan.sh` — machine-specific overrides for this machine
 
-The `defaults read` command (no arguments) dumps all user defaults for all domains at once in a plist-like text format. Diffing two such snapshots shows exactly what changed — including system settings AND app settings.
+The `defaults read` command (no arguments) dumps all user defaults for all domains at once in a plist-like text format.
+Diffing two such snapshots shows exactly what changed — including system settings AND app settings.
 
 ## Workflow
 
-Follow these steps in sequence. The key interaction point is pausing after the before snapshot so the user can actually make their changes before you capture the after snapshot.
+Follow these steps in sequence.
+The key interaction point is pausing after the before snapshot
+so the user can actually make their changes before you capture the after snapshot.
 
 ### Step 1: Before Snapshot
 
@@ -48,7 +51,9 @@ Run:
 macos-snapshot-diff <BEFORE> <AFTER>
 ```
 
-This strips obvious noise (timestamps, window positions/sizes, UUIDs, date strings, large floats that look like unix timestamps) and outputs only the meaningful changed lines. Lines prefixed with `<` are the old/before value; `>` are the new/after value.
+This strips obvious noise (timestamps, window positions/sizes, UUIDs, date strings, large floats that look like unix timestamps)
+and outputs only the meaningful changed lines.
+Lines prefixed with `<` are the old/before value; `>` are the new/after value.
 
 If the output is empty, tell the user no meaningful defaults changes were detected.
 
@@ -63,13 +68,15 @@ The `defaults read` output format groups keys under domain blocks:
     };
 ```
 
-The filtered diff only shows changed lines without their domain context. Reconstruct context by running:
+The filtered diff only shows changed lines without their domain context.
+Reconstruct context by running:
 
 ```bash
 diff <BEFORE> <AFTER>
 ```
 
-and scanning the surrounding context lines to find which `"domain" = {` block each changed key belongs to. The domain is always the nearest preceding line that matches `"..." =     {`.
+and scanning the surrounding context lines to find which `"domain" = {` block each changed key belongs to.
+The domain is always the nearest preceding line that matches `"..." =     {`.
 
 **For each changed key, determine:**
 
@@ -104,7 +111,8 @@ For each domain's changes, ask the user to choose one of:
 2. **Track as machine-specific** → add to `~/.config/macos/settings.caladan.sh`
 3. **Skip** → don't record
 
-Batch the prompt per domain to avoid asking one-by-one when a domain has multiple related changes. Example: "For `com.apple.dock` (tilesize + autohide-delay) — track globally, machine-specific, or skip?"
+Batch the prompt per domain to avoid asking one-by-one when a domain has multiple related changes.
+Example: "For `com.apple.dock` (tilesize + autohide-delay) — track globally, machine-specific, or skip?"
 
 If the user wants to track some keys from a domain but not others, handle them individually.
 
@@ -124,7 +132,8 @@ Map the output to the `defaults write` flag:
 - `Type is boolean` → `-bool`
 - `Type is integer` → `-int`
 - `Type is float` → `-float`
-- `Type is array` or `Type is dictionary` → record as a comment only (arrays/dicts can't be cleanly expressed as a single `defaults write`)
+- `Type is array` or `Type is dictionary` → record as a comment only
+  (arrays/dicts can't be cleanly expressed as a single `defaults write`)
 
 **2. Format the command:**
 
@@ -140,7 +149,10 @@ For deleted keys (reset to system default):
 defaults delete <domain> <key>
 ```
 
-**3. Add a one-line comment** above the command explaining what the setting does, if it can be inferred from the key name or domain. Use the same style as the existing settings files. If you're unsure, omit the comment rather than guess.
+**3. Add a one-line comment** above the command explaining what the setting does,
+if it can be inferred from the key name or domain.
+Use the same style as the existing settings files.
+If you're unsure, omit the comment rather than guess.
 
 **4. Insert into the target settings file:**
 
@@ -155,4 +167,5 @@ defaults delete <domain> <key>
 defaults write com.apple.dock tilesize -int 36
 ```
 
-**After writing all changes**, summarize what was added to which file so the user can review the diff before committing.
+**After writing all changes**, summarize what was added to which file
+so the user can review the diff before committing.

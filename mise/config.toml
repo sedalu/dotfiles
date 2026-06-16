@@ -1,5 +1,6 @@
-# Floor for the experimental `mise bootstrap`/`mise dotfiles` subsystems this
-# config relies on (`[bootstrap.*]`, `[dotfiles]`). Older mise lacks them.
+# Floor for the experimental `mise bootstrap`/`mise dotfiles` subsystems this config relies on
+# (`[bootstrap.*]`, `[dotfiles]`).
+# Older mise lacks them.
 min_version = "2026.6.10"
 
 [settings]
@@ -13,12 +14,12 @@ verbose = false
 [settings.npm]
 package_manager = "bun"
 
-# Machine-global system packages (shared libs and bootstrap tools), poured by
-# mise's built-in Homebrew bottle installer — no `brew` required. Install with
-# `mise bootstrap packages install`; see `install:mise:system-packages`.
-# Per-OS packages (incl. the mas CLI) live in config.macos.toml; per-machine
-# packages in config.<machine>.toml (both auto-loaded — see miserc.toml). GUI
-# casks still live in homebrew/Brewfile pending mise cask support.
+# Machine-global system packages (shared libs and bootstrap tools),
+# poured by mise's built-in Homebrew bottle installer — no `brew` required.
+# Install with `mise bootstrap packages install`; see `install:mise:system-packages`.
+# Per-OS packages (incl. the mas CLI) live in config.macos.toml;
+# per-machine packages in config.<machine>.toml (both auto-loaded — see miserc.toml).
+# GUI casks still live in homebrew/Brewfile pending mise cask support.
 [bootstrap.packages]
 "brew:bash" = "latest"
 "brew:git" = "latest"

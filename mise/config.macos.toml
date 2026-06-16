@@ -7,15 +7,15 @@
 #   - claude: app-type cask installs, but mise mangles nested Electron frameworks
 #     so the bundle fails Gatekeeper ("App is damaged"); brew's install is valid.
 # (Verified 2026-06-13; revisit as brew-cask: support matures.)
-# GUI apps that ship a plain notarized .app in a DMG (obsidian, steam) instead
-# install via the http:/github: backend + install-app hook — see config.caladan.toml.
+# GUI apps that ship a plain notarized .app in a DMG (obsidian, steam)
+# instead install via the http:/github: backend + install-app hook — see config.caladan.toml.
 [bootstrap.packages]
 "brew:mas" = "latest" # Mac App Store CLI (formula); apps installed by the mas tasks
 
 # Login shell for this account, converged by `mise bootstrap user apply`
 # (wired into install:login-shell; checked by doctor:login-shell).
-# Homebrew zsh rather than the system /bin/zsh — the newer build installed via
-# [bootstrap.packages]. `apply` registers it in /etc/shells (one-time sudo) then
-# chsh's this account. macOS-only: the path is Homebrew-arm-specific.
+# Homebrew zsh rather than the system /bin/zsh — the newer build installed via [bootstrap.packages].
+# `apply` registers it in /etc/shells (one-time sudo) then chsh's this account.
+# macOS-only: the path is Homebrew-arm-specific.
 [bootstrap.user]
 login_shell = "/opt/homebrew/bin/zsh"

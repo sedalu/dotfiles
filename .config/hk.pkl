@@ -1,8 +1,9 @@
 amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Builtins.pkl"
 
-// Files we don't own — app-managed or generated. Formatters, hygiene *fixes*,
-// and linters skip these (they'd fight the owning app or churn generated output).
+// Files we don't own — app-managed or generated.
+// Formatters, hygiene *fixes*, and linters skip these
+// (they'd fight the owning app or churn generated output).
 // Secret scanners and non-destructive guards deliberately do NOT use this list:
 // they must see every staged/pushed file.
 local notOurs = List(
@@ -19,8 +20,8 @@ local notOurs = List(
 )
 
 // Our shell scripts include many extensionless files (bin/, mise tasks/hooks),
-// so the builtin "**/*.sh" globs aren't enough. zsh is intentionally absent:
-// shfmt/shellcheck don't support it.
+// so the builtin "**/*.sh" globs aren't enough.
+// zsh is intentionally absent: shfmt/shellcheck don't support it.
 local shellGlob = List(
   "**/*.sh",
   "**/*.bash",
@@ -75,13 +76,16 @@ local guards = new Mapping<String, Step> {
   ["detect_private_key"] = Builtins.detect_private_key
 }
 
-// Secret scanner — `git` mode, not the builtin's `dir` mode. `gitleaks dir`
-// walks the filesystem: it ignores .gitignore, follows into untracked siblings,
-// and (given many path args) falls back to scanning `.` — which drags in the
-// multi-GB gitignored trees living under our worktree (colima/ VM state,
-// claude/ runtime data). `gitleaks git` reads blobs straight from git history,
-// so gitignored/untracked/symlinked files are structurally invisible while every
-// committed line we own is scanned. Fast (~100ms over full history) and exact.
+// Secret scanner — `git` mode, not the builtin's `dir` mode.
+// `gitleaks dir` walks the filesystem:
+// it ignores .gitignore, follows into untracked siblings,
+// and (given many path args) falls back to scanning `.` —
+// which drags in the multi-GB gitignored trees living under our worktree
+// (colima/ VM state, claude/ runtime data).
+// `gitleaks git` reads blobs straight from git history,
+// so gitignored/untracked/symlinked files are structurally invisible
+// while every committed line we own is scanned.
+// Fast (~100ms over full history) and exact.
 local gitleaks = (Builtins.gitleaks) {
   check = "gitleaks git --redact --no-banner ."
 }

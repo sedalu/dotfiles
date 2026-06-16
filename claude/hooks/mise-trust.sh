@@ -2,8 +2,8 @@
 # Auto-trust mise configs in known git repos/worktrees.
 #
 # Security model:
-#   - Main worktree: only trust if config content is already in the mise trust
-#     store (i.e. the user previously reviewed and trusted it manually).
+#   - Main worktree: only trust if config content is already in the mise trust store
+#     (i.e. the user previously reviewed and trusted it manually).
 #   - Secondary worktree: only trust if the main worktree's config is trusted.
 #   - Non-git directories: never auto-trust.
 #

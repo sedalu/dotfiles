@@ -1,6 +1,7 @@
 # dotfiles
 
-XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR` (typically `$XDG_CONFIG_HOME` or `~/.config`).
+XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR`
+(typically `$XDG_CONFIG_HOME` or `~/.config`).
 
 ## Structure
 
@@ -43,7 +44,8 @@ git clone --separate-git-dir ~/.local/share/dotfiles.git \
 ~/.config/bin/bootstrap https://github.com/<user>/dotfiles.git
 ```
 
-The bootstrap script installs Homebrew, mise, shell symlinks, and zsh plugins. Open a new shell afterwards to pick up the environment.
+The bootstrap script installs Homebrew, mise, shell symlinks, and zsh plugins.
+Open a new shell afterwards to pick up the environment.
 
 ### Day-to-day
 
@@ -75,13 +77,19 @@ For CLI tools and runtimes, prefer `mise/config.toml`:
 mise use --global <tool>
 ```
 
-For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`), use `[bootstrap.packages]` in `mise/config.toml` — mise pours Homebrew bottles directly. macOS-only packages (including the `mas` CLI) go in `mise/config.macos.toml`; per-machine packages in `mise/config.<machine>.toml` (both auto-loaded — see `mise/miserc.toml`):
+For shared system libraries and build dependencies (e.g. `openssl@3`, `pkgconf`),
+use `[bootstrap.packages]` in `mise/config.toml` — mise pours Homebrew bottles directly.
+macOS-only packages (including the `mas` CLI) go in `mise/config.macos.toml`;
+per-machine packages in `mise/config.<machine>.toml` (both auto-loaded — see `mise/miserc.toml`):
 
 ```sh
 mise bootstrap packages install
 ```
 
-GUI apps that ship a notarized `.app` in a DMG (e.g. Obsidian, Steam) install via mise — a `github:`/`http:` tool in `mise/config.<machine>.toml` with the `install-app` hook (mounts the DMG, copies the `.app` to `~/Applications`). Only casks `brew-cask:` can't handle — pkg installers and Electron app bundles it mangles — stay in `homebrew/Brewfile`:
+GUI apps that ship a notarized `.app` in a DMG (e.g. Obsidian, Steam) install via mise —
+a `github:`/`http:` tool in `mise/config.<machine>.toml` with the `install-app` hook
+(mounts the DMG, copies the `.app` to `~/Applications`).
+Only casks `brew-cask:` can't handle — pkg installers and Electron app bundles it mangles — stay in `homebrew/Brewfile`:
 
 ```sh
 brew bundle install
@@ -89,18 +97,22 @@ brew bundle install
 
 ## macOS Settings
 
-Scalar `defaults write` preferences live in `[bootstrap.macos.defaults]` (`mise/config.toml`, per-machine in `mise/config.<machine>.toml`); apply and verify with mise:
+Scalar `defaults write` preferences live in `[bootstrap.macos.defaults]`
+(`mise/config.toml`, per-machine in `mise/config.<machine>.toml`); apply and verify with mise:
 
 ```sh
 mise run install:macos   # apply preferences + reset-catalog
 mise run doctor:macos    # check for drift
 ```
 
-Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`; settings with no `defaults` equivalent are documented in `macos/manual.md`.
+Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`;
+settings with no `defaults` equivalent are documented in `macos/manual.md`.
 
 ## Linting & Git Hooks
 
-[hk](https://hk.jdx.dev) orchestrates formatting, linting, and secret scanning. Config lives in `.config/` (`hk.pkl` plus `shellcheckrc`, `rumdl.toml`, `typos.toml` sidecars); every tool installs via mise.
+[hk](https://hk.jdx.dev) orchestrates formatting, linting, and secret scanning.
+Config lives in `.config/` (`hk.pkl` plus `shellcheckrc`, `rumdl.toml`, `typos.toml` sidecars);
+every tool installs via mise.
 
 ```sh
 hk check         # lint staged files, non-destructive (default scope)
@@ -109,17 +121,23 @@ hk check --all   # lint the whole tree — drift check / CI
 hk fix --all     # format the whole tree
 ```
 
-Git hooks delegate to hk via `git/config`: `pre-commit` formats and lints staged files, and `pre-push` runs the secret scan. Export `HK=0` to bypass a hook.
+Git hooks delegate to hk via `git/config`:
+`pre-commit` formats and lints staged files, and `pre-push` runs the secret scan.
+Export `HK=0` to bypass a hook.
 
-Formatters and linters only touch files we own (app-managed and generated files are excluded), but secret scanning (`gitleaks`, in `git` mode) covers every committed line. See [`DESIGN.md`](DESIGN.md#10-linting-formatting--secret-scanning-hk) for the full design.
+Formatters and linters only touch files we own (app-managed and generated files are excluded),
+but secret scanning (`gitleaks`, in `git` mode) covers every committed line.
+See [`DESIGN.md`](DESIGN.md#10-linting-formatting--secret-scanning-hk) for the full design.
 
 ## Login Shell
 
-The login shell is declared in `[bootstrap.user].login_shell` (`mise/config.macos.toml` — Homebrew zsh, `/opt/homebrew/bin/zsh`), applied and verified with mise:
+The login shell is declared in `[bootstrap.user].login_shell`
+(`mise/config.macos.toml` — Homebrew zsh, `/opt/homebrew/bin/zsh`), applied and verified with mise:
 
 ```sh
 mise run install:login-shell   # register in /etc/shells (sudo) + chsh
 mise run doctor:login-shell    # check for drift
 ```
 
-The first apply prompts once for `sudo` to add the shell to `/etc/shells`; afterwards it converges to a no-op. Open a new login shell for the change to take effect.
+The first apply prompts once for `sudo` to add the shell to `/etc/shells`; afterwards it converges to a no-op.
+Open a new login shell for the change to take effect.

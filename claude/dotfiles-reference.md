@@ -1,6 +1,7 @@
 # Dotfiles & Shared Tasks Reference
 
-A quick reference for working with the personal dotfiles repo and its mise worktree tasks from any project.
+A quick reference for working with the personal dotfiles repo
+and its mise worktree tasks from any project.
 
 ## Bare-Worktree Pattern
 
@@ -8,7 +9,8 @@ A quick reference for working with the personal dotfiles repo and its mise workt
 **Git directory:** `~/.local/share/dotfiles.git`
 **Design:** XDG-compliant, bare git repo using `--separate-git-dir`
 
-This setup enables parallel branch management and easy context switching across projects and configuration versions.
+This setup enables parallel branch management
+and easy context switching across projects and configuration versions.
 
 ## Worktree Tasks (Daily Use)
 
@@ -124,7 +126,9 @@ The dotfiles repo contains:
 - **Shell config** (`shell/`) — environment variables, aliases, functions
 - **Tool configs** (`mise/`, `brew/`, `git/`, `ghostty/`, etc.)
 - **Custom scripts** (`bin/`) — `extract`, `genpass`, `path`, `port`
-- **Mise tasks** — dotfiles-management tasks live in `.config/mise/tasks/` (a project-local scope, available only within the dotfiles tree); the global `worktree:*` tasks live in `mise/tasks/`
+- **Mise tasks** — dotfiles-management tasks live in `.config/mise/tasks/`
+  (a project-local scope, available only within the dotfiles tree);
+  the global `worktree:*` tasks live in `mise/tasks/`
 
 ### Bootstrap & Maintenance Tasks
 

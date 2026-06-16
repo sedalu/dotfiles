@@ -1,6 +1,6 @@
 ---
 name: feedback-config-authoring-style
-description: "Authoring style in the dotfiles repo — semantic line breaks in EVERY comment (shell/TOML/pkl, not column-wrapped); no inline TOML tables"
+description: "Authoring style — semantic line breaks in Markdown prose AND every comment type (not column-wrapped), now codified in global CLAUDE.md; no inline TOML tables in the dotfiles repo"
 metadata: 
   node_type: memory
   type: feedback
@@ -13,15 +13,22 @@ corrected me on two formatting preferences in one session (2026-06-13):
 1. **No inline TOML tables.** Use standard table headers, not `{ ... }` inline
    tables. E.g. write `[dotfiles."~/.zshenv"]` with `source`/`mode` on their own
    lines, not `"~/.zshenv" = { source = "...", mode = "symlink" }`.
-2. **Semantic line breaks in comments — ALL file types, not just config.**
-   Break comment lines at clause/sentence boundaries (one unit of meaning per
-   line), never greedy-wrapped to a fixed column width. Applies to every comment
-   I write or edit here: shell, TOML, pkl, etc. Do NOT column-wrap.
+2. **Semantic line breaks — Markdown prose AND ALL comment types.**
+   Break at clause/sentence boundaries (one unit of meaning per line), never
+   greedy-wrapped to a fixed column width. Applies to Markdown prose and to every
+   comment I write or edit: shell, TOML, pkl, etc. Do NOT column-wrap.
 
-**Why:** readability and clean diffs — expanded tables and clause-per-line
-comments keep future edits to single-line changes.
+As of 2026-06-16 this is codified as a global authoring default in
+`~/.claude/CLAUDE.md` ("## Authoring Style: Semantic Line Breaks"), and the whole
+dotfiles repo (all owned Markdown + comments) was reflowed to conform. Exceptions
+left greedy on purpose: generated `macos/settings.sh` descriptions (verbatim from
+macos-defaults.com via `catalog:macos`), `#USAGE`/`#MISE` spec strings, shellcheck
+directives, and column-aligned tables.
 
-**How to apply:** before finishing ANY comment I author in this repo, re-read it
-and confirm each line ends at a clause/sentence boundary, not a wrap point. This
-is a stated preference, not derivable from existing files; I have failed to
-apply it after having it in memory, so treat it as a checklist item, not a hint.
+**Why:** readability and clean diffs — clause-per-line prose and comments keep
+future edits to single-line changes.
+
+**How to apply:** before finishing ANY prose or comment I author here, re-read it
+and confirm each line ends at a clause/sentence boundary, not a wrap point. I have
+failed to apply it after having it in memory, so treat it as a checklist item, not
+a hint.
