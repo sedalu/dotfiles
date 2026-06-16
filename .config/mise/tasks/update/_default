@@ -3,4 +3,7 @@
 #MISE description="Update dotfiles"
 set -euo pipefail
 
-mise run 'update:[!_]*'
+# Prefix each parallel subtask's output with its task name for attribution.
+# The persisted task.output setting is ignored by `mise run` (mise 2026.6.10),
+# so force it via the env var here.
+MISE_TASK_OUTPUT=prefix mise run 'update:[!_]*'
