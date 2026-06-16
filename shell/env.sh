@@ -91,6 +91,10 @@ export LESSHISTFILE="$XDG_STATE_HOME/less_history"
 # Cargo
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 
+# Rustup — toolchain store; mise's rust installs are symlinks to cargo/bin
+# (rustup proxies), so they resolve toolchains here at runtime.
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
+
 # Go — GOPATH, GOMODCACHE, and GOCACHE live in the env file at $GOENV,
 # rendered from go/env.tmpl by mise [dotfiles] (see config.toml).
 # GOENV must be set here so Go finds that file before reading it.
@@ -98,6 +102,18 @@ export GOENV="$XDG_CONFIG_HOME/go/env"
 
 # Bun
 export BUN_INSTALL="$XDG_DATA_HOME/bun"
+
+# Docker — the config dir is machine state (current context, context metadata,
+# mise-symlinked cli-plugins), not portable config, so it lives in state.
+export DOCKER_CONFIG="$XDG_STATE_HOME/docker"
+
+# npm — no native XDG support. Cache is regenerable; userconfig (.npmrc) is real
+# config but npm writes auth tokens there, so it's deny-by-default in .gitignore.
+export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
+
+# Vim — relocate viminfo to state (helix is $EDITOR; no vimrc in use).
+export VIMINIT="set viminfofile=$XDG_STATE_HOME/vim/viminfo"
 
 # --- OS & Machine Layers ------------------
 

@@ -15,3 +15,6 @@
 
 # Colima runtime state (VM disk images, sockets) — not config
 /colima/
+
+# npm userconfig — deny-by-default; npm writes auth tokens to .npmrc
+/npm/
