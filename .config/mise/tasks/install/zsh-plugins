@@ -4,12 +4,6 @@
 #MISE hide=true
 set -euo pipefail
 
-# Our global git hooks (git/config) run hk in every repo.
-# These plugin clones fire post-checkout, so skip hk here:
-# it has no business running in third-party repos,
-# and the hook subprocess lacks mise on PATH.
-export HK=0
-
 # shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/zsh-plugins.sh
 . "$DOTFILES_DIR/lib/dotfiles/zsh-plugins.sh"
 
