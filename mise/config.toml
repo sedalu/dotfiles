@@ -15,7 +15,7 @@ package_manager = "bun"
 
 # Machine-global system packages (shared libs and bootstrap tools), poured by
 # mise's built-in Homebrew bottle installer — no `brew` required. Install with
-# `mise bootstrap packages install`; see `dotfiles:install:mise:system-packages`.
+# `mise bootstrap packages install`; see `install:mise:system-packages`.
 # Per-OS packages (incl. the mas CLI) live in config.macos.toml; per-machine
 # packages in config.<machine>.toml (both auto-loaded — see miserc.toml). GUI
 # casks still live in homebrew/Brewfile pending mise cask support.
@@ -27,7 +27,7 @@ package_manager = "bun"
 "brew:pkgconf" = "latest"   # helps compilers locate openssl and other libs when building from source
 
 # Declarative symlinks for repo-sourced config files,
-# applied by `mise dotfiles apply` (wired into `dotfiles:install:symlinks`).
+# applied by `mise dotfiles apply` (wired into `install:symlinks`).
 # Per-machine entries live in config.<machine>.toml;
 # all [dotfiles] tables union across loaded files (see miserc.toml).
 # The install task backs up any conflicting non-symlink target to .bak first,
@@ -62,7 +62,7 @@ source = "~/.config/go/env.tmpl"
 mode = "template"
 
 # Scalar macOS `defaults write` preferences,
-# applied by `mise bootstrap macos-defaults apply` (wired into `dotfiles:install:macos`).
+# applied by `mise bootstrap macos-defaults apply` (wired into `install:macos`).
 # Per-machine entries live in config.<machine>.toml and union via MISE_ENV (see miserc.toml).
 # Only scalar writes belong here;
 # the `defaults delete` reset-catalog and killall restart logic stay in macos/settings.sh,

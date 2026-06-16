@@ -50,22 +50,22 @@ The bootstrap script installs Homebrew, mise, shell symlinks, and zsh plugins. O
 On an already-configured machine, use mise tasks:
 
 ```sh
-mise run dotfiles:install   # install brew, mise, symlinks, zsh plugins
-mise run dotfiles:update    # update brew, mise, zsh plugins
-mise run dotfiles:doctor    # run health checks
+mise run install   # install brew, mise, symlinks, zsh plugins
+mise run update    # update brew, mise, zsh plugins
+mise run doctor    # run health checks
 ```
 
 ## Mise Tasks
 
 | Task               | Description                                |
 | ------------------ | ------------------------------------------ |
-| `dotfiles:install` | Install dotfiles (brew, symlinks, plugins) |
-| `dotfiles:update`  | Update dotfiles (brew, mise, zsh-plugins)  |
-| `dotfiles:doctor`  | Run all dotfiles health checks             |
+| `install` | Install dotfiles (brew, symlinks, plugins) |
+| `update`  | Update dotfiles (brew, mise, zsh-plugins)  |
+| `doctor`  | Run all dotfiles health checks             |
 
 See [`TASKS.md`](TASKS.md) for the complete, auto-generated reference of every task
 (including the `worktree:` namespace);
-regenerate it with `mise run dotfiles:catalog:tasks`.
+regenerate it with `mise run catalog:tasks`.
 
 ## Adding Packages
 
@@ -92,8 +92,8 @@ brew bundle install
 Scalar `defaults write` preferences live in `[bootstrap.macos.defaults]` (`mise/config.toml`, per-machine in `mise/config.<machine>.toml`); apply and verify with mise:
 
 ```sh
-mise run dotfiles:install:macos   # apply preferences + reset-catalog
-mise run dotfiles:doctor:macos    # check for drift
+mise run install:macos   # apply preferences + reset-catalog
+mise run doctor:macos    # check for drift
 ```
 
 Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`; settings with no `defaults` equivalent are documented in `macos/manual.md`.
@@ -118,8 +118,8 @@ Formatters and linters only touch files we own (app-managed and generated files 
 The login shell is declared in `[bootstrap.user].login_shell` (`mise/config.macos.toml` — Homebrew zsh, `/opt/homebrew/bin/zsh`), applied and verified with mise:
 
 ```sh
-mise run dotfiles:install:login-shell   # register in /etc/shells (sudo) + chsh
-mise run dotfiles:doctor:login-shell    # check for drift
+mise run install:login-shell   # register in /etc/shells (sudo) + chsh
+mise run doctor:login-shell    # check for drift
 ```
 
 The first apply prompts once for `sudo` to add the shell to `/etc/shells`; afterwards it converges to a no-op. Open a new login shell for the change to take effect.

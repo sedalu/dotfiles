@@ -3,4 +3,4 @@
 #MISE description="Run all dotfiles health checks"
 set -euo pipefail
 
-mise run 'dotfiles:doctor:[!_]*'
+mise run 'doctor:[!_]*'

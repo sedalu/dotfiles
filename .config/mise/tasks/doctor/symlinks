@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Check [dotfiles] symlinks point to correct targets"
 #MISE description="Check [dotfiles] symlinks point to correct targets"
-#MISE depends=["dotfiles:doctor:repo"]
+#MISE depends=["doctor:repo"]
 #MISE hide=true
 set -euo pipefail
 
@@ -11,6 +11,6 @@ set -euo pipefail
 if mise dotfiles status --missing; then
 	echo "✅ All [dotfiles] symlinks correct"
 else
-	echo "❌ Symlinks out of sync — run mise run dotfiles:install:symlinks"
+	echo "❌ Symlinks out of sync — run mise run install:symlinks"
 	exit 1
 fi

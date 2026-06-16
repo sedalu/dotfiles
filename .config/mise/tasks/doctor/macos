@@ -21,7 +21,7 @@ echo "🔧 Preferences ([bootstrap.macos.defaults]):"
 if mise bootstrap macos-defaults status --missing; then
 	echo "✅ All preferences correct"
 else
-	echo "❌ Preferences out of sync — run 'mise run dotfiles:install:macos'"
+	echo "❌ Preferences out of sync — run 'mise run install:macos'"
 	fail=1
 fi
 
@@ -44,7 +44,7 @@ for i in "${!_dw_domains[@]}"; do
 done
 
 if ((cat_fail > 0)); then
-	echo "❌ $cat_fail catalog key(s) still set — run 'mise run dotfiles:install:macos'"
+	echo "❌ $cat_fail catalog key(s) still set — run 'mise run install:macos'"
 	fail=1
 else
 	echo "✅ All catalog keys at macOS default"

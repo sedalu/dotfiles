@@ -124,30 +124,20 @@ The dotfiles repo contains:
 - **Shell config** (`shell/`) — environment variables, aliases, functions
 - **Tool configs** (`mise/`, `brew/`, `git/`, `ghostty/`, etc.)
 - **Custom scripts** (`bin/`) — `extract`, `genpass`, `path`, `port`
-- **Mise tasks** (`mise/tasks/`) — automation for dotfiles management and worktrees
+- **Mise tasks** — dotfiles-management tasks live in `.config/mise/tasks/` (a project-local scope, available only within the dotfiles tree); the global `worktree:*` tasks live in `mise/tasks/`
 
 ### Bootstrap & Maintenance Tasks
 
-- **`dotfiles:install`** — Full installation: brew, directories, mise, symlinks, zsh-plugins, SSH config
-- **`dotfiles:update`** — Update everything: brew, mise, zsh-plugins
-- **`dotfiles:doctor`** — Health check: verify brew, mise, dirs, symlinks, plugins, SSH, machine config
+- **`install`** — Full installation: brew, directories, mise, symlinks, zsh-plugins, SSH config
+- **`update`** — Update everything: brew, mise, zsh-plugins
+- **`doctor`** — Health check: verify brew, mise, dirs, symlinks, plugins, SSH, machine config
 
-From any project, run dotfiles maintenance tasks:
-
-```bash
-# Update the dotfiles
-mise run dotfiles:update
-
-# Check dotfiles health
-mise run dotfiles:doctor
-```
-
-Or cd into the dotfiles directly:
+These tasks are scoped to the dotfiles tree, so run them from anywhere under `$DOTFILES_DIR`:
 
 ```bash
-cd $DOTFILES_DIR
-mise run update
-mise run doctor
+cd $DOTFILES_DIR   # or any subdirectory
+mise run update    # update the dotfiles
+mise run doctor    # check dotfiles health
 ```
 
 ### Shell Sourcing
@@ -159,6 +149,6 @@ mise run doctor
 
 - **Full design doc:** `~/.config/.github/DESIGN.md` — Architecture decisions, environment variables, shell load order, bare repo pattern
 - **Worktree tasks:** `~/.config/mise/tasks/worktree/` — Individual task definitions
-- **Dotfiles tasks:** `~/.config/mise/tasks/dotfiles/` — Individual task definitions
+- **Dotfiles tasks:** `~/.config/.config/mise/tasks/` — Individual task definitions (project-local scope)
 - **Mise config:** `~/.config/mise/config.toml` — Tool versions and configurations
 - **Global Claude config:** `~/.claude/CLAUDE.md` — Workflow preferences and tooling strategy

@@ -3,4 +3,4 @@
 #MISE description="Install dotfiles"
 set -euo pipefail
 
-mise run 'dotfiles:install:[!_]*'
+mise run 'install:[!_]*'

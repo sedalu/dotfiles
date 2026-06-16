@@ -2,16 +2,16 @@
 # macos/settings.sh — macOS reset-catalog + restart targets
 #
 # `defaults delete` entries track keys we keep at their macOS default,
-# synced from macos-defaults.com by `mise run dotfiles:catalog:macos`.
+# synced from macos-defaults.com by `mise run catalog:macos`.
 # Scalar preferences live in [bootstrap.macos.defaults] (mise/config*.toml);
 # settings with no defaults equivalent are documented in macos/manual.md.
-# Apply:  mise run dotfiles:install:macos
-# Check:  mise run dotfiles:doctor:macos
+# Apply:  mise run install:macos
+# Check:  mise run doctor:macos
 
 # --- Restart targets ---
 # Maps domains to the app that must be restarted when settings change.
 # Format: "domain:target" — install task only killalls targets whose domains changed.
-# shellcheck disable=SC2034  # consumed by dotfiles:install:macos, which sources this file
+# shellcheck disable=SC2034  # consumed by install:macos, which sources this file
 killall_targets=(
 	"com.apple.dock:Dock"
 	"com.apple.finder:Finder"

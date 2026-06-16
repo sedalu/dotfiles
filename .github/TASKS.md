@@ -1,55 +1,55 @@
 # Mise Tasks
 
-Complete reference for every `mise run` task in this repo,
-grouped under the `dotfiles:` and `worktree:` namespaces.
+Complete reference for every `mise run` task in this repo:
+the tree-scoped dotfiles-management tasks and the global `worktree:*` tasks.
 For the day-to-day summary, see the [Mise Tasks table in the README](README.md#mise-tasks).
 
 > [!NOTE]
 > This section is generated from each task's Usage spec by
-> `mise run dotfiles:catalog:tasks` — do not edit it by hand.
+> `mise run catalog:tasks` — do not edit it by hand.
 
 <!-- mise-tasks -->
-## `dotfiles:bootstrap`
+## `bootstrap`
 
-- **Usage**: `dotfiles:bootstrap [repo-url]`
+- **Usage**: `bootstrap [repo-url]`
 
 ### Arguments
 
 #### `[repo-url]`
 
-## `dotfiles:catalog:macos`
+## `catalog:macos`
 
-- **Usage**: `dotfiles:catalog:macos`
+- **Usage**: `catalog:macos`
 
 Sync macOS defaults catalog from macos-defaults.com
 
-## `dotfiles:catalog:tasks`
+## `catalog:tasks`
 
-- **Usage**: `dotfiles:catalog:tasks`
+- **Usage**: `catalog:tasks`
 
 Regenerate the task reference in .github/TASKS.md
 
-## `dotfiles:doctor`
+## `doctor`
 
-- **Usage**: `dotfiles:doctor`
+- **Usage**: `doctor`
 
 Run all dotfiles health checks
 
-## `dotfiles:install`
+## `install`
 
-- **Usage**: `dotfiles:install`
+- **Usage**: `install`
 
 Install dotfiles
 
-## `dotfiles:machine`
+## `machine`
 
-- **Usage**: `dotfiles:machine`
+- **Usage**: `machine`
 
 Set machine name (OS hostname + DOTFILES_MACHINE)
 
-## `dotfiles:update`
+## `update`
 
-- **Usage**: `dotfiles:update`
+- **Usage**: `update`
 
 Update dotfiles
 

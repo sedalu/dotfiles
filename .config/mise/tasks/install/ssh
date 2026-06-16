@@ -2,7 +2,7 @@
 #USAGE complete "Set up SSH directory, keys, and permissions"
 #MISE description="Set up SSH directory, keys, and permissions"
 #MISE hide=true
-#MISE depends=["dotfiles:install:symlinks"]
+#MISE depends=["install:symlinks"]
 set -euo pipefail
 
 # --- config ----------------------------

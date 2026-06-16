@@ -187,7 +187,7 @@ Example: `config.caladan.toml` adds `~/Downloads` → iCloud Drive Downloads (an
 
 ### Per-Shell Directories
 
-Created by `lib/dotfiles/dirs.sh` and verified by `dotfiles:doctor:dirs`:
+Created by `lib/dotfiles/dirs.sh` and verified by `doctor:dirs`:
 
 - `$XDG_DATA_HOME/bash/completions` — bash completion scripts
 - `$XDG_STATE_HOME/bash` — bash history
@@ -214,7 +214,7 @@ Go's environment file, formerly defined here via `go.sh` and written by `go env 
 macOS configuration is split by what mise can express:
 
 - **Scalar preferences** (`defaults write` values) are declared in `[bootstrap.macos.defaults]` (`mise/config.toml` + per-machine `config.${MACHINE}.toml`) and applied/verified by mise itself — `mise bootstrap macos-defaults apply` and `status --missing`.
-- **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map — stays in `macos/settings.sh`, because mise can express neither an absent key nor an app restart. It is synced from macos-defaults.com by `dotfiles:catalog:macos`.
+- **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map — stays in `macos/settings.sh`, because mise can express neither an absent key nor an app restart. It is synced from macos-defaults.com by `catalog:macos`.
 - **Manual-only settings** with no `defaults` equivalent (Tips, Mail, Spotlight categories) are documented in `macos/manual.md`.
 
 | Config file                         | Defines                                                  | Used by                                     |
@@ -250,21 +250,23 @@ Per-machine (`config.caladan.toml`): the Claude project-memory symlink and `~/Do
 
 ### Apply & Conflict Resolution
 
-`mise/tasks/dotfiles/install/symlinks` drives the apply:
+`.config/mise/tasks/install/symlinks` drives the apply:
 
 1. **Backup pre-flight.** `mise dotfiles apply --force` overwrites conflicting targets but keeps no backup, and plain `rm` can't remove a macOS deny-delete directory (e.g. a pristine `~/Downloads`). For every declared target that exists as a real, non-symlink file/dir, the task strips any deny-delete ACL and moves it to `.bak`, preserving the user's data. Wrong symlinks and missing targets need no pre-flight.
 2. **Apply.** `mise dotfiles apply --force --yes` creates/repairs every symlink. Already-correct entries are no-ops.
 
-`dotfiles:doctor:symlinks` gates on `mise dotfiles status --missing`, which exits non-zero on any drift (missing, source missing, or differs).
+`doctor:symlinks` gates on `mise dotfiles status --missing`, which exits non-zero on any drift (missing, source missing, or differs).
 
 ## 9. Mise Task Orchestration
 
-All automation runs through `mise run` with tasks in `mise/tasks/dotfiles/`.
+All automation runs through `mise run` with tasks in `.config/mise/tasks/`.
+
+These live in a **project-local** mise scope, not the global config dir. The worktree root is `$DOTFILES_DIR` (`$XDG_CONFIG_HOME`), which is also mise's *global* config dir (`mise/config.toml`), so tasks placed under `mise/tasks/` are visible from every directory on the machine. Moving the dotfiles tasks to `.config/mise/tasks/` — one of mise's default file-task dirs, discovered by walking up from the cwd — scopes them to the `$DOTFILES_DIR` subtree without leaking into the global task namespace. mise won't load a non-global config until it's trusted, so `shell/env.sh` exports `MISE_TRUSTED_CONFIG_PATHS="$DOTFILES_DIR/.config/mise"`; this can't live in the global `config.toml`, since `trusted_config_paths` there is parsed before variables expand. The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
 
 ### Install Dependencies
 
 ```text
-dotfiles:install
+install
 ├── brew             (parallel)
 ├── dirs             (parallel)
 ├── mise             (parallel)
@@ -280,7 +282,7 @@ dotfiles:install
 ### Update Dependencies
 
 ```text
-dotfiles:update
+update
 ├── brew
 ├── mise             (depends: brew; also runs `mise bootstrap packages upgrade`)
 ├── macos            (parallel, darwin only)
@@ -291,7 +293,7 @@ dotfiles:update
 ### Doctor Dependencies
 
 ```text
-dotfiles:doctor
+doctor
 ├── tools
 ├── brew             (depends: tools)
 ├── mise             (depends: tools; also checks `mise bootstrap packages status --missing`)
@@ -309,17 +311,17 @@ dotfiles:doctor
 
 ### Bootstrap
 
-Full fresh-machine sequence (`mise/tasks/dotfiles/bootstrap`):
+Full fresh-machine sequence (`.config/mise/tasks/bootstrap`):
 
 1. Load `~/.dotfiles` overrides
 2. Clone repo with `--separate-git-dir`
 3. Write `.git` pointer file
 4. Set `advice.addIgnoredFile = false`
 5. Source `env.sh` directly from checkout
-6. Run `dotfiles:machine` (interactive hostname setup)
+6. Run `machine` (interactive hostname setup)
 7. Install mise if missing
-8. Run `dotfiles:install`
-9. Run `dotfiles:doctor` to verify
+8. Run `install`
+9. Run `doctor` to verify
 
 ## 10. Linting, Formatting & Secret Scanning (hk)
 
@@ -337,7 +339,7 @@ Full fresh-machine sequence (`mise/tasks/dotfiles/bootstrap`):
 
 ### Owned-Files Scope
 
-Formatters and linters carry an `exclude` list (`notOurs`): files written by another app or generated by a task — `gh/hosts.yml`, `gh/config.yml`, `claude/settings.json`, Claude auto-memory, `obsidian/`, `cmux/`, `.github/TASKS.md`. Excluding them keeps the pipeline from fighting the owning tool or churning generated output. Because our shell scripts include many extensionless files (`bin/`, mise tasks/hooks), the shell steps use an explicit `shellGlob` (`**/*.sh`, `**/*.bash`, `bin/**`, `mise/tasks/**`, `mise/hooks/**`, `shell/bash/**`) rather than the builtin `**/*.sh`. zsh is deliberately absent — shfmt/shellcheck don't support it.
+Formatters and linters carry an `exclude` list (`notOurs`): files written by another app or generated by a task — `gh/hosts.yml`, `gh/config.yml`, `claude/settings.json`, Claude auto-memory, `obsidian/`, `cmux/`, `.github/TASKS.md`. Excluding them keeps the pipeline from fighting the owning tool or churning generated output. Because our shell scripts include many extensionless files (`bin/`, mise tasks/hooks), the shell steps use an explicit `shellGlob` (`**/*.sh`, `**/*.bash`, `bin/**`, `.config/mise/tasks/**`, `mise/tasks/**`, `mise/hooks/**`, `shell/bash/**`) rather than the builtin `**/*.sh`. zsh is deliberately absent — shfmt/shellcheck don't support it.
 
 ### Secrets See Everything
 

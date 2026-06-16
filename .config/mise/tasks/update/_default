@@ -3,4 +3,4 @@
 #MISE description="Update dotfiles"
 set -euo pipefail
 
-mise run 'dotfiles:update:[!_]*'
+mise run 'update:[!_]*'

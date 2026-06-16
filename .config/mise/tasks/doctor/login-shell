@@ -16,6 +16,6 @@ fi
 if mise bootstrap user status --missing; then
 	echo "✅ Login shell correct"
 else
-	echo "❌ Login shell out of sync — run 'mise run dotfiles:install:login-shell'"
+	echo "❌ Login shell out of sync — run 'mise run install:login-shell'"
 	exit 1
 fi

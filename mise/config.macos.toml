@@ -13,7 +13,7 @@
 "brew:mas" = "latest" # Mac App Store CLI (formula); apps installed by the mas tasks
 
 # Login shell for this account, converged by `mise bootstrap user apply`
-# (wired into dotfiles:install:login-shell; checked by doctor:login-shell).
+# (wired into install:login-shell; checked by doctor:login-shell).
 # Homebrew zsh rather than the system /bin/zsh — the newer build installed via
 # [bootstrap.packages]. `apply` registers it in /etc/shells (one-time sudo) then
 # chsh's this account. macOS-only: the path is Homebrew-arm-specific.

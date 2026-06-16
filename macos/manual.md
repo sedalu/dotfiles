@@ -8,7 +8,7 @@ For comparison, the automatable layers are:
 - **Preferences** — scalar `defaults write` values,
   in `[bootstrap.macos.defaults]`
   (`mise/config.toml` plus per-machine `mise/config.<machine>.toml`),
-  applied by `mise run dotfiles:install:macos`.
+  applied by `mise run install:macos`.
 - **Reset-catalog** — keys tracked at their macOS default (`defaults delete`),
   in `macos/settings.sh`.
 

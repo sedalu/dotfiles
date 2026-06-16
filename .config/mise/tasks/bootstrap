@@ -58,9 +58,9 @@ source "$DOTFILES_DIR/shell/env.sh"
 echo ""
 echo "🖥  Setting machine name..."
 if command -v mise &>/dev/null; then
-	mise run dotfiles:machine
+	mise run machine
 else
-	"$DOTFILES_DIR/mise/tasks/dotfiles/machine"
+	"$DOTFILES_DIR/.config/mise/tasks/machine"
 fi
 
 # --- install ---------------------------
@@ -68,20 +68,20 @@ echo ""
 echo "📦 Installing tools and packages..."
 
 if ! command -v mise &>/dev/null; then
-	"$DOTFILES_DIR/mise/tasks/dotfiles/install/mise/_default"
+	"$DOTFILES_DIR/.config/mise/tasks/install/mise/_default"
 fi
 
-mise run dotfiles:install
+mise run install
 echo "✔ Done."
 
 # --- verify ----------------------------
 echo ""
 echo "Running health checks..."
-if mise run dotfiles:doctor; then
+if mise run doctor; then
 	echo ""
 	echo "✅ Bootstrap complete. Open a new shell to pick up the environment."
 else
 	echo ""
 	echo "⚠️ Bootstrap finished but some health checks failed."
-	echo "   Run 'mise run dotfiles:doctor' to investigate."
+	echo "   Run 'mise run doctor' to investigate."
 fi

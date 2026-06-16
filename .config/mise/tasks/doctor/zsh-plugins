@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Check zsh plugins are installed (soft warning)"
 #MISE description="Check zsh plugins are installed (soft warning)"
-#MISE depends=["dotfiles:doctor:dirs"]
+#MISE depends=["doctor:dirs"]
 #MISE hide=true
 set -euo pipefail
 
@@ -21,7 +21,7 @@ done
 
 if ((missing > 0)); then
 	echo ""
-	echo "⚠️ $missing plugin(s) missing — run mise run dotfiles:install:zsh-plugins"
+	echo "⚠️ $missing plugin(s) missing — run mise run install:zsh-plugins"
 fi
 
 exit 0

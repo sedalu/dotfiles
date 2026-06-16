@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Install App Store apps via mas"
 #MISE description="Install App Store apps via mas"
-#MISE depends=["dotfiles:install:mise:system-packages"]
+#MISE depends=["install:mise:system-packages"]
 #MISE hide=true
 
 set -euo pipefail

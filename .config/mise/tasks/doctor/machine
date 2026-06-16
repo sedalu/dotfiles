@@ -21,7 +21,7 @@ fi
 if grep -q '^DOTFILES_MACHINE=' "$HOME/.dotfiles" 2>/dev/null; then
 	echo "✅ ~/.dotfiles contains DOTFILES_MACHINE"
 else
-	echo "⚠️  ~/.dotfiles missing DOTFILES_MACHINE — run 'mise run dotfiles:machine'"
+	echo "⚠️  ~/.dotfiles missing DOTFILES_MACHINE — run 'mise run machine'"
 	((warn++)) || true
 fi
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #USAGE complete "Regenerate the task reference in .github/TASKS.md"
 #MISE description="Regenerate the task reference in .github/TASKS.md"
-#MISE sources=["mise/tasks/**/*"]
+#MISE sources=[".config/mise/tasks/**/*"]
 #MISE outputs=[".github/TASKS.md"]
 set -euo pipefail
 

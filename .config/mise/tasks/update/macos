@@ -4,4 +4,4 @@
 #MISE hide=true
 set -euo pipefail
 
-mise run dotfiles:install:macos
+mise run install:macos
