@@ -7,6 +7,12 @@ set -euo pipefail
 
 # --- config -----------------------------
 
+# Our global git hooks (git/config) run hk in every repo.
+# These plugin pulls fire post-checkout/-merge/-rewrite, so skip hk here:
+# it has no business running in third-party repos,
+# and the hook subprocess lacks mise on PATH.
+export HK=0
+
 # Zsh plugins directory.
 ZSH_PLUGINS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 
