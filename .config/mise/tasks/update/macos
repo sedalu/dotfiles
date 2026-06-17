@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 #USAGE complete "Re-apply macOS defaults settings"
 #MISE description="Re-apply macOS defaults settings"
+#MISE depends=["install:macos"]
 #MISE hide=true
-set -euo pipefail
 
-mise run install:macos
+# Re-applying macOS defaults is identical to installing them,
+# so this task has no body of its own — it just depends on install:macos.
+# Nesting `mise run install:macos` here instead would spawn a child mise
+# that inherits MISE_TASK_OUTPUT=prefix from the `update` aggregator
+# and re-tags its output, double-prefixing every line
+# as `[update:macos] [install:macos] …` (mise 2026.6.10).
+# As a dependency the work runs once under its own `[install:macos]` prefix.
