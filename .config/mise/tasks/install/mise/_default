@@ -9,13 +9,11 @@ set -euo pipefail
 # Installation path for the mise binary.
 MISE_INSTALL_PATH="${MISE_INSTALL_PATH:-$HOME/.local/bin/mise}"
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ MISE_INSTALL_PATH=$MISE_INSTALL_PATH"
 
 # --- install ---------------------------
 
-echo ""
 echo "📦 Installing mise..."
 
 if command -v mise &>/dev/null; then
@@ -25,5 +23,4 @@ else
 	echo "✔ Done."
 fi
 
-echo ""
 echo "🎉 mise installed"

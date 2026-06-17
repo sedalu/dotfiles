@@ -7,7 +7,6 @@ set -euo pipefail
 # shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/zsh-plugins.sh
 . "$DOTFILES_DIR/lib/dotfiles/zsh-plugins.sh"
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ ZSH_PLUGINS_DIR=$ZSH_PLUGINS_DIR"
 
@@ -15,7 +14,6 @@ echo "→ ZSH_PLUGINS_DIR=$ZSH_PLUGINS_DIR"
 
 mkdir -p "$ZSH_PLUGINS_DIR"
 
-echo ""
 echo "📦 Cloning zsh plugins..."
 
 failed=0
@@ -38,10 +36,8 @@ for pair in "${dotfiles_zsh_plugins[@]}"; do
 done
 
 if [[ "$failed" -gt 0 ]]; then
-	echo ""
 	echo "🛑 Error: $failed plugin(s) failed" >&2
 	exit 1
 fi
 
-echo ""
 echo "🎉 All zsh plugins installed"

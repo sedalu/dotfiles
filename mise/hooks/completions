@@ -56,7 +56,6 @@ bash_dir="${XDG_DATA_HOME:-$HOME/.local/share}/bash/completions"
 # Zsh completion output directory.
 zsh_dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ tool=${tool}"
 echo "→ version=${version:-none}"
@@ -67,7 +66,6 @@ echo "→ zsh_dir=${zsh_dir}"
 
 mkdir -p "${bash_dir}" "${zsh_dir}"
 
-echo ""
 echo "📦 Installing completions for ${tool}${version:+ v${version}}..."
 
 # Replace {} placeholder with the shell name.
@@ -102,7 +100,6 @@ fi
 # --- verify -----------------------------
 
 if [[ "${failed}" -eq 1 ]]; then
-	echo ""
 	echo "⚠️ Some completions failed to generate for ${tool}."
 	exit 1
 fi

@@ -34,7 +34,6 @@ elif [[ -n "${DOTFILES_MACHINE:-}" ]]; then
 	echo "✅ DOTFILES_MACHINE matches OS hostname"
 fi
 
-echo ""
 if ((warn > 0)); then
 	echo "⚠️  $warn machine check warning(s)"
 	# Soft warning — don't fail the doctor run

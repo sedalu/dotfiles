@@ -10,13 +10,11 @@ set -euo pipefail
 # SSH directory path.
 ssh_dir="$HOME/.ssh"
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ ssh_dir=$ssh_dir"
 
 # --- install ---------------------------
 
-echo ""
 echo "📁 Setting up SSH directory..."
 
 if [[ ! -d "$ssh_dir" ]]; then
@@ -26,7 +24,6 @@ else
 	echo "⏭️ $ssh_dir already exists, skipping"
 fi
 
-echo ""
 echo "🔑 Generating ed25519 key pair..."
 
 if [[ ! -f "$ssh_dir/id_ed25519" ]]; then
@@ -36,7 +33,6 @@ else
 	echo "⏭️ ed25519 key pair already exists, skipping"
 fi
 
-echo ""
 echo "🔒 Fixing permissions..."
 
 chmod 700 "$ssh_dir"
@@ -50,5 +46,4 @@ for key in "$ssh_dir"/id_*; do
 done
 echo "✔ Done."
 
-echo ""
 echo "🎉 SSH setup complete"

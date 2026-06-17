@@ -10,17 +10,16 @@ source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/dotfiles/hostname
 
 # --- update -----------------------------
 
-echo ""
-echo "🔄 Updating Homebrew..."
-
-brew update
+# No "🔄 Updating Homebrew..." banner of our own:
+# brew prints its own "==> Updating Homebrew..." to stderr, so ours would just duplicate it.
+# --quiet drops the "Already up-to-date." line when there's nothing to pull.
+brew update --quiet
 
 # Upgrade only what the Brewfile declares (formulae + sidecar) and all casks.
 # System libraries (bash, git, zsh, openssl@3, pkgconf and their transitive
 # deps) are owned by mise via [bootstrap.packages]; a blanket `brew upgrade` would
 # re-pour them and collide with mise's bottle manager, since both share the
 # same prefix (/opt/homebrew).
-echo ""
 echo "⬆️  Upgrading Brewfile formulae and casks..."
 
 brewfile="${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/homebrew/Brewfile}"
@@ -38,9 +37,9 @@ if [[ -f $machine_brewfile ]]; then
 fi
 
 if ((${#formulae[@]})); then
-	brew upgrade "${formulae[@]}"
+	brew upgrade --quiet "${formulae[@]}"
 fi
-brew upgrade --cask
+brew upgrade --quiet --cask
 brew cleanup
 
 echo "🎉 Homebrew updated."

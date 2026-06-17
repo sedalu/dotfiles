@@ -46,7 +46,6 @@ if [[ -z "$path" ]]; then
 	exit 1
 fi
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ path=$path"
 echo "→ app=${app:-(auto)}"
@@ -56,12 +55,10 @@ echo "→ dest=$dest"
 
 # Skip on non-macOS — .app bundles are macOS-only.
 if [[ "$(uname)" != "Darwin" ]]; then
-	echo ""
 	echo "⏭️ Not running on macOS, skipping"
 	exit 0
 fi
 
-echo ""
 echo "📦 Installing .app bundle..."
 
 # Find the first DMG in the install path.

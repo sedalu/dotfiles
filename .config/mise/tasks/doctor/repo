@@ -38,9 +38,7 @@ else
 fi
 
 if ((fail > 0)); then
-	echo ""
 	echo "❌ Repo check failed"
 	exit 1
 fi
-echo ""
 echo "✅ Dotfiles repo configured correctly"

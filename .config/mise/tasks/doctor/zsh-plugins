@@ -20,7 +20,6 @@ for pair in "${dotfiles_zsh_plugins[@]}"; do
 done
 
 if ((missing > 0)); then
-	echo ""
 	echo "⚠️ $missing plugin(s) missing — run mise run install:zsh-plugins"
 fi
 

@@ -18,9 +18,7 @@ for dir in "${dotfiles_dirs[@]}"; do
 done
 
 if ((fail > 0)); then
-	echo ""
 	echo "❌ $fail directory check(s) failed"
 	exit 1
 fi
-echo ""
 echo "✅ All required directories exist"

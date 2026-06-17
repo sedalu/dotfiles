@@ -43,14 +43,12 @@ else
 	fonts_dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
 fi
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ path=$path"
 echo "→ fonts_dir=$fonts_dir"
 
 # --- install ----------------------------
 
-echo ""
 echo "📦 Installing fonts..."
 
 # Find all TTF and OTF font files in the install path.

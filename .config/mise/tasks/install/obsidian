@@ -10,7 +10,6 @@ set -euo pipefail
 # so this mirrors the old "is obsidian in this machine's Brewfile" check
 # without coupling to tool-install order.
 if [[ -z "$(mise ls "github:obsidianmd/obsidian-releases" 2>/dev/null)" ]]; then
-	echo ""
 	echo "⏭️  Obsidian not configured for this machine, skipping"
 	exit 0
 fi
@@ -42,7 +41,6 @@ current_year="$(date +%Y)"
 
 # --- create vault directories ---
 
-echo ""
 echo "📁 Creating Obsidian vault directories..."
 
 for dir in "${obsidian_dirs[@]}"; do
@@ -52,7 +50,6 @@ echo "✔ Done."
 
 # --- copy templates (no-clobber) ---
 
-echo ""
 echo "📄 Copying Obsidian templates..."
 
 for entry in "${obsidian_templates[@]}"; do
@@ -73,5 +70,4 @@ for entry in "${obsidian_templates[@]}"; do
 	echo "✔ ${dst##*/}"
 done
 
-echo ""
 echo "🎉 Obsidian vault setup complete"

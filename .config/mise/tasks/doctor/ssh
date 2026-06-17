@@ -70,9 +70,7 @@ else
 fi
 
 if ((fail > 0)); then
-	echo ""
 	echo "❌ $fail SSH check(s) failed"
 	exit 1
 fi
-echo ""
 echo "✅ SSH setup is healthy"

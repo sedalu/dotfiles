@@ -51,6 +51,12 @@ elif [[ -d /home/linuxbrew/.linuxbrew ]]; then
 	export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:${INFOPATH:-}"
 fi
 
+# Quiet Homebrew's chatter:
+# drop the env-var hints and the post-`update` listing of newly added formulae/casks,
+# neither of which we act on.
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_UPDATE_REPORT_NEW=1
+
 # --- PATH -------------------------------
 # Factored into path.sh so login shells can re-apply it after path_helper (see path.sh header).
 # XDG_CONFIG_HOME is set above;

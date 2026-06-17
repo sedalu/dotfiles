@@ -26,7 +26,6 @@ else
 fi
 
 # --- Reset-catalog: each tracked key must be absent ---
-echo ""
 echo "🧹 Reset-catalog (macos/settings.sh):"
 _dw_domains=() _dw_keys=()
 while IFS= read -r file; do
@@ -50,7 +49,6 @@ else
 	echo "✅ All catalog keys at macOS default"
 fi
 
-echo ""
 if ((fail > 0)); then
 	exit 1
 fi

@@ -9,10 +9,8 @@ set -euo pipefail
 
 # --- update -----------------------------
 
-echo ""
 echo "🔄 Updating App Store apps..."
 
 mas upgrade
 
-echo ""
 echo "🎉 App Store apps updated."

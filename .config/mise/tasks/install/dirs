@@ -9,7 +9,6 @@ set -euo pipefail
 
 # --- install ---------------------------
 
-echo ""
 echo "📁 Creating XDG directories..."
 
 for dir in "${dotfiles_dirs[@]}"; do
@@ -17,5 +16,4 @@ for dir in "${dotfiles_dirs[@]}"; do
 done
 echo "✔ Done."
 
-echo ""
 echo "🎉 All XDG directories created"

@@ -9,10 +9,6 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 	exit 0
 fi
 
-# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/macos.sh
-source "$DOTFILES_DIR/lib/dotfiles/macos.sh"
-
-echo ""
 echo "🍎 Applying macOS settings..."
 
 # --- Step 1: scalar preferences via [bootstrap.macos.defaults] ---
@@ -26,7 +22,6 @@ while read -r domain; do
 	[[ -n "$domain" ]] && write_changed+=("$domain")
 done < <(mise bootstrap macos-defaults status 2>/dev/null | awk '$NF != "set" { print $1 }')
 
-echo ""
 echo "⚙️  Writing preferences..."
 mise bootstrap macos-defaults apply --yes
 
@@ -34,28 +29,22 @@ mise bootstrap macos-defaults apply --yes
 # These keys have no [bootstrap.macos.defaults] equivalent
 # (mise can't express "absent"),
 # so they stay as sourced `defaults delete` lines.
-# Snapshot each key before and after to detect which deletes actually changed state.
-_dw_domains=() _dw_keys=()
-while IFS= read -r file; do
-	macos_parse_defaults "$file"
-done < <(macos_settings_files)
 
-_before=()
-for i in "${!_dw_domains[@]}"; do
-	_before[i]="$(command defaults read "${_dw_domains[$i]}" "${_dw_keys[$i]}" 2>/dev/null || echo "")"
-done
-
-echo ""
 echo "🧹 Resetting tracked defaults..."
 
-# Wrap `defaults` to give per-line feedback while sourcing the catalog.
-# A failing `defaults delete` just means the key is already absent.
+# Wrap `defaults` while sourcing the catalog so we report only the keys that actually change —
+# a `defaults delete` of an already-absent key is a no-op (and may "fail"), and stays silent.
+# Each changed key's domain is recorded so Step 3 restarts exactly the affected apps,
+# which folds the old before/after snapshot into this single pass.
+delete_changed=()
 defaults() {
-	if command defaults "$@" 2>/dev/null; then
-		echo "  ✔ ${*:2}"
-	else
-		echo "  ✔ ${*:2} (already default)"
-	fi
+	local domain="$2" key="$3" before after
+	before="$(command defaults read "$domain" "$key" 2>/dev/null || true)"
+	command defaults "$@" 2>/dev/null || true
+	after="$(command defaults read "$domain" "$key" 2>/dev/null || true)"
+	[[ "$before" == "$after" ]] && return 0
+	echo "  ✔ ${*:2}"
+	delete_changed+=("$domain")
 }
 
 killall_targets=()
@@ -72,12 +61,7 @@ fi
 unset -f defaults
 
 # --- Step 3: restart only the apps whose settings changed ---
-delete_changed=()
-for i in "${!_dw_domains[@]}"; do
-	after="$(command defaults read "${_dw_domains[$i]}" "${_dw_keys[$i]}" 2>/dev/null || echo "")"
-	[[ "${_before[$i]}" != "$after" ]] && delete_changed+=("${_dw_domains[$i]}")
-done
-
+# write_changed (Step 1) and delete_changed (built by the wrapper above) name the changed domains.
 _needed_targets=()
 _has_target() {
 	local t
@@ -94,17 +78,18 @@ for domain in "${write_changed[@]}" "${delete_changed[@]}"; do
 done
 
 if ((${#_needed_targets[@]} > 0)); then
-	echo ""
 	echo "🔄 Restarting changed apps..."
 	for target in "${_needed_targets[@]}"; do
 		killall "$target" 2>/dev/null || true
 		echo "  ↺ $target"
 	done
-else
-	echo ""
-	echo "✅ No changes detected, no restarts needed"
 fi
 
-echo ""
-echo "🎉 macOS settings applied"
-echo "ℹ️  Some settings may require logout or reboot to take effect"
+if ((${#write_changed[@]} + ${#delete_changed[@]} == 0)); then
+	echo "✅ macOS settings already up to date"
+else
+	# Only worth mentioning when something actually changed —
+	# a killall covers most apps, but some settings still need a logout/reboot.
+	echo "🎉 macOS settings applied"
+	echo "ℹ️  Some settings may require logout or reboot to take effect"
+fi

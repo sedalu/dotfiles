@@ -10,7 +10,6 @@ if [[ -f "$HOME/.dotfiles" ]]; then
 	# shellcheck source=/dev/null  # machine-local overrides, not part of the repo
 	source "$HOME/.dotfiles"
 	echo "Loaded overrides from ~/.dotfiles."
-	echo ""
 fi
 
 # Git repository URL for the dotfiles.
@@ -29,7 +28,6 @@ echo "→ DOTFILES_GIT=$DOTFILES_GIT"
 echo "→ MISE_INSTALL_PATH=$MISE_INSTALL_PATH"
 
 # --- clone -----------------------------
-echo ""
 echo "⬇️ Cloning dotfiles repository..."
 if [[ -d "$DOTFILES_GIT" ]]; then
 	echo "Repository already exists at $DOTFILES_GIT."
@@ -55,7 +53,6 @@ git --git-dir="$DOTFILES_GIT" config advice.addIgnoredFile false
 source "$DOTFILES_DIR/shell/env.sh"
 
 # --- machine name ----------------------
-echo ""
 echo "🖥  Setting machine name..."
 if command -v mise &>/dev/null; then
 	mise run machine
@@ -64,7 +61,6 @@ else
 fi
 
 # --- install ---------------------------
-echo ""
 echo "📦 Installing tools and packages..."
 
 if ! command -v mise &>/dev/null; then
@@ -75,13 +71,10 @@ mise run install
 echo "✔ Done."
 
 # --- verify ----------------------------
-echo ""
 echo "Running health checks..."
 if mise run doctor; then
-	echo ""
 	echo "✅ Bootstrap complete. Open a new shell to pick up the environment."
 else
-	echo ""
 	echo "⚠️ Bootstrap finished but some health checks failed."
 	echo "   Run 'mise run doctor' to investigate."
 fi

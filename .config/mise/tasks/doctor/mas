@@ -9,7 +9,6 @@ set -euo pipefail
 
 # --- doctor -----------------------------
 
-echo ""
 echo "🩺 Checking mas..."
 
 failed=0
@@ -25,10 +24,8 @@ if ! mas outdated >/dev/null 2>&1; then
 fi
 
 if [[ "${failed}" -gt 0 ]]; then
-	echo ""
 	echo "🛑 ${failed} check(s) failed" >&2
 	exit 1
 fi
 
-echo ""
 echo "✔ mas ok"

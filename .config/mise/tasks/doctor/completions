@@ -33,7 +33,6 @@ for tool in "${tools[@]}"; do
 done
 
 if ((missing > 0)); then
-	echo ""
 	echo "⚠️ $missing tool(s) missing completions"
 fi
 

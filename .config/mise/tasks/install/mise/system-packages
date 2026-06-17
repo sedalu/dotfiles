@@ -8,10 +8,8 @@ set -euo pipefail
 # prefix (/opt/homebrew) itself if absent — so this runs independently of the
 # brew task. mise-poured and brew-installed kegs coexist in the same prefix.
 
-echo ""
 echo "📦 Installing system packages..."
 mise bootstrap packages install --yes
 echo "✔ Done."
 
-echo ""
 echo "🎉 System packages installed"

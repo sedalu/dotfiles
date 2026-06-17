@@ -4,11 +4,9 @@
 #MISE hide=true
 set -euo pipefail
 
-echo ""
 echo "⚙️ Configuring..."
 echo "→ DOTFILES_DIR=$DOTFILES_DIR"
 
-echo ""
 echo "🔗 Applying [dotfiles] symlinks..."
 
 # `mise dotfiles apply --force` overwrites a conflicting target but keeps no backup of its own,
@@ -42,5 +40,4 @@ done < <(mise dotfiles status 2>/dev/null | awk '{ print $1 }')
 
 mise dotfiles apply --force --yes
 
-echo ""
 echo "🎉 [dotfiles] symlinks applied"

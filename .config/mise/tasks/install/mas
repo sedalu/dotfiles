@@ -26,11 +26,9 @@ install_from_file() {
 	done <"${file}"
 }
 
-echo ""
 echo "📦 Installing App Store apps..."
 
 install_from_file "${mas_dir}/apps"
 install_from_file "${mas_dir}/apps.${machine}"
 
-echo ""
 echo "🎉 App Store apps installed."

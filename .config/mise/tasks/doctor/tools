@@ -23,9 +23,7 @@ for tool in "${tools[@]}"; do
 done
 
 if ((fail > 0)); then
-	echo ""
 	echo "❌ $fail tool(s) missing"
 	exit 1
 fi
-echo ""
 echo "✅ All essential tools found"

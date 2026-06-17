@@ -294,7 +294,6 @@ done
 mv "$tmp_file" "$SETTINGS_FILE"
 
 # --- Summary ---
-echo ""
 echo "📋 Catalog sync complete:"
 parts=()
 ((added > 0)) && parts+=("${added} added")
