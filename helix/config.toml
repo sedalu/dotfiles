@@ -6,6 +6,11 @@ bufferline = "multiple"
 [editor.soft-wrap]
 enable = true
 
+[editor.cursor-shape]
+# Bar (pipe) caret in insert mode so the exact insertion point is visible;
+# normal and select keep the block caret (Helix default).
+insert = "bar"
+
 [keys.normal]
 # Lazygit
 C-g = [
@@ -21,11 +26,56 @@ C-s = ":write"
 # Quit all
 C-q = ":quit-all"
 
-# Window split navigation via Ctrl+Arrow
-"C-left" = "jump_view_left"
-"C-right" = "jump_view_right"
-"C-up" = "jump_view_up"
-"C-down" = "jump_view_down"
+# macOS-style navigation.
+# Window nav moves to the C-w chord + arrows (a Helix default),
+# since macOS Mission Control owns Ctrl+Arrow and would intercept it.
+# Ghostty's defaults already translate the macOS motions into terminal escapes
+# (matching zsh's readline): Option+Arrow sends ESC b / ESC f,
+# and Cmd+Arrow sends ^A / ^E.
+# So word jump binds A-b / A-f and line start/end binds C-a / C-e —
+# the keys Helix actually receives.
+# Word motions collapse the selection after moving (move_word_impl always selects),
+# so a plain motion only moves the caret.
+# collapse_selection lands on the range cursor (head-1 forward, head backward — no
+# collapse-to-head command exists), so A-f nudges right once to reach head.
+# This optimizes for code; in whitespace-only prose it can sit one past the word start.
+"A-b" = ["move_prev_word_start", "collapse_selection"]
+"A-f" = ["move_next_word_start", "collapse_selection", "move_char_right"]
+"C-a" = "goto_line_start"
+"C-e" = "goto_line_end"
+
+# Shift extends the selection along the same motions.
+# Ghostty's shift+arrow / shift+home/end fall through to Helix when no terminal
+# selection is active, so these arrive as S-* via the kitty keyboard protocol.
+"S-left" = "extend_char_left"
+"S-right" = "extend_char_right"
+"S-up" = "extend_visual_line_up"
+"S-down" = "extend_visual_line_down"
+"A-S-left" = "extend_prev_word_start"
+"A-S-right" = "extend_next_word_start"
+"S-home" = "extend_to_line_start"
+"S-end" = "extend_to_line_end"
+
+# Delete key removes the selection (Helix leaves backspace/del unbound here).
+# The _noyank variant keeps Delete a pure delete, distinct from cut and d's yank-delete.
+"del" = "delete_selection_noyank"
+"backspace" = "delete_selection_noyank"
+
+# CUA-style clipboard. C-c displaces toggle_comments (still on space-c);
+# C-a / C-x displace increment / decrement (relocated to +/- below).
+# Cut yanks to the system clipboard, then deletes without touching the yank register.
+# paste_clipboard_after lands at the caret on a collapsed cursor, after the selection otherwise.
+"C-c" = "yank_to_clipboard"
+"C-x" = ["yank_to_clipboard", "delete_selection_noyank"]
+"C-v" = "paste_clipboard_after"
+# C-/ toggles comments to match VSCode (Cmd-/); additive — toggle_comments is also on space-c.
+"C-/" = "toggle_comments"
+
+# Relocate the defaults the macOS bindings displaced.
+# A-w restores move_parent_node_start (was A-b); the rest of the tree-sitter family is intact.
+"+" = "increment"
+"-" = "decrement"
+"A-w" = "move_parent_node_start"
 
 [keys.normal.space]
 # Buffer operations
@@ -35,3 +85,60 @@ X = ":buffer-close-others"
 # Window splits
 v = ":vsplit"
 s = ":hsplit"
+
+# macOS-style navigation, select mode.
+# A plain motion moves the caret here too (collapsing any selection),
+# matching macOS where an unshifted motion drops the selection;
+# the Shift bindings extend it instead.
+[keys.select]
+"A-b" = ["move_prev_word_start", "collapse_selection"]
+"A-f" = ["move_next_word_start", "collapse_selection", "move_char_right"]
+"C-a" = "goto_line_start"
+"C-e" = "goto_line_end"
+"S-left" = "extend_char_left"
+"S-right" = "extend_char_right"
+"S-up" = "extend_visual_line_up"
+"S-down" = "extend_visual_line_down"
+"A-S-left" = "extend_prev_word_start"
+"A-S-right" = "extend_next_word_start"
+"S-home" = "extend_to_line_start"
+"S-end" = "extend_to_line_end"
+# delete_selection exits select mode afterward, returning to normal.
+"del" = "delete_selection_noyank"
+"backspace" = "delete_selection_noyank"
+"C-c" = "yank_to_clipboard"
+"C-x" = ["yank_to_clipboard", "delete_selection_noyank"]
+"C-v" = "paste_clipboard_after"
+"C-/" = "toggle_comments"
+# Relocated displaced defaults (extend variant of parent-node nav in select mode).
+"+" = "increment"
+"-" = "decrement"
+"A-w" = "extend_parent_node_start"
+
+# macOS-style navigation, insert mode.
+# Word motions always select in Helix (move_word_impl), which makes no sense mid-insert,
+# so collapse the selection back to a bare caret after moving.
+# collapse_selection lands on the range cursor, one grapheme behind head on a forward
+# motion, so A-f nudges right once to sit on the next word's start (A-b already lands right).
+# goto_line_end_newline (not goto_line_end) so the cursor can sit past the last char,
+# matching Helix's own insert-mode End binding.
+[keys.insert]
+"A-b" = ["move_prev_word_start", "collapse_selection"]
+"A-f" = ["move_next_word_start", "collapse_selection", "move_char_right"]
+"C-a" = "goto_line_start"
+"C-e" = "goto_line_end_newline"
+"S-left" = "extend_char_left"
+"S-right" = "extend_char_right"
+"S-up" = "extend_visual_line_up"
+"S-down" = "extend_visual_line_down"
+"A-S-left" = "extend_prev_word_start"
+"A-S-right" = "extend_next_word_start"
+"S-home" = "extend_to_line_start"
+"S-end" = "extend_to_line_end"
+# C-x cut displaces Helix's insert-mode completion trigger (relocated to C-Space below).
+"C-c" = "yank_to_clipboard"
+"C-x" = ["yank_to_clipboard", "delete_selection_noyank"]
+"C-v" = "paste_clipboard_after"
+"C-/" = "toggle_comments"
+# Restore the completion trigger on a conventional key.
+"C-space" = "completion"
