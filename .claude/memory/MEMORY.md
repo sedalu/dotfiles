@@ -8,3 +8,5 @@
 - [feedback-config-authoring-style.md](feedback-config-authoring-style.md) — no inline TOML tables; semantic line breaks in comments
 - [mise-vars-not-in-tool-postinstall.md](mise-vars-not-in-tool-postinstall.md) — mise [vars] don't render in [tools] postinstall; breaks every introspection command — don't use them there
 - [feedback-xdg-classify-by-data.md](feedback-xdg-classify-by-data.md) — XDG-relocate tool dirs by data class (state→STATE_HOME out of worktree, config→CONFIG_HOME); don't reflexively use CONFIG_HOME
+- [feedback-verify-tool-source-before-config.md](feedback-verify-tool-source-before-config.md) — verify a tool's command names/behavior from upstream source in ~/Projects/ref before proposing config; don't recall from memory
+- [feedback-confirm-before-implementing.md](feedback-confirm-before-implementing.md) — for non-trivial tradeoffs, present the recommendation and wait for go-ahead before editing files
