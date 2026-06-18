@@ -9,8 +9,6 @@ set -euo pipefail
 
 # --- update -----------------------------
 
-echo "🔄 Updating App Store apps..."
-
+# No banners of our own — mas streams its own progress when it upgrades something
+# and stays quiet when everything is already current.
 mas upgrade
-
-echo "🎉 App Store apps updated."

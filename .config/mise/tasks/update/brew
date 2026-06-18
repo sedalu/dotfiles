@@ -20,8 +20,7 @@ brew update --quiet
 # deps) are owned by mise via [bootstrap.packages]; a blanket `brew upgrade` would
 # re-pour them and collide with mise's bottle manager, since both share the
 # same prefix (/opt/homebrew).
-echo "⬆️  Upgrading Brewfile formulae and casks..."
-
+# No banner of our own — `brew upgrade --quiet` lists what it bumps and stays silent otherwise.
 brewfile="${HOMEBREW_BUNDLE_FILE:-$DOTFILES_DIR/homebrew/Brewfile}"
 machine="${DOTFILES_MACHINE:-$(normalize_hostname "$(get_hostname)")}"
 machine_brewfile="$(dirname "$brewfile")/Brewfile.${machine}"
@@ -41,5 +40,3 @@ if ((${#formulae[@]})); then
 fi
 brew upgrade --quiet --cask
 brew cleanup
-
-echo "🎉 Homebrew updated."

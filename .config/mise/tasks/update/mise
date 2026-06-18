@@ -7,8 +7,8 @@ set -euo pipefail
 
 # --- update -----------------------------
 
-echo "🔄 Updating mise..."
-
+# No banners of our own — each mise subcommand prints its own outcome
+# (e.g. "mise is already up to date") and stays quiet when there's nothing to do.
 mise self-update --yes
 mise plugins update --yes
 mise upgrade --bump --yes
@@ -18,8 +18,5 @@ mise bootstrap packages upgrade --yes
 
 # --- environment ------------------------
 
-echo "📦 Updating mise completions..."
-
+# completions stays silent on success and only speaks up on failure.
 "$DOTFILES_DIR/mise/hooks/completions" --tool mise completions {}
-
-echo "🎉 mise updated."

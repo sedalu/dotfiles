@@ -9,8 +9,6 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 	exit 0
 fi
 
-echo "🍎 Applying macOS settings..."
-
 # --- Step 1: scalar preferences via [bootstrap.macos.defaults] ---
 # Capture which write-domains mise will change *before* applying,
 # so we can restart exactly those apps afterwards.
@@ -22,15 +20,13 @@ while read -r domain; do
 	[[ -n "$domain" ]] && write_changed+=("$domain")
 done < <(mise bootstrap macos-defaults status 2>/dev/null | awk '$NF != "set" { print $1 }')
 
-echo "⚙️  Writing preferences..."
+# mise prints what it writes and stays quiet when nothing changes — no banner of our own.
 mise bootstrap macos-defaults apply --yes
 
 # --- Step 2: reset-catalog via `defaults delete` ---
 # These keys have no [bootstrap.macos.defaults] equivalent
 # (mise can't express "absent"),
 # so they stay as sourced `defaults delete` lines.
-
-echo "🧹 Resetting tracked defaults..."
 
 # Wrap `defaults` while sourcing the catalog so we report only the keys that actually change —
 # a `defaults delete` of an already-absent key is a no-op (and may "fail"), and stays silent.
@@ -85,11 +81,9 @@ if ((${#_needed_targets[@]} > 0)); then
 	done
 fi
 
-if ((${#write_changed[@]} + ${#delete_changed[@]} == 0)); then
-	echo "✅ macOS settings already up to date"
-else
-	# Only worth mentioning when something actually changed —
-	# a killall covers most apps, but some settings still need a logout/reboot.
+# Stay silent when nothing changed; only speak up when something was actually applied.
+if ((${#write_changed[@]} + ${#delete_changed[@]} > 0)); then
+	# A killall covers most apps, but some settings still need a logout/reboot.
 	echo "🎉 macOS settings applied"
 	echo "ℹ️  Some settings may require logout or reboot to take effect"
 fi

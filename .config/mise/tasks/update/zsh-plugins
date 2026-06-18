@@ -10,9 +10,6 @@ set -euo pipefail
 # Zsh plugins directory.
 ZSH_PLUGINS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
 
-echo "⚙️ Configuring..."
-echo "→ ZSH_PLUGINS_DIR=$ZSH_PLUGINS_DIR"
-
 # --- update -----------------------------
 
 if [[ ! -d "$ZSH_PLUGINS_DIR" ]]; then
@@ -20,18 +17,21 @@ if [[ ! -d "$ZSH_PLUGINS_DIR" ]]; then
 	exit 1
 fi
 
-echo "🔄 Updating zsh plugins..."
-
 failed=0
 
+# Report only the plugins that actually moved or failed —
+# a no-op pull (the common case) stays silent.
+# Compare HEAD before/after rather than scraping git's "Already up to date." text.
 for dir in "$ZSH_PLUGINS_DIR"/*/; do
 	[[ -d "$dir/.git" ]] || continue
 	name=$(basename "$dir")
-	echo "🔄 Updating $name..."
-	if git -C "$dir" pull --rebase --autostash; then
-		echo "✅ $name updated."
+	before=$(git -C "$dir" rev-parse HEAD)
+	if out=$(git -C "$dir" pull --rebase --autostash 2>&1); then
+		after=$(git -C "$dir" rev-parse HEAD)
+		[[ "$before" != "$after" ]] && echo "✅ $name updated."
 	else
 		echo "⚠️ Failed to update $name." >&2
+		echo "$out" >&2
 		failed=$((failed + 1))
 	fi
 done
@@ -39,5 +39,3 @@ done
 if [[ $failed -gt 0 ]]; then
 	exit 1
 fi
-
-echo "🎉 All zsh plugins updated."
