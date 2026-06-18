@@ -72,10 +72,14 @@ C-q = ":quit-all"
 "C-/" = "toggle_comments"
 
 # Relocate the defaults the macOS bindings displaced.
-# A-w restores move_parent_node_start (was A-b); the rest of the tree-sitter family is intact.
+# Parent-node start moves to A-a, pairing with the default A-e (move_parent_node_end)
+# the way C-a / C-e bracket the line — Ctrl spans the line, Alt spans the syntax node.
+# A-a was select_all_siblings, relocated to A-S-a;
+# the rest of the tree-sitter family (expand/shrink, siblings, [ / ] gotos, mi/ma) is intact.
 "+" = "increment"
 "-" = "decrement"
-"A-w" = "move_parent_node_start"
+"A-a" = "move_parent_node_start"
+"A-S-a" = "select_all_siblings"
 
 [keys.normal.space]
 # Buffer operations
@@ -111,9 +115,12 @@ s = ":hsplit"
 "C-v" = "paste_clipboard_after"
 "C-/" = "toggle_comments"
 # Relocated displaced defaults (extend variant of parent-node nav in select mode).
+# A-a mirrors normal; select's A-e is already extend_parent_node_end by default.
+# A-a was select_all_siblings, relocated to A-S-a.
 "+" = "increment"
 "-" = "decrement"
-"A-w" = "extend_parent_node_start"
+"A-a" = "extend_parent_node_start"
+"A-S-a" = "select_all_siblings"
 
 # macOS-style navigation, insert mode.
 # Word motions always select in Helix (move_word_impl), which makes no sense mid-insert,
