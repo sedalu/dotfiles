@@ -27,13 +27,12 @@ C-s = ":write"
 C-q = ":quit-all"
 
 # macOS-style navigation.
-# Window nav moves to the C-w chord + arrows (a Helix default),
-# since macOS Mission Control owns Ctrl+Arrow and would intercept it.
-# Ghostty's defaults already translate the macOS motions into terminal escapes
-# (matching zsh's readline): Option+Arrow sends ESC b / ESC f,
-# and Cmd+Arrow sends ^A / ^E.
-# So word jump binds A-b / A-f and line start/end binds C-a / C-e —
-# the keys Helix actually receives.
+# Window nav lives on the C-w chord + arrows (a Helix default),
+# since macOS Mission Control owns Ctrl+Arrow and intercepts it before the terminal.
+# Word jump rides Ghostty's Option+Arrow translation (alt+arrow_left=esc:b / _right=esc:f),
+# so it reaches Helix as A-b / A-f.
+# Line start/end can't use Command — Cmd is bound to tabs/scroll in Ghostty,
+# and Helix has no super modifier — so it uses Control directly: the emacs-style C-a / C-e.
 # Word motions collapse the selection after moving (move_word_impl always selects),
 # so a plain motion only moves the caret.
 # collapse_selection lands on the range cursor (head-1 forward, head backward — no
@@ -94,6 +93,12 @@ X = ":buffer-close-others"
 v = ":vsplit"
 s = ":hsplit"
 
+# Override the goto menu's `e` to jump to the very end of the file (goto_file_end),
+# mirroring gg's jump to the very start; the default ge is goto_last_line (start of last line).
+# Bare G is a no-op (goto_line acts only with a count), so reach start-of-last-line via ge then C-a.
+[keys.normal.g]
+e = "goto_file_end"
+
 # macOS-style navigation, select mode.
 # A plain motion moves the caret here too (collapsing any selection),
 # matching macOS where an unshifted motion drops the selection;
@@ -128,6 +133,10 @@ s = ":hsplit"
 "-" = "decrement"
 "A-a" = "extend_parent_node_start"
 "S-A-a" = "select_all_siblings"
+
+# ge extends the selection to the very end of the file (mirrors normal mode).
+[keys.select.g]
+e = "extend_to_file_end"
 
 # macOS-style navigation, insert mode.
 # Word motions always select in Helix (move_word_impl), which makes no sense mid-insert,
