@@ -48,9 +48,13 @@ When adding a new CLI tool or runtime:
    mise pours Homebrew bottles directly (no `brew` needed);
    install with `mise bootstrap packages install` (wired into `install:mise:system-packages`).
 3. **Fall back to Brew** —
-   use `homebrew/Brewfile` only for casks `brew-cask:` can't handle:
-   `pkg` installers and Electron `app` bundles mise mangles into a failed-Gatekeeper state
-   (mise 2026.6.6; revisit as `brew-cask:` matures).
+   use `homebrew/Brewfile` only for casks mise's `brew-cask:` backend can't install cleanly.
+   The remaining blocker is signed app bundles:
+   mise copies a `.app` by dereferencing its internal symlinks,
+   which breaks the code-signature seal so a signed Electron app fails Gatekeeper —
+   `claude` stays on brew, which installs via `ditto`.
+   `pkg` casks now install (mise 2026.6.13, given a `pkgutil` receipt id),
+   but `tailscale-app` isn't migrated yet; revisit as `brew-cask:` matures.
    A GUI app that ships a notarized `.app` in a DMG does *not* need brew —
    install it as a `github:`/`http:` tool with the `install-app` hook (see below),
    as obsidian and steam do in `config.caladan.toml`.
