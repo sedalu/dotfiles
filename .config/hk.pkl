@@ -51,7 +51,26 @@ local rumdl = (Builtins.rumdl) {
   check_diff = "rumdl check --config .config/rumdl.toml --diff {{ files }}"
   fix = "rumdl check --config .config/rumdl.toml --fix {{ files }}"
 }
-local yamlfmt = (Builtins.yamlfmt) { exclude = notOurs }
+// yamlfmt is the YAML *formatter* only;
+// ryl (below) owns linting, replacing yamlfmt's `-lint` pass.
+// Dropping check_diff leaves yamlfmt with no check command,
+// so hk skips it in check runs and only formats in fix/pre-commit runs.
+local yamlfmt = (Builtins.yamlfmt) {
+  exclude = notOurs
+  check_diff = null
+  fix = "yamlfmt -conf .config/yamlfmt.yml {{ files }}"
+}
+// ryl is the YAML *linter* (replaces `yamlfmt -lint`).
+// Config lives in .config/ryl.toml, passed explicitly:
+// ryl would discover it, but hk's other tools pass their .config/ sidecars the same way.
+// Plain `ryl check` (not --diff) so unfixable violations fail too, not just fixable drift.
+local ryl = (Builtins.ryl) {
+  exclude = notOurs
+  check = "ryl check -c .config/ryl.toml {{ files }}"
+  check_diff = null
+  check_list_files = null
+  fix = "ryl check -c .config/ryl.toml --fix {{ files }}"
+}
 local typos = (Builtins.typos) {
   exclude = notOurs
   check_diff = """
@@ -99,6 +118,7 @@ local formatters = new Mapping<String, Step> {
   ["taplo_format"] = taploFormat
   ["rumdl"] = rumdl
   ["yamlfmt"] = yamlfmt
+  ["ryl"] = ryl
   ["typos"] = typos
 }
 

@@ -170,7 +170,7 @@ hk = "latest"
 pitchfork = "latest"
 
 # hk linters (see hk.pkl); typos/yamlfmt ship no shell completions, so they stay bare.
-# gitleaks and rumdl get completion postinstall hooks below.
+# gitleaks, rumdl, and ryl get completion postinstall hooks below.
 typos = "latest"
 yamlfmt = "latest"
 
@@ -179,6 +179,11 @@ yamlfmt = "latest"
 [tools."aqua:tamasfe/taplo"]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
+
+# ryl — the YAML linter (replaces yamlfmt's -lint role; see hk.pkl).
+[tools."aqua:owenlamont/ryl"]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate-completions {}"
 
 [tools."github:ryanoasis/nerd-fonts"]
 version = "latest"

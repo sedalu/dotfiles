@@ -1,0 +1,7 @@
+# yamlfmt — YAML formatter config (see .config/hk.pkl).
+# ryl owns linting and enforces that every string is double-quoted;
+# yamlfmt preserves quotes, and force_quote_style normalizes any it touches to
+# double so the formatter and linter agree on quote style.
+formatter:
+  type: "basic"
+  force_quote_style: "double"

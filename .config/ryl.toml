@@ -1,0 +1,50 @@
+# ryl — YAML linter (replaces yamlfmt's `-lint` role; see .config/hk.pkl).
+#
+# ryl enables no rules by default, so this file is the whole ruleset.
+# It is tuned to coexist with yamlfmt (the formatter):
+# each rule that overlaps a layout decision is set to match what yamlfmt emits,
+# so the two never fight (loop) or leave a standing complaint.
+# The layout rules follow ryl's yamlfmt recipe (docs/using-with-formatters.md);
+# quoted-strings is our own stricter choice (quote everything), verified not to loop.
+#
+# Enabled rules default to error level, so findings block commits.
+
+[files]
+yaml = ["*.yaml", "*.yml", ".yamllint"]
+
+[rules]
+braces = "enable"
+brackets = "enable"
+colons = "enable"
+commas = "enable"
+comments-indentation = "enable"
+hyphens = "enable"
+new-line-at-end-of-file = "enable"
+trailing-spaces = "enable"
+
+[rules.document-start]
+present = false # yamlfmt removes `---`
+
+[rules.comments]
+min-spaces-from-content = 1 # yamlfmt uses one space before inline comments
+
+[rules.new-lines]
+type = "unix"
+
+[rules.empty-lines]
+max = 2
+
+[rules.indentation]
+spaces = 2
+indent-sequences = true
+
+# Every string value must be quoted, with double quotes —
+# YAML's optional quoting is a footgun, so we make it mandatory.
+# yamlfmt preserves quotes (and force_quote_style backstops the style),
+# so the two don't fight.
+[rules.quoted-strings]
+required = true
+quote-type = "double"
+
+[rules.line-length]
+max = 120
