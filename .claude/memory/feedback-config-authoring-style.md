@@ -17,6 +17,12 @@ corrected me on two formatting preferences in one session (2026-06-13):
    Break at clause/sentence boundaries (one unit of meaning per line), never
    greedy-wrapped to a fixed column width. Applies to Markdown prose and to every
    comment I write or edit: shell, TOML, pkl, etc. Do NOT column-wrap.
+   **My recurring failure (caught repeatedly, incl. 2026-07-02/04):** I write a long
+   subject phrase, hit an imagined column limit, and wrap right before the verb —
+   e.g. `# ...and the claude cask\n# are managed by mise`. NEVER split a subject from
+   its verb. A subject+verb+object is ONE clause = ONE line, however long it runs.
+   Only break before conjunctions (and/but/so/or), before subordinate clauses, and
+   after colons/semicolons/dashes.
 
 As of 2026-06-16 this is codified as a global authoring default in
 `~/.claude/CLAUDE.md` ("## Authoring Style: Semantic Line Breaks"), and the whole

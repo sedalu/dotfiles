@@ -93,22 +93,37 @@ matures." Expect breaking churn between mise releases (the `[system.packages]`
   `brew/Brewfile` → `homebrew/Brewfile` fallbacks (6b3f8d1 left them) in
   `install/obsidian` + `doctor/brew`.
 
-**Blocked — only claude + tailscale-app stay in homebrew/Brewfile:**
-mise has two brew prefixes in `[bootstrap.packages]`: `brew:` (formulae, formula
-API) and `brew-cask:` (casks, cask API). On 2026.6.6 `brew-cask:` handles only
-CLI-ish casks: `app` casks install but mise mangles nested Electron frameworks →
-Gatekeeper "App is damaged" (claude); `pkg` / `binary` / `font` artifacts
-hard-error "unsupported artifact type" (tailscale-app is `pkg`; nerd-font casks
-are `font`). So claude + tailscale-app stay on brew; the `brew` CLI, Brewfile,
-and brew tasks are kept. Full brew removal is gated on the tailscale `.pkg`
-(would need an `install-pkg` hook). Do NOT re-test casks via `brew:` — it's
-formula-only and 404s on every cask; casks need the `brew-cask:` prefix.
-GUI apps that ship a plain notarized `.app` in a DMG don't need brew at all —
-use `http:`/`github:` + `install-app` (see the obsidian/steam Done bullet).
+**GUI casks migrated to mise brew-cask: (2026-07-04, mise 2026.7.0).** #10626 +
+#10671 extended `brew-cask:`: `app` casks copy via `ditto` (signature-preserving),
+`pkg` casks install via `sudo installer -pkg`, `font`/`binary` supported.
+- **claude** (`app` cask): DONE + verified. `brew uninstall --cask claude` +
+  `mise bootstrap packages apply brew-cask:claude`; Gatekeeper accepted, codesign
+  deep-strict OK, matches Anthropic PBC baseline. No sudo needed (/Applications is 775).
+- **tailscale-app** (`pkg` cask): DONE + verified. Same flow, but the `sudo installer`
+  step needs a TTY — I ran the config change, the user ran the swap in their terminal
+  (`brew uninstall --cask tailscale-app && mise ... apply`, sudo prompt inline). No task
+  change was needed: `install:mise:system-packages` runs `mise bootstrap packages install`
+  with inherited stdio, so sudo prompts fine when `mise run install` has a TTY.
+- **JetBrains Mono font** (`font` cask): still BLOCKED — `brew-cask:` font installer is
+  broken in 2026.7.0 (`invalid font target '/$HOME/Library/Fonts/…'`, cask.rs:545, though
+  the cask JSON is clean). Stays `github:`/`install-fonts`. See [[project-font-cask-migration]].
 
-**Future stages (not started):** none — the declared migration backlog is clear.
-The [[feedback_macos_defaults_session]] snapshot/diff workflow remains for
-discovering new defaults to add (whether as a scalar pref or a reset-catalog
-entry).
+IMPORTANT — `brew list --cask` is NOT the ownership signal: mise stores its cask
+receipts in the shared Homebrew Caskroom (`/opt/homebrew/Caskroom/<token>/` with a
+`.mise-cask.toml` marker), so `brew list --cask` lists mise-managed casks too. The
+authoritative check is `brew info --cask <token>` → "Not installed" (brew disclaims both).
+Do NOT re-test casks via `brew:` — it's formula-only and 404s on casks.
+
+**Full Homebrew removal — DONE (2026-07-04, dotfiles-cleanup-only scope).** Deleted
+`homebrew/Brewfile` (and the `homebrew/` dir) and retired the `install/brew` + `update/brew`
++ `doctor/brew` tasks; scrubbed brew from CLAUDE.md, README.md, and DESIGN.md (layout table,
+per-machine layering table, and the install/update/doctor task-flow diagrams), then
+regenerated `.github/TASKS.md`. Dropped `HOMEBREW_BUNDLE_FILE` from `shell/env.sh` and the
+stale `/homebrew/*.lock` gitignore (now `/homebrew/` — catch-all, nothing there is ours).
+Deliberately KEPT `/opt/homebrew` as mise's bottle prefix and did NOT uninstall the brew CLI —
+it sits unused at zero risk, and `env.sh`/`path.sh` still export the prefix (mise pours
+bottles there and creates the prefix itself; the brew CLI isn't needed for `brew:` or
+`brew-cask:`). Only `brew-cask:claude` + `brew-cask:tailscale-app` remain declared, both
+mise-managed. Font stays the sole blocked item — see [[project-font-cask-migration]].
 
 Repo conventions: in ~/.config commit directly to main ([[dotfiles-commit-to-main]]).

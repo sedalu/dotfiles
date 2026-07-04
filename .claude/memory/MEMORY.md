@@ -4,6 +4,7 @@
 - [feedback-never-rewrite-commits.md](feedback-never-rewrite-commits.md) — never amend/rebase/reset/force-push unless explicitly told; new work = new commit
 - [feedback_macos_defaults_session.md](feedback_macos_defaults_session.md) — macOS defaults snapshots: use `defaults read > file` + diff, not per-domain dirs; project skills live in `<project>/.claude/skills/`
 - [project_macos_defaults_todos.md](project_macos_defaults_todos.md) — Future work: automate macos-defaults catalog sync and update tracking
+- [project-font-cask-migration.md](project-font-cask-migration.md) — BLOCKED: font→brew-cask migration stuck; mise 2026.7.0 font installer is broken ("invalid font target")
 - [project_mise_bootstrap_migration.md](project_mise_bootstrap_migration.md) — staged Homebrew→mise migration: obsidian/steam→[tools], Go→[dotfiles]; only claude+tailscale casks remain on brew (brew-cask: limits)
 - [feedback-config-authoring-style.md](feedback-config-authoring-style.md) — no inline TOML tables; semantic line breaks in comments
 - [feedback-yaml-always-quote-strings.md](feedback-yaml-always-quote-strings.md) — always double-quote YAML string values; enforced by ryl (linter) + yamlfmt (formatter)
@@ -11,3 +12,5 @@
 - [feedback-xdg-classify-by-data.md](feedback-xdg-classify-by-data.md) — XDG-relocate tool dirs by data class (state→STATE_HOME out of worktree, config→CONFIG_HOME); don't reflexively use CONFIG_HOME
 - [feedback-verify-tool-source-before-config.md](feedback-verify-tool-source-before-config.md) — verify a tool's command names/behavior from upstream source in ~/Projects/ref before proposing config; don't recall from memory
 - [feedback-confirm-before-implementing.md](feedback-confirm-before-implementing.md) — for non-trivial tradeoffs, present the recommendation and wait for go-ahead before editing files
+- [feedback-research-latest-source.md](feedback-research-latest-source.md) — when researching from source (incl. ~/Projects/ref), update to latest first unless told otherwise
+- [feedback-no-history-comments.md](feedback-no-history-comments.md) — don't write changelog/history comments narrating what moved or changed; git records that
