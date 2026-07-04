@@ -1,7 +1,0 @@
-# Empty — all Homebrew packages have migrated to mise's [bootstrap.packages]:
-# formulae and the mas CLI as brew: entries, claude and tailscale-app as brew-cask: entries.
-#
-# Nothing is left to install here.
-# The next step is full Homebrew removal:
-# delete this file, drop the install/update/doctor brew tasks,
-# and uninstall the /opt/homebrew CLI (mise pours its own bottles and manages the prefix without it).

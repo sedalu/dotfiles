@@ -8,7 +8,6 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR`
 | Directory       | Purpose                                               |
 | --------------- | ----------------------------------------------------- |
 | `shell/`        | Bash and Zsh config (env, interactive, completions)   |
-| `homebrew/`     | Homebrew `Brewfile` (GUI casks only)                  |
 | `mise/`         | mise config, tasks, and hooks                         |
 | `git/`          | Git config and ignore                                 |
 | `ghostty/`      | Ghostty terminal config                               |
@@ -44,7 +43,7 @@ git clone --separate-git-dir ~/.local/share/dotfiles.git \
 ~/.config/bin/bootstrap https://github.com/<user>/dotfiles.git
 ```
 
-The bootstrap script installs Homebrew, mise, shell symlinks, and zsh plugins.
+The bootstrap script installs mise, shell symlinks, and zsh plugins.
 Open a new shell afterwards to pick up the environment.
 
 ### Day-to-day
@@ -52,8 +51,8 @@ Open a new shell afterwards to pick up the environment.
 On an already-configured machine, use mise tasks:
 
 ```sh
-mise run install   # install brew, mise, symlinks, zsh plugins
-mise run update    # update brew, mise, zsh plugins
+mise run install   # install mise, system packages, symlinks, zsh plugins
+mise run update    # update mise, system packages, zsh plugins
 mise run doctor    # run health checks
 ```
 
@@ -61,8 +60,8 @@ mise run doctor    # run health checks
 
 | Task               | Description                                |
 | ------------------ | ------------------------------------------ |
-| `install` | Install dotfiles (brew, symlinks, plugins) |
-| `update`  | Update dotfiles (brew, mise, zsh-plugins)  |
+| `install` | Install dotfiles (system packages, symlinks, plugins) |
+| `update`  | Update dotfiles (mise, system packages, zsh-plugins)  |
 | `doctor`  | Run all dotfiles health checks             |
 
 See [`TASKS.md`](TASKS.md) for the complete, auto-generated reference of every task
@@ -89,11 +88,10 @@ mise bootstrap packages install
 GUI apps that ship a notarized `.app` in a DMG (e.g. Obsidian, Steam) install via mise —
 a `github:`/`http:` tool in `mise/config.<machine>.toml` with the `install-app` hook
 (mounts the DMG, copies the `.app` to `~/Applications`).
-Only casks `brew-cask:` can't handle — pkg installers and Electron app bundles it mangles — stay in `homebrew/Brewfile`:
-
-```sh
-brew bundle install
-```
+Homebrew casks install as `brew-cask:` entries in `[bootstrap.packages]`
+(macOS-only → `mise/config.macos.toml`), poured by mise without the `brew` CLI:
+mise copies `.app` bundles with `ditto`
+and installs `pkg` casks via `sudo installer`.
 
 ## macOS Settings
 

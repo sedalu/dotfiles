@@ -19,7 +19,6 @@ package_manager = "bun"
 # Install with `mise bootstrap packages install`; see `install:mise:system-packages`.
 # Per-OS packages (incl. the mas CLI) live in config.macos.toml;
 # per-machine packages in config.<machine>.toml (both auto-loaded — see miserc.toml).
-# GUI casks still live in homebrew/Brewfile pending mise cask support.
 [bootstrap.packages]
 "brew:bash" = "latest"
 "brew:git" = "latest"

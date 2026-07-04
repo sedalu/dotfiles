@@ -14,7 +14,6 @@ See [`.github/DESIGN.md`](../.github/DESIGN.md) for detailed system architecture
 | --------------- | --------------------------------------------------------------- |
 | `shell/`        | Shared env (`env.sh`, `interactive.sh`) + bash/zsh dirs         |
 | `mise/`         | Tool versions (`config.toml`), tasks, and hooks                 |
-| `homebrew/`     | Homebrew Brewfile (GUI casks only); brew's XDG config dir       |
 | `git/`          | User-level git config and ignore                                |
 | `ghostty/`      | Ghostty terminal config                                         |
 | `helix/`        | Helix editor config and language servers                        |
@@ -47,20 +46,20 @@ When adding a new CLI tool or runtime:
    (both auto-loaded via `auto_env`/`MISE_ENV` — see `mise/miserc.toml`).
    mise pours Homebrew bottles directly (no `brew` needed);
    install with `mise bootstrap packages install` (wired into `install:mise:system-packages`).
-3. **Fall back to Brew** —
-   mise's `brew-cask:` backend (2026.7.0) now installs GUI casks directly:
-   it copies `.app` bundles with `ditto` (preserving the code-signature seal)
+3. **GUI casks** —
+   a Homebrew cask installs as a `brew-cask:` entry in `[bootstrap.packages]`
+   (macOS-only → `mise/config.macos.toml`), poured by mise without the `brew` CLI:
+   mise copies `.app` bundles with `ditto` (preserving the code-signature seal)
    and installs `pkg` casks via `sudo installer -pkg`.
-   `claude` and `tailscale-app` both install this way from `[bootstrap.packages]`,
-   so `homebrew/Brewfile` is now empty and Homebrew removal is pending.
+   `claude` and `tailscale-app` install this way.
    The one artifact `brew-cask:` can't handle yet is a font cask —
    its installer is broken in 2026.7.0 (`invalid font target '/$HOME/Library/Fonts/…'`),
    so the JetBrains Mono Nerd Font stays a `github:` tool + `install-fonts` hook.
-   A GUI app that ships a notarized `.app` in a DMG does *not* need brew —
+   A GUI app that ships a notarized `.app` in a DMG does *not* need a cask —
    install it as a `github:`/`http:` tool with the `install-app` hook (see below),
    as obsidian and steam do in `config.caladan.toml`.
 
-The Brewfile is intentionally small. Most tools live in `mise/config.toml`.
+Most tools live in `mise/config.toml`.
 
 If the tool supports shell completions,
 add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/completions`
@@ -102,7 +101,7 @@ so the `github:`/`install-fonts` route stays until a fixed mise ships.
   and checked by `doctor:login-shell` (`status --missing`).
   Both skip when no `[bootstrap.user]` entry loads.
 - **Commit messages** — conventional commits: `type(scope): description`
-  (e.g., `feature(brew): add Brewfile`, `fix(zsh): override HISTFILE`).
+  (e.g., `feat(mise): add ripgrep`, `fix(zsh): override HISTFILE`).
 - **Shell config split** — `shell/env.sh` holds environment variables
   (sourced by both `.zshenv` and `bash_env`).
   `shell/interactive.sh` holds aliases, functions, and interactive setup
@@ -160,8 +159,8 @@ The global `worktree:*` tasks stay in `mise/tasks/`. Key tasks:
 
 | Task               | Purpose                                    |
 | ------------------ | ------------------------------------------ |
-| `install`      | Install dotfiles (brew, system packages, symlinks, plugins) |
-| `update`       | Update dotfiles (brew, mise, system packages, zsh-plugins)  |
+| `install`      | Install dotfiles (system packages, symlinks, plugins) |
+| `update`       | Update dotfiles (mise, system packages, zsh-plugins)  |
 | `doctor`       | Run all dotfiles health checks             |
 | `catalog:tasks` | Regenerate `.github/TASKS.md` from task Usage specs       |
 

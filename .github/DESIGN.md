@@ -182,7 +182,6 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | `shell/env.sh`             | `shell/env.${MACHINE}.sh`                  | `env.caladan.sh`               |
 | `shell/interactive.sh`     | `shell/interactive.${MACHINE}.sh`          | `interactive.caladan.sh`       |
 | `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
-| `homebrew/Brewfile`        | `homebrew/Brewfile.${MACHINE}`             | `Brewfile.<machine>`           |
 | `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
 The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`:
@@ -328,7 +327,6 @@ The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they ope
 
 ```text
 install
-├── brew             (parallel)
 ├── dirs             (parallel)
 ├── mise             (parallel)
 │   └── system-packages  (mise bootstrap packages install)
@@ -344,8 +342,7 @@ install
 
 ```text
 update
-├── brew
-├── mise             (depends: brew; also runs `mise bootstrap packages upgrade`)
+├── mise             (also runs `mise bootstrap packages upgrade`)
 ├── macos            (parallel, darwin only)
 ├── zsh-plugins      (parallel)
 └── mas              (parallel, darwin only)
@@ -356,7 +353,6 @@ update
 ```text
 doctor
 ├── tools
-├── brew             (depends: tools)
 ├── mise             (depends: tools; also checks `mise bootstrap packages status --missing`)
 ├── repo             (depends: tools)
 │   └── symlinks     (depends: repo)
