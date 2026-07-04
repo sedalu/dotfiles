@@ -48,13 +48,14 @@ When adding a new CLI tool or runtime:
    mise pours Homebrew bottles directly (no `brew` needed);
    install with `mise bootstrap packages install` (wired into `install:mise:system-packages`).
 3. **Fall back to Brew** —
-   use `homebrew/Brewfile` only for casks mise's `brew-cask:` backend can't install cleanly.
-   The remaining blocker is signed app bundles:
-   mise copies a `.app` by dereferencing its internal symlinks,
-   which breaks the code-signature seal so a signed Electron app fails Gatekeeper —
-   `claude` stays on brew, which installs via `ditto`.
-   `pkg` casks now install (mise 2026.6.13, given a `pkgutil` receipt id),
-   but `tailscale-app` isn't migrated yet; revisit as `brew-cask:` matures.
+   mise's `brew-cask:` backend (2026.7.0) now installs GUI casks directly:
+   it copies `.app` bundles with `ditto` (preserving the code-signature seal)
+   and installs `pkg` casks via `sudo installer -pkg`.
+   `claude` and `tailscale-app` both install this way from `[bootstrap.packages]`,
+   so `homebrew/Brewfile` is now empty and Homebrew removal is pending.
+   The one artifact `brew-cask:` can't handle yet is a font cask —
+   its installer is broken in 2026.7.0 (`invalid font target '/$HOME/Library/Fonts/…'`),
+   so the JetBrains Mono Nerd Font stays a `github:` tool + `install-fonts` hook.
    A GUI app that ships a notarized `.app` in a DMG does *not* need brew —
    install it as a `github:`/`http:` tool with the `install-app` hook (see below),
    as obsidian and steam do in `config.caladan.toml`.
@@ -71,7 +72,13 @@ to move the .app to `~/Applications`.
 
 If installing a font,
 add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/install-fonts`
-to move the font files to the users font store.
+to move the font files to the user's font store —
+this is how the JetBrains Mono Nerd Font installs.
+mise 2026.7.0 added a `brew-cask:` font route in principle
+(declare the cask in `[bootstrap.packages]`, mise links it into `~/Library/Fonts` itself, no hook),
+but its font installer is broken in that release
+(`invalid font target '/$HOME/Library/Fonts/…'`),
+so the `github:`/`install-fonts` route stays until a fixed mise ships.
 
 ## Conventions
 

@@ -1,18 +1,7 @@
-# System formulae (bash, git, zsh, openssl@3, pkgconf) and the mas CLI are managed by mise via [bootstrap.packages] (config.toml + config.macos.toml).
-# This file is GUI casks only —
-# each entry stays on Homebrew for its own reason (checked against mise 2026.6.13):
+# Empty — all Homebrew packages have migrated to mise's [bootstrap.packages]:
+# formulae and the mas CLI as brew: entries, claude and tailscale-app as brew-cask: entries.
 #
-# - claude: mise's brew-cask backend copies app bundles by dereferencing their internal symlinks,
-#   which rewrites the bundle layout and breaks the code-signature seal —
-#   a signed Electron app then fails Gatekeeper as "damaged".
-#   brew installs via ditto + quarantine clearing, keeping the bundle intact.
-#   Revisit if mise switches install_app to a symlink-preserving copy.
-# - tailscale-app: a pkg cask that mise can now install
-#   (pkg + pkgutil-receipt support landed in #10587),
-#   but not yet migrated.
-
-# macOS only
-if OS.mac?
-    cask "claude"
-    cask "tailscale-app"
-end
+# Nothing is left to install here.
+# The next step is full Homebrew removal:
+# delete this file, drop the install/update/doctor brew tasks,
+# and uninstall the /opt/homebrew CLI (mise pours its own bottles and manages the prefix without it).
