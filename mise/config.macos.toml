@@ -1,0 +1,14 @@
+# macOS-only system packages, loaded automatically via auto_env (see miserc.toml).
+# mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
+[bootstrap.packages]
+"brew:mas" = "latest"                # Mac App Store CLI; apps installed by the mas tasks
+"brew-cask:claude" = "latest"
+"brew-cask:tailscale-app" = "latest"
+
+# Login shell for this account, converged by `mise bootstrap user apply`
+# (wired into install:login-shell; checked by doctor:login-shell).
+# Homebrew zsh rather than the system /bin/zsh — the newer build installed via [bootstrap.packages].
+# `apply` registers it in /etc/shells (one-time sudo) then chsh's this account.
+# macOS-only: the path is Homebrew-arm-specific.
+[bootstrap.user]
+login_shell = "/opt/homebrew/bin/zsh"
