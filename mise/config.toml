@@ -184,11 +184,6 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate-completions {}"
 
-[tools."github:ryanoasis/nerd-fonts"]
-version = "latest"
-asset_pattern = "JetBrainsMono.tar.xz"
-postinstall = "$DOTFILES_DIR/mise/hooks/install-fonts"
-
 [tools."go:github.com/go-delve/delve/cmd/dlv"]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"

@@ -49,12 +49,12 @@ When adding a new CLI tool or runtime:
 3. **GUI casks** —
    a Homebrew cask installs as a `brew-cask:` entry in `[bootstrap.packages]`
    (macOS-only → `mise/config.macos.toml`), poured by mise without the `brew` CLI:
-   mise copies `.app` bundles with `ditto` (preserving the code-signature seal)
-   and installs `pkg` casks via `sudo installer -pkg`.
-   `claude` and `tailscale-app` install this way.
-   The one artifact `brew-cask:` can't handle yet is a font cask —
-   its installer is broken in 2026.7.0 (`invalid font target '/$HOME/Library/Fonts/…'`),
-   so the JetBrains Mono Nerd Font stays a `github:` tool + `install-fonts` hook.
+   mise copies `.app` bundles with `ditto` (preserving the code-signature seal),
+   installs `pkg` casks via `sudo installer -pkg`,
+   and links font casks straight into `~/Library/Fonts`.
+   `claude`, `tailscale-app`, and `font-jetbrains-mono-nerd-font` install this way
+   (the font route was broken in mise 2026.7.0 — `invalid font target '/$HOME/Library/Fonts/…'` —
+   fixed in 2026.7.1).
    A GUI app that ships a notarized `.app` in a DMG does *not* need a cask —
    install it as a `github:`/`http:` tool with the `install-app` hook (see below),
    as obsidian and steam do in `config.caladan.toml`.
@@ -69,15 +69,13 @@ If installing a macOS GUI app,
 add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/install-app`
 to move the .app to `~/Applications`.
 
-If installing a font,
-add a `postinstall` hook in `mise/config.toml` that calls `mise/hooks/install-fonts`
-to move the font files to the user's font store —
-this is how the JetBrains Mono Nerd Font installs.
-mise 2026.7.0 added a `brew-cask:` font route in principle
-(declare the cask in `[bootstrap.packages]`, mise links it into `~/Library/Fonts` itself, no hook),
-but its font installer is broken in that release
-(`invalid font target '/$HOME/Library/Fonts/…'`),
-so the `github:`/`install-fonts` route stays until a fixed mise ships.
+If installing a font available as a Homebrew cask,
+declare it as a `brew-cask:font-*` entry in `[bootstrap.packages]`
+(macOS-only → `mise/config.macos.toml`) — mise links it into `~/Library/Fonts` itself, no hook needed.
+This is how the JetBrains Mono Nerd Font installs.
+For a font with no Homebrew cask,
+fall back to a `github:`/`http:` tool with a `postinstall` hook in `mise/config.toml`
+that calls `mise/hooks/install-fonts` to move the font files to the user's font store.
 
 ## Conventions
 
