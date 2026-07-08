@@ -1,6 +1,6 @@
 ---
 name: project_mise_bootstrap_migration
-description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — complete: brew fully removed, all casks (claude, tailscale-app, font-jetbrains-mono-nerd-font) on brew-cask"
+description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — brew fully removed; claude/tailscale-app/font on brew-cask, but obsidian/steam/ghostty stay on install-app (brew-cask corrupts their framework bundles, verified 2026-07-07)"
 metadata: 
   node_type: memory
   type: project
@@ -133,5 +133,28 @@ bottles there and creates the prefix itself; the brew CLI isn't needed for `brew
 `brew-cask:`). `brew-cask:claude`, `brew-cask:tailscale-app`, and
 `brew-cask:font-jetbrains-mono-nerd-font` are declared, all mise-managed — the cask
 migration is fully complete, no blocked items remain.
+
+**obsidian/steam/ghostty → brew-cask attempted and REVERTED (2026-07-07, mise 2026.7.2).**
+Looked like the natural next step after claude/tailscale-app/font succeeded, so all three
+(plus the `install/obsidian` gate, which keyed on `mise ls "github:obsidianmd/obsidian-releases"`
+and would've broken once obsidian left `[tools]`) were migrated in one pass. `mise bootstrap
+packages install` ran clean with no errors — but `spctl -a -vv` (the actual Gatekeeper
+assessment, not just `codesign --verify`) rejected all three fresh `/Applications` copies with
+"bundle format is ambiguous (could be app or framework)". Root cause, confirmed by diffing
+`Contents/Frameworks/*.framework` between the old (`install-app`/`ditto`, working) and new
+(`brew-cask`, broken) copies: the old copy preserves the framework's versioned-symlink layout
+(`Electron Framework -> Versions/Current/Electron Framework`, etc.); brew-cask's copy
+dereferences those symlinks into real duplicated files, corrupting the bundle shape. This is
+the exact "dereferences internal symlinks, breaks the code-signature seal" failure mode the
+pre-2026.7.0 comments described for claude — except claude's `Electron Framework.framework`
+(same shape) installs fine via brew-cask today, so this isn't a blanket regression, it's
+specific to how these three casks (obsidian, steam, ghostty) get fetched/copied — maybe DMG-
+sourced-artifact vs whatever claude's cask uses. Unresolved; not worth digging further until
+mise ships another cask-handling fix. Fully reverted: config/doc edits rolled back to HEAD,
+the three broken `/Applications` copies deleted, the three working `~/Applications` copies
+(install-app-installed) reconfirmed Gatekeeper-accepted. **Next attempt: migrate ONE app at a
+time and verify with `spctl -a -vv` before touching the next one** — don't batch, since
+brew-cask's cask-by-cask reliability isn't uniform even within the same mise version. Watch
+mise release notes for further cask-copy fixes before retrying.
 
 Repo conventions: in ~/.config commit directly to main ([[dotfiles-commit-to-main]]).
