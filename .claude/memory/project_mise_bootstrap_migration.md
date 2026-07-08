@@ -1,6 +1,6 @@
 ---
 name: project_mise_bootstrap_migration
-description: "Staged migration of the dotfiles from Homebrew to mise's [bootstrap.*] system; what's done, what's blocked, what's next"
+description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — complete: brew fully removed, all casks (claude, tailscale-app, font-jetbrains-mono-nerd-font) on brew-cask"
 metadata: 
   node_type: memory
   type: project
@@ -104,9 +104,16 @@ matures." Expect breaking churn between mise releases (the `[system.packages]`
   (`brew uninstall --cask tailscale-app && mise ... apply`, sudo prompt inline). No task
   change was needed: `install:mise:system-packages` runs `mise bootstrap packages install`
   with inherited stdio, so sudo prompts fine when `mise run install` has a TTY.
-- **JetBrains Mono font** (`font` cask): still BLOCKED — `brew-cask:` font installer is
-  broken in 2026.7.0 (`invalid font target '/$HOME/Library/Fonts/…'`, cask.rs:545, though
-  the cask JSON is clean). Stays `github:`/`install-fonts`. See [[project-font-cask-migration]].
+- **JetBrains Mono font** (`font` cask): DONE + verified (2026-07-07, mise 2026.7.2). The
+  `invalid font target '/$HOME/Library/Fonts/…'` bug (cask.rs:545) was fixed upstream in
+  2026.7.1 (`fix(brew-cask): expand font target paths to handle $HOME`, PR #10788 — confirmed
+  by reading the commit in `~/Projects/ref/mise`, whose test case reproduces this exact
+  JetBrainsMono path). Migrated: removed `[tools."github:ryanoasis/nerd-fonts"]` from
+  `mise/config.toml`, added `"brew-cask:font-jetbrains-mono-nerd-font" = "latest"` to
+  `mise/config.macos.toml`. Verified end to end by moving the 96 existing font files aside,
+  running `mise bootstrap packages apply brew-cask:font-jetbrains-mono-nerd-font`, and
+  diffing filenames against the backup (exact match, empty diff). `mise/hooks/install-fonts`
+  stays in the repo as the documented fallback for fonts with no Homebrew cask.
 
 IMPORTANT — `brew list --cask` is NOT the ownership signal: mise stores its cask
 receipts in the shared Homebrew Caskroom (`/opt/homebrew/Caskroom/<token>/` with a
@@ -123,7 +130,8 @@ stale `/homebrew/*.lock` gitignore (now `/homebrew/` — catch-all, nothing ther
 Deliberately KEPT `/opt/homebrew` as mise's bottle prefix and did NOT uninstall the brew CLI —
 it sits unused at zero risk, and `env.sh`/`path.sh` still export the prefix (mise pours
 bottles there and creates the prefix itself; the brew CLI isn't needed for `brew:` or
-`brew-cask:`). Only `brew-cask:claude` + `brew-cask:tailscale-app` remain declared, both
-mise-managed. Font stays the sole blocked item — see [[project-font-cask-migration]].
+`brew-cask:`). `brew-cask:claude`, `brew-cask:tailscale-app`, and
+`brew-cask:font-jetbrains-mono-nerd-font` are declared, all mise-managed — the cask
+migration is fully complete, no blocked items remain.
 
 Repo conventions: in ~/.config commit directly to main ([[dotfiles-commit-to-main]]).
