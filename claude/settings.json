@@ -42,10 +42,10 @@
     "typescript-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
   },
+  "effortLevel": "xhigh",
   "tui": "fullscreen",
   "theme": "dark-ansi",
   "autoCompactEnabled": true,
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true,
-  "model": "opus"
+  "agentPushNotifEnabled": true
 }
