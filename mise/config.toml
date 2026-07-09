@@ -1,7 +1,4 @@
-# Floor for the experimental `mise bootstrap`/`mise dotfiles` subsystems this config relies on
-# (`[bootstrap.*]`, `[dotfiles]`).
-# Older mise lacks them.
-min_version = "2026.6.10"
+min_version = "2026.7.5"
 
 [settings]
 auto_install = true
