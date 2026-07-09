@@ -157,4 +157,17 @@ time and verify with `spctl -a -vv` before touching the next one** — don't bat
 brew-cask's cask-by-cask reliability isn't uniform even within the same mise version. Watch
 mise release notes for further cask-copy fixes before retrying.
 
+**Checked mise 2026.7.3 (2026-07-08) — does NOT fix the obsidian/steam/ghostty blocker.**
+That release's two brew-cask changes, `feat(brew): run cask lifecycle hooks` (#10837) and
+`fix(brew): support pkg-created cask binaries` (#10841), looked promising but verified by
+diffing `src/system/packages/brew/cask.rs` in `~/Projects/ref/mise` between v2026.7.2 and
+v2026.7.3: `install_app()` (the function that `ditto`s the `.app` bundle into place) is
+byte-for-byte unchanged — still a plain `ditto from to` with no symlink-preserving flag.
+#10837 only adds preflight/postflight Ruby lifecycle-hook execution; #10841 only changes
+binary-artifact lookup after `pkg` installs. Neither touches app-bundle copying, so the
+framework-symlink-dereferencing bug is still there. Don't retry obsidian/steam/ghostty until
+a future mise changelog specifically mentions fixing `ditto`/framework/symlink handling in
+`brew-cask` app installs — check `install_app`'s diff directly rather than assuming a
+brew-cask-adjacent fix covers it.
+
 Repo conventions: in ~/.config commit directly to main ([[dotfiles-commit-to-main]]).

@@ -14,3 +14,4 @@
 - [feedback-research-latest-source.md](feedback-research-latest-source.md) — when researching from source (incl. ~/Projects/ref), update to latest first unless told otherwise
 - [feedback-no-history-comments.md](feedback-no-history-comments.md) — don't write changelog/history comments narrating what moved or changed; git records that
 - [feedback-migrate-one-app-at-a-time.md](feedback-migrate-one-app-at-a-time.md) — batch migrations of similar targets one at a time with real verification between each, not all-then-verify
+- [feedback-gate-warnings-on-pending-action.md](feedback-gate-warnings-on-pending-action.md) — only print a side-effect heads-up (e.g. password prompt) when the triggering action will actually run
