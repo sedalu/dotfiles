@@ -9,6 +9,16 @@ set -euo pipefail
 
 # --- update -----------------------------
 
-# No banners of our own — mas streams its own progress when it upgrades something
-# and stays quiet when everything is already current.
-mas upgrade
+# Check first so the password heads-up (and mas's own progress banners)
+# only show up when there's actually an update to install.
+outdated="$(mas outdated)"
+
+if [[ -n "${outdated}" ]]; then
+	# macOS can prompt for your login password to authorize the install
+	# with no warning of its own — flag it before mas starts.
+	echo "🔐 macOS may prompt for your password to authorize the update..."
+fi
+
+# mas prints "Update progress cannot be displayed" with no trailing newline,
+# so the next "==> Updated …" line runs into it — insert the missing newline.
+mas upgrade | sed -l 's/cannot be displayed==>/cannot be displayed\n==>/g'
