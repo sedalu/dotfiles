@@ -1,6 +1,6 @@
 ---
 name: project_mise_bootstrap_migration
-description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — brew fully removed; claude/tailscale-app/font on brew-cask, but obsidian/steam/ghostty stay on install-app (brew-cask corrupts their framework bundles, verified 2026-07-07)"
+description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — DONE: brew removed, all GUI casks (claude/tailscale-app/font/ghostty/obsidian/steam) on brew-cask; only cmux remains on install-app/DMG, untried"
 metadata: 
   node_type: memory
   type: project
@@ -165,9 +165,42 @@ v2026.7.3: `install_app()` (the function that `ditto`s the `.app` bundle into pl
 byte-for-byte unchanged — still a plain `ditto from to` with no symlink-preserving flag.
 #10837 only adds preflight/postflight Ruby lifecycle-hook execution; #10841 only changes
 binary-artifact lookup after `pkg` installs. Neither touches app-bundle copying, so the
-framework-symlink-dereferencing bug is still there. Don't retry obsidian/steam/ghostty until
-a future mise changelog specifically mentions fixing `ditto`/framework/symlink handling in
-`brew-cask` app installs — check `install_app`'s diff directly rather than assuming a
-brew-cask-adjacent fix covers it.
+framework-symlink-dereferencing bug is still there.
+
+**Root cause was misdiagnosed, actual fix landed in mise 2026.7.6 (2026-07-14) — ghostty
+RE-MIGRATED to brew-cask successfully.** The 2026.7.3 investigation diffed the wrong
+function: `install_app()`'s `ditto` calls were never the problem (`ditto` preserves
+symlinks natively). The real corruption happened one step earlier, in `file::un_dmg()`
+(`src/file.rs`) — mounting the DMG then copying its contents out via the generic
+`copy_dir_all`, which dereferences symlinks into real files. That's what mangled
+`Sparkle.framework`'s versioned-symlink layout (`Versions/Current -> B`, etc.) before
+`install_app` ever ran. `fix(bootstrap): preserve symlinks when extracting dmgs` (#10949,
+mise 2026.7.6) replaced that call with a new `copy_dir_all_preserve_symlinks` — confirmed
+by reading `src/file.rs`'s diff in `~/Projects/ref/mise` between v2026.7.5 and v2026.7.6.
+This also explains why claude's cask always worked: claude's Homebrew cask source is a
+`.zip` (confirmed via `gh api repos/Homebrew/homebrew-cask/contents/Casks/c/claude.rb`),
+so it never touches `un_dmg` — it isn't a blanket brew-cask regression, it's specific to
+DMG-sourced casks. Migrated ghostty alone first per [[feedback-migrate-one-app-at-a-time]]:
+added `"brew-cask:ghostty" = "latest"` to `mise/config.macos.toml`, ran `mise bootstrap
+packages apply brew-cask:ghostty`, verified `spctl -a -vv` → accepted, diffed symlinks +
+file count against the old `~/Applications/Ghostty.app` (install-app copy) — identical (7
+symlinks, 771 files each). Removed `[tools."http:ghostty"]` from `mise/config.toml` and
+deleted the stale `~/Applications/Ghostty.app`.
+
+**obsidian + steam migrated same day (2026-07-14), same verified process, one at a time.**
+Both are per-machine (`mise/config.caladan.toml`), unlike global ghostty, so they moved into
+that file's `[bootstrap.packages]` as `"brew-cask:obsidian"` / `"brew-cask:steam"` instead of
+`config.macos.toml`. obsidian: replaced `[tools."github:obsidianmd/obsidian-releases"]`;
+also had to fix `.config/mise/tasks/install/obsidian`'s gate, which keyed on
+`mise ls "github:obsidianmd/obsidian-releases"` (that tool ID no longer exists) — now checks
+`mise bootstrap packages status --json | jq -e '.["brew-cask"].packages[]? | select(.package
+== "obsidian")'`, same "declared regardless of install state" semantic, re-tested via
+`mise run install:obsidian`. steam: replaced `[tools."http:steam"]`, no task referenced it.
+Both verified `spctl -a -vv` → accepted, symlinks/file-count identical to their old
+install-app copies (obsidian 14 symlinks/623 files, steam 6 symlinks/113 files), stale
+`~/Applications/*.app` copies deleted. **Full migration is done** — every GUI cask
+(claude, tailscale-app, font, ghostty, obsidian, steam) is now on `brew-cask:`. Only `cmux`
+(`mise/config.toml`, global) remains on the `install-app`/DMG pattern — untouched so far,
+same migration should apply if/when it's tried.
 
 Repo conventions: in ~/.config commit directly to main ([[dotfiles-commit-to-main]]).

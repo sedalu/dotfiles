@@ -5,10 +5,10 @@
 set -euo pipefail
 
 # --- gate: only run where Obsidian is declared for this machine ---
-# Obsidian is a per-machine mise tool (config.caladan.toml), not a global one.
-# `mise ls` lists a declared tool whether or not it is installed yet,
+# Obsidian is a per-machine bootstrap package (config.caladan.toml), not a global one.
+# `bootstrap packages status` lists a declared package whether or not it is installed yet,
 # so the gate keys on declaration, not install order.
-if [[ -z "$(mise ls "github:obsidianmd/obsidian-releases" 2>/dev/null)" ]]; then
+if ! mise bootstrap packages status --json 2>/dev/null | jq -e '.["brew-cask"].packages[]? | select(.package == "obsidian")' >/dev/null; then
 	echo "⏭️  Obsidian not configured for this machine, skipping"
 	exit 0
 fi

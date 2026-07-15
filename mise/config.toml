@@ -1,4 +1,4 @@
-min_version = "2026.7.5"
+min_version = "2026.7.6"
 
 [settings]
 auto_install = true
@@ -170,6 +170,9 @@ pitchfork = "latest"
 typos = "latest"
 yamlfmt = "latest"
 
+# presenterm ships no shell completions either (clap without clap_complete), so it stays bare too.
+"aqua:mfontanini/presenterm" = "latest"
+
 # Sub-table tools (with postinstall hooks or extra options)
 
 [tools."aqua:tamasfe/taplo"]
@@ -184,11 +187,6 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate-completions {}"
 [tools."go:github.com/go-delve/delve/cmd/dlv"]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
-
-[tools."http:ghostty"]
-version = "1.2.3"
-postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
-platforms.macos-arm64.url = "https://release.files.ghostty.org/{{version}}/Ghostty.dmg"
 
 [tools."http:cmux"]
 version = "0.64.4"
