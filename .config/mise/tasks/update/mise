@@ -2,6 +2,10 @@
 #USAGE complete "Update mise managed tools"
 #MISE description="Update mise managed tools"
 #MISE hide=true
+# raw=true: pkg-cask upgrades (e.g. tailscale-app) may need a sudo prompt,
+# which needs a real TTY —
+# the `update` aggregator's prefixing otherwise pipes stdio and hides it.
+#MISE raw=true
 
 set -euo pipefail
 
