@@ -141,6 +141,7 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 # "ubi:jstemmer/go-junit-report" = "latest"
 # bare
 bun = "latest"
+cargo-binstall = "latest"
 claude = "latest"
 difftastic = "latest"
 eza = "latest"
