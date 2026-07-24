@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 6717805a-7b83-4289-af3b-cb295157b81e
+  modified: 2026-07-24T04:11:00.569Z
 ---
 
 When authoring files in the dotfiles repo ([[dotfiles-commit-to-main]]), Seth
@@ -38,3 +39,11 @@ future edits to single-line changes.
 and confirm each line ends at a clause/sentence boundary, not a wrap point. I have
 failed to apply it after having it in memory, so treat it as a checklist item, not
 a hint.
+
+**Recurred again 2026-07-23:** wrote a task comment, greedy-wrapped a long
+subject+verb+object clause mid-sentence ("...as symlinks to\nsiblings inside its
+own keg") instead of keeping it one line. Corrected in two rounds: first pass
+still wrapped, second pass (one full clause/sentence per line, breaking only at
+"and"/"but"/em dash) was accepted. Also got "could be more concise" alongside the
+line-break correction — check both length AND break points before presenting a
+comment, not just break points alone.
