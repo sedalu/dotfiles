@@ -18,6 +18,19 @@ mise plugins update --yes
 mise upgrade --bump --yes
 
 # System packages declared in [bootstrap.packages] (poured Homebrew bottles).
+#
+# pkgconf ships bin/pkg-config and lib/libpkgconf.dylib as symlinks to siblings inside its own keg.
+# mise mishandles that second symlink hop and refuses to relink them, aborting the whole upgrade —
+# but only once pkgconf has a new bottle to pour.
+# Clear just those two symlinks first, and only when a pour is pending.
+if mise bootstrap packages upgrade --dry-run --yes brew:pkgconf 2>&1 | grep -q '^pour pkgconf/'; then
+	for f in /opt/homebrew/bin/pkg-config /opt/homebrew/lib/libpkgconf.dylib; do
+		[[ -L "$f" ]] || continue
+		case "$(readlink "$f")" in
+		../Cellar/pkgconf/*) rm -f "$f" ;;
+		esac
+	done
+fi
 mise bootstrap packages upgrade --yes
 
 # --- environment ------------------------
