@@ -2,7 +2,6 @@
 # mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
 [bootstrap.packages]
 "brew:mas" = "latest"                                # Mac App Store CLI; apps installed by the mas tasks
-"brew-cask:claude" = "latest"
 "brew-cask:font-jetbrains-mono-nerd-font" = "latest"
 "brew-cask:ghostty" = "latest"
 "brew-cask:tailscale-app" = "latest"
