@@ -111,11 +111,14 @@ that calls `mise/hooks/install-fonts` to move the font files to the user's font 
 ## Code quality (hk)
 
 [hk](https://hk.jdx.dev) runs the formatters, linters, and secret scanning.
-Config lives in `.config/` (passed explicitly — hk/tool auto-discovery doesn't look in this subdir):
+Config lives in `.config/`:
 
 - **`hk.pkl`** — pipeline definition (steps + `check`/`fix`/`pre-commit`/`pre-push` hooks),
   pkl amending hk's `Config.pkl`.
+  hk discovers this itself — `.config/hk.pkl` is in its default search path, so no `HK_FILE` needed.
 - **`shellcheckrc`, `rumdl.toml`, `typos.toml`** — per-tool sidecars.
+  These *are* passed explicitly (`--rcfile`, `--config`) from the steps in `hk.pkl`,
+  since the tools' own auto-discovery doesn't look in this subdir.
 
 Every tool (`hk`, `shellcheck`, `shfmt`, `taplo`, `rumdl`, `yamlfmt`, `typos`, `gitleaks`) installs via mise.
 `hk check` lints staged files and `hk fix` auto-formats them (default scope);
