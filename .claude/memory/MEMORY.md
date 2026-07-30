@@ -16,3 +16,4 @@
 - [feedback-migrate-one-app-at-a-time.md](feedback-migrate-one-app-at-a-time.md) — batch migrations of similar targets one at a time with real verification between each, not all-then-verify
 - [feedback-gate-warnings-on-pending-action.md](feedback-gate-warnings-on-pending-action.md) — only print a side-effect heads-up (e.g. password prompt) when the triggering action will actually run
 - [project_mise_raw_task_sudo_tty.md](project_mise_raw_task_sudo_tty.md) — mise task raw=true fixes sudo-needs-TTY failures but drops that task's output prefix; don't sudo the outer `mise run` instead
+- [feedback-no-meta-commentary-in-tasks.md](feedback-no-meta-commentary-in-tasks.md) — no rationale/architecture comments in task or config files; that's what CLAUDE.md and DESIGN.md are for

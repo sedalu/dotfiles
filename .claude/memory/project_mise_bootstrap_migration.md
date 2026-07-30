@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 6717805a-7b83-4289-af3b-cb295157b81e
+  modified: 2026-07-30T01:26:12.042Z
 ---
 
 Ongoing (as of 2026-06-13): incrementally moving the dotfiles off Homebrew onto
@@ -202,5 +203,34 @@ install-app copies (obsidian 14 symlinks/623 files, steam 6 symlinks/113 files),
 (claude, tailscale-app, font, ghostty, obsidian, steam) is now on `brew-cask:`. Only `cmux`
 (`mise/config.toml`, global) remains on the `install-app`/DMG pattern — untouched so far,
 same migration should apply if/when it's tried.
+
+**App Store apps → `mas:` entries in `[bootstrap.packages]` (2026-07-29, mise 2026.7.16).**
+Retired the hand-rolled `mas/apps` + `mas/apps.<machine>` lists and the `install:mas` /
+`update:mas` tasks (`doctor:mas` kept — it checks App Store reachability, which
+`mise bootstrap packages status` can't see). Apps are now `"mas:<adam-id>" = "latest"`
+entries: universal Apple apps in `config.macos.toml`, Banktivity + Civ VII in
+`config.caladan.toml`. The existing generic tasks absorb the work — `install:mise:system-packages`
+(`packages install`), `update:mise` (`packages upgrade`), `doctor:mise` (`status --missing`).
+The mas CLI itself moved from `"brew:mas"` to a `[tools]` entry (`aqua:mas-cli/mas`, 7.0.0):
+`fix(bootstrap): detect mise-managed mas` (#11429, in 2026.7.16) made the mas manager resolve
+its binary via `configured_toolset_or_path_which` instead of bare `PATH`, verified here by
+running `mise bootstrap packages status` under `env -i PATH=/usr/bin:/bin` — mas entries still
+resolved. Ordering caveat: a bare `mise bootstrap` applies `[bootstrap.packages]` (step 1) long
+before `[tools]` (step 9), so a tool-provided mas would be missing on a fresh machine; driving
+installs through the mise task instead works because `task.run_auto_install` installs config
+tools before the task body. `[bootstrap.hooks.pre-packages]` is the escape hatch if the bare
+command is ever used. Gotcha found: the legacy Mac-only iWork IDs (Keynote 409183694, Pages
+409201541, Numbers 409203825) are DELISTED — they still appear in `mas list` but `mas info`
+404s and `mas install` would fail on a new machine; the current universal IDs are 361285480 /
+361309726 / 361304891. Always `mas info <id>` before declaring. The 15.3 apps do NOT upgrade the 14.5 ones in place —
+new bundle ID (`com.apple.Numbers` vs `com.apple.iWork.Numbers`), new name
+(`Numbers Creator Studio.app`), macOS 15.6 minimum — so both coexist until the legacy trio is
+deleted (`sudo rm -rf`; they're root:wheel with non-group-writable `Contents/`).
+Orphaned `brew:mas@7.0.0` keg pruned (`packages prune --manager brew`), mise-managed mas still green.
+GOTCHA: `mas install` requires root (mas 7: "Requires root privileges to install apps") and mise
+spawns mas with `stdin(Stdio::null())`, so it only works where sudo has a controlling terminal or a
+cached timestamp — fine from an interactive `mise run install`, impossible from a non-TTY agent
+shell. Fallback `sudo mas install <ids>`; longer-term lever is `#MISE raw=true`
+([[project_mise_raw_task_sudo_tty]]).
 
 Repo conventions: in ~/.config commit directly to main ([[dotfiles-commit-to-main]]).
