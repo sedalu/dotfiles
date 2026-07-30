@@ -24,7 +24,6 @@ See [`.github/DESIGN.md`](../.github/DESIGN.md) for detailed system architecture
 | `fnox/`         | fnox secret management config (macOS Keychain)                  |
 | `lazygit/`      | Lazygit TUI config and Catppuccin theme                         |
 | `lib/`          | Shell helper libraries                                          |
-| `mas/`          | Mac App Store app list                                          |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)              |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)           |
 | `.config/`      | hk pipeline (`hk.pkl`) + linter sidecars (shellcheck, rumdl, typos) |
@@ -41,7 +40,7 @@ When adding a new CLI tool or runtime:
 2. **System libraries / build deps** —
    shared libraries and bootstrap tools (`openssl@3`, `pkgconf`, `bash`, `git`, `zsh`) go in `[bootstrap.packages]`.
    Machine-global packages live in `mise/config.toml`;
-   macOS-only packages (including the `mas` CLI) in `mise/config.macos.toml`;
+   macOS-only packages in `mise/config.macos.toml`;
    per-machine packages in `mise/config.<machine>.toml`
    (both auto-loaded via `auto_env`/`MISE_ENV` — see `mise/miserc.toml`).
    mise pours Homebrew bottles directly (no `brew` needed);
@@ -58,6 +57,19 @@ When adding a new CLI tool or runtime:
    A GUI app that ships a notarized `.app` in a DMG does *not* need a cask —
    install it as a `github:`/`http:` tool with the `install-app` hook (see below),
    as obsidian and steam do in `config.caladan.toml`.
+4. **Mac App Store apps** —
+   a `mas:<adam-id>` entry in `[bootstrap.packages]`
+   (universal apps → `mise/config.macos.toml`, machine-specific → `config.<machine>.toml`).
+   Find the ID with `mas search <name>`,
+   confirm it still resolves with `mas info <id>` — delisted IDs stay installable-looking in `mas list`
+   but fail on a fresh machine —
+   and record the app's name as a trailing comment, since the key itself is only digits.
+   No version pins: the App Store only ever serves current.
+   The `mas` CLI backing these entries is a `[tools]` entry in `config.macos.toml`;
+   mise resolves it through the toolset rather than `PATH` (2026.7.16),
+   and `task.run_auto_install` installs it before `install:mise:system-packages` runs.
+   A bare `mise bootstrap` applies `[bootstrap.packages]` long before `[tools]`,
+   so always drive package installs through the task, not that command.
 
 Most tools live in `mise/config.toml`.
 

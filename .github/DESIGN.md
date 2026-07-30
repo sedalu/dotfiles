@@ -149,8 +149,8 @@ Avoids subprocess overhead on every shell start.
 | App installation     | `mise/hooks/install-app` (DMG → `~/Applications`)   | N/A                                         |
 | Font installation    | `mise/hooks/install-fonts` (→ `~/Library/Fonts`)    | N/A                                         |
 | ACL handling         | Strips deny-delete ACLs before replacing dirs       | N/A                                         |
-| App Store            | `mas` tasks run only when `DOTFILES_OS=darwin`      | Skipped                                     |
-| System packages      | `config.macos.toml` adds the `mas` CLI to `[bootstrap.packages]` (auto-loaded) | `config.linux.toml` (none yet) |
+| App Store            | `"mas:<adam-id>"` entries in `[bootstrap.packages]` | Skipped (manager unavailable)               |
+| System packages      | `config.macos.toml` (auto-loaded) adds casks and App Store apps | `config.linux.toml` (none yet)  |
 
 Homebrew paths are hardcoded in `env.sh` to avoid a `brew shellenv` subprocess on every shell start.
 
@@ -181,7 +181,6 @@ Machine-specific config files are loaded alongside base config when a sidecar fi
 | -------------------------- | ------------------------------------------ | ------------------------------ |
 | `shell/env.sh`             | `shell/env.${MACHINE}.sh`                  | `env.caladan.sh`               |
 | `shell/interactive.sh`     | `shell/interactive.${MACHINE}.sh`          | `interactive.caladan.sh`       |
-| `mas/apps`                 | `mas/apps.${MACHINE}`                      | `mas/apps.caladan`             |
 | `mise/config.toml`         | `mise/config.${MACHINE}.toml`              | `config.caladan.toml`          |
 
 The `mise/config.${MACHINE}.toml` layer is loaded by mise itself, not a shell `source`:
@@ -228,7 +227,7 @@ This ensures install tasks create exactly what doctor tasks verify — same defi
 | Library file        | Defines                                     | Used by                                  |
 | ------------------- | ------------------------------------------- | ---------------------------------------- |
 | `dirs.sh`           | XDG directories to create/verify            | install:dirs, doctor:dirs                |
-| `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, install:mas, env.sh             |
+| `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, doctor:machine                  |
 | `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
 
 Go's environment file, formerly defined here via `go.sh` and written by `go env -w`,
@@ -334,7 +333,6 @@ install
 ├── login-shell      (parallel, macOS only via config)
 ├── symlinks         (parallel)
 ├── zsh-plugins      (parallel)
-├── mas              (depends: mise:system-packages; darwin only)
 └── ssh              (depends: symlinks)
 ```
 
@@ -344,8 +342,7 @@ install
 update
 ├── mise             (also runs `mise bootstrap packages upgrade`)
 ├── macos            (parallel, darwin only)
-├── zsh-plugins      (parallel)
-└── mas              (parallel, darwin only)
+└── zsh-plugins      (parallel)
 ```
 
 ### Doctor Dependencies

@@ -3,6 +3,8 @@
 [bootstrap.packages]
 "brew-cask:obsidian" = "latest"
 "brew-cask:steam" = "latest"
+"mas:1480779512" = "latest"     # Banktivity: Budget & Finances
+"mas:6744373452" = "latest"     # Sid Meier's Civilization VII
 
 # Per-machine symlinks for caladan,
 # unioned with the base [dotfiles] in config.toml

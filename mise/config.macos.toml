@@ -1,10 +1,18 @@
+# macOS-only tools, loaded automatically via auto_env (see miserc.toml).
+[tools]
+mas = "latest" # Mac App Store CLI; drives the "mas:" entries below
+
 # macOS-only system packages, loaded automatically via auto_env (see miserc.toml).
 # mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
 [bootstrap.packages]
-"brew:mas" = "latest"                                # Mac App Store CLI; apps installed by the mas tasks
 "brew-cask:font-jetbrains-mono-nerd-font" = "latest"
 "brew-cask:ghostty" = "latest"
 "brew-cask:tailscale-app" = "latest"
+"mas:682658836" = "latest"                           # GarageBand
+"mas:408981434" = "latest"                           # iMovie
+"mas:361285480" = "latest"                           # Keynote
+"mas:361309726" = "latest"                           # Pages
+"mas:361304891" = "latest"                           # Numbers
 
 # Login shell for this account, converged by `mise bootstrap user apply`
 # (wired into install:login-shell; checked by doctor:login-shell).
