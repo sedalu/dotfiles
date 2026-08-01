@@ -1,6 +1,6 @@
 ---
 name: project_mise_bootstrap_migration
-description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — DONE: brew removed, all GUI casks (claude/tailscale-app/font/ghostty/obsidian/steam) on brew-cask; only cmux remains on install-app/DMG, untried"
+description: "Migration of the dotfiles from Homebrew to mise's [bootstrap.*] system — DONE: brew removed, all GUI casks (tailscale-app/font/ghostty/obsidian/steam) on brew-cask; only cmux on install-app/DMG, via the github: backend in config.macos.toml"
 metadata: 
   node_type: memory
   type: project
@@ -200,9 +200,11 @@ also had to fix `.config/mise/tasks/install/obsidian`'s gate, which keyed on
 Both verified `spctl -a -vv` → accepted, symlinks/file-count identical to their old
 install-app copies (obsidian 14 symlinks/623 files, steam 6 symlinks/113 files), stale
 `~/Applications/*.app` copies deleted. **Full migration is done** — every GUI cask
-(claude, tailscale-app, font, ghostty, obsidian, steam) is now on `brew-cask:`. Only `cmux`
-(`mise/config.toml`, global) remains on the `install-app`/DMG pattern — untouched so far,
-same migration should apply if/when it's tried.
+(tailscale-app, font, ghostty, obsidian, steam) is now on `brew-cask:`. Only `cmux`
+(`mise/config.macos.toml`) remains on the `install-app`/DMG pattern, now via the `github:`
+backend (`github:manaflow-ai/cmux` + `asset_pattern`) so `latest` resolves and the download
+is attestation/SLSA-verified — `http:` could do neither. There is no Claude desktop cask:
+the `claude` entry is the CLI, a plain `[tools]` entry.
 
 **App Store apps → `mas:` entries in `[bootstrap.packages]` (2026-07-29, mise 2026.7.16).**
 Retired the hand-rolled `mas/apps` + `mas/apps.<machine>` lists and the `install:mas` /
