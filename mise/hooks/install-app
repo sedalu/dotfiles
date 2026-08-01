@@ -3,6 +3,7 @@
 #USAGE flag "--path <path>" "Directory containing the DMG (default: \$MISE_TOOL_INSTALL_PATH)."
 #USAGE flag "--app <name>" "Name of the .app bundle to install (default: first .app found on the volume)."
 #USAGE flag "--dest <dir>" "Destination directory for the .app bundle (default: ~/Applications)."
+#USAGE flag "--force" "Install even when the destination holds this version or newer, or the app is running."
 #MISE description="Mount a DMG from the mise install path and copy the .app bundle to ~/Applications."
 #MISE hide=true
 set -euo pipefail
@@ -15,6 +16,8 @@ path=""
 app=""
 # Destination directory for the installed .app bundle.
 dest=""
+# Bypass the version and running-app guards.
+force="false"
 
 while [[ $# -gt 0 ]]; do
 	case "$1" in
@@ -29,6 +32,10 @@ while [[ $# -gt 0 ]]; do
 	--dest)
 		dest="${2:?--dest requires a value}"
 		shift 2
+		;;
+	--force)
+		force="true"
+		shift
 		;;
 	*)
 		echo "🛑 Error: unknown argument: $1" >&2
@@ -50,6 +57,30 @@ echo "⚙️ Configuring..."
 echo "→ path=$path"
 echo "→ app=${app:-(auto)}"
 echo "→ dest=$dest"
+echo "→ force=$force"
+
+# --- helpers ----------------------------
+
+# Print a bundle's CFBundleShortVersionString, or nothing when it can't be read.
+# PlistBuddy reports a missing file or key on stdout rather than stderr,
+# so accept only a version-shaped result and treat anything else as unknown.
+# An unknown version disables the comparison guards, which then fall through to installing.
+bundle_version() {
+	local plist="$1/Contents/Info.plist" version=""
+
+	if [[ -f "$plist" ]]; then
+		version="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$plist" 2>/dev/null || true)"
+	fi
+	if [[ "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+		printf '%s' "$version"
+	fi
+	return 0
+}
+
+# True when $1 is a strictly newer version than $2.
+version_gt() {
+	[[ "$1" != "$2" && "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" == "$1" ]]
+}
 
 # --- install ----------------------------
 
@@ -76,10 +107,20 @@ fi
 echo "→ dmg=$dmg"
 
 # Unmount the volume and clear any leftover staging dir on exit, even on error.
+# A surviving backup means we died mid-swap, so put the previous bundle back.
 volume=""
 staging=""
+backup=""
+installed=""
 cleanup() {
 	[[ -n "$staging" && -e "$staging" ]] && rm -rf "$staging"
+	if [[ -n "$backup" && -d "$backup" && -n "$installed" ]]; then
+		if [[ -d "$installed" ]]; then
+			rm -rf "$backup"
+		else
+			mv "$backup" "$installed"
+		fi
+	fi
 	if [[ -n "$volume" ]]; then
 		if ! hdiutil detach "$volume" -quiet 2>/dev/null; then
 			true
@@ -130,6 +171,42 @@ echo "→ app=$app_path"
 
 # Derive the bundle filename for the destination path.
 app_name="${app_path##*/}"
+installed="$dest/$app_name"
+
+# Skip when the destination already holds this version or a newer one.
+# An app carrying its own updater (Sparkle, …) routinely runs ahead of the pinned release,
+# so reinstalling over it would silently downgrade a working bundle.
+new_version="$(bundle_version "$app_path")"
+cur_version="$(bundle_version "$installed")"
+
+if [[ "$force" == "false" && -n "$new_version" && -n "$cur_version" ]]; then
+	if [[ "$new_version" == "$cur_version" ]]; then
+		echo "✅ $app_name $cur_version is already installed at $dest."
+		exit 0
+	fi
+	if version_gt "$cur_version" "$new_version"; then
+		echo "⏭️ $app_name $cur_version at $dest is newer than $new_version, skipping (--force overrides)."
+		exit 0
+	fi
+fi
+
+# Leave a running app alone:
+# the process keeps the files it already opened
+# but can no longer load anything else from the bundle it was launched from,
+# so the breakage surfaces later and far from the cause.
+# Skip rather than fail — this runs as a postinstall hook,
+# so a non-zero exit fails the whole `mise install`
+# and blocks every task or git hook that auto-installs a missing tool.
+# `ps` rather than `pgrep`, which does not match GUI processes launched by launchd.
+if [[ "$force" == "false" ]]; then
+	# shellcheck disable=SC2009  # pgrep matches neither the argv nor the name of a launchd-started GUI app
+	running="$(ps -Ao comm= | grep -Fc "$installed/Contents/" || true)"
+	if [[ "$running" != "0" ]]; then
+		echo "⏭️ $app_name is running, leaving ${cur_version:-the installed bundle} in place."
+		echo "   Quit it, then re-run with --force to install ${new_version:-the staged version}."
+		exit 0
+	fi
+fi
 
 # Ensure the destination directory exists.
 mkdir -p "$dest"
@@ -138,8 +215,9 @@ mkdir -p "$dest"
 # so a re-install or version upgrade REPLACES the bundle instead of nesting inside it
 # (`cp -R foo.app dir/foo.app` copies *into* an existing foo.app).
 # `ditto` preserves bundle metadata (resource forks, ACLs) more faithfully than `cp -R`.
-echo "→ dest=$dest/$app_name"
+echo "→ dest=$installed"
 staging="$dest/.${app_name}.new.$$"
+backup="$dest/.${app_name}.old.$$"
 rm -rf "$staging"
 ditto "$app_path" "$staging"
 
@@ -147,18 +225,27 @@ ditto "$app_path" "$staging"
 # so the notarized bundle launches without the "downloaded from the internet" prompt.
 xattr -dr com.apple.quarantine "$staging" 2>/dev/null || true
 
-# Swap into place: remove any existing bundle, then move the staged copy over.
+# Swap by moving the old bundle aside rather than deleting it up front,
+# so a failure part-way through leaves the previous version recoverable
+# instead of leaving no app at all.
 # `${var:?}` guards against ever expanding toward / on an unset/empty var.
-rm -rf "${dest:?}/${app_name:?}"
-mv "$staging" "$dest/$app_name"
+if [[ -d "${installed:?}" ]]; then
+	mv "$installed" "${backup:?}"
+fi
+if ! mv "$staging" "$installed"; then
+	echo "🛑 Error: could not move $app_name into $dest." >&2
+	exit 1
+fi
+rm -rf "$backup"
+backup=""
 
 # --- verify -----------------------------
 
 # Check the bundle exists AND is a real app (has Contents/) —
 # the latter catches a nested or partial copy that a bare directory check would miss.
-if [[ ! -d "$dest/$app_name/Contents" ]]; then
+if [[ ! -d "$installed/Contents" ]]; then
 	echo "🛑 Error: $app_name was not correctly installed at $dest." >&2
 	exit 1
 fi
 
-echo "✅ $app_name installed to $dest."
+echo "✅ $app_name ${new_version:-} installed to $dest."
