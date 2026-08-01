@@ -2,6 +2,13 @@
 [tools]
 mas = "latest" # Mac App Store CLI; drives the "mas:" entries below
 
+# cmux terminal — ships a notarized .app in a DMG,
+# moved to ~/Applications by the install-app hook.
+[tools."github:manaflow-ai/cmux"]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
+platforms.macos-arm64.asset_pattern = "cmux-macos.dmg"
+
 # macOS-only system packages, loaded automatically via auto_env (see miserc.toml).
 # mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
 [bootstrap.packages]

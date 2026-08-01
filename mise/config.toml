@@ -189,11 +189,6 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate-completions {}"
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
-[tools."http:cmux"]
-version = "0.64.4"
-postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
-platforms.macos-arm64.url = "https://github.com/manaflow-ai/cmux/releases/download/v{{version}}/cmux-macos.dmg"
-
 [tools.bat]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --completion {}"
