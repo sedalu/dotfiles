@@ -51,12 +51,17 @@ When adding a new CLI tool or runtime:
    mise copies `.app` bundles with `ditto` (preserving the code-signature seal),
    installs `pkg` casks via `sudo installer -pkg`,
    and links font casks straight into `~/Library/Fonts`.
-   `claude`, `tailscale-app`, and `font-jetbrains-mono-nerd-font` install this way
+   `ghostty`, `tailscale-app`, and `font-jetbrains-mono-nerd-font` install this way
    (the font route was broken in mise 2026.7.0 — `invalid font target '/$HOME/Library/Fonts/…'` —
    fixed in 2026.7.1).
+   The Claude Code CLI is *not* one of these — it is a plain `[tools]` entry (`claude`),
+   unrelated to the retired Claude desktop cask.
    A GUI app that ships a notarized `.app` in a DMG does *not* need a cask —
-   install it as a `github:`/`http:` tool with the `install-app` hook (see below),
-   as obsidian and steam do in `config.caladan.toml`.
+   install it as a `github:` tool with the `install-app` hook (see below),
+   as cmux does in `config.macos.toml`.
+   Prefer `github:` over `http:` — it resolves `latest` from the release list
+   (`http:` cannot, so it strands the entry on a hardcoded version)
+   and verifies artifact attestations and SLSA provenance.
 4. **Mac App Store apps** —
    a `mas:<adam-id>` entry in `[bootstrap.packages]`
    (universal apps → `mise/config.macos.toml`, machine-specific → `config.<machine>.toml`).
