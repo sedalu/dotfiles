@@ -65,6 +65,25 @@ reload() {
 	fi
 }
 
+# cmux reports Claude Code session state by intercepting `claude` at launch,
+# but it only installs that interception in shells it starts itself:
+# nested and re-exec'd shells fall through to the bare binary
+# and run an unhooked session with no error.
+# Defined only inside a cmux surface, so this is absent everywhere else.
+if [[ -n "${CMUX_SURFACE_ID:-}" ]]; then
+	claude() {
+		local cli="${CMUX_BUNDLED_CLI_PATH:-}"
+		local wrapper="${CMUX_CLAUDE_WRAPPER_SHIM:-}"
+		[[ -x "$wrapper" ]] || wrapper="${cli%/*}/cmux-claude-wrapper"
+
+		if [[ -x "$wrapper" ]]; then
+			"$wrapper" "$@"
+		else
+			command claude "$@"
+		fi
+	}
+fi
+
 # --- OS & Machine Layers ------------------
 
 # shellcheck source=/dev/null  # path resolved at runtime from $DOTFILES_OS
