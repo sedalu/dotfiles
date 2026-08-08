@@ -18,3 +18,8 @@
 
 # npm userconfig — deny-by-default; npm writes auth tokens to .npmrc
 /npm/
+
+# opencode — not ours to track: `make agents-default-opencode` in ~/Projects/kronk
+# owns these files and overwrites them wholesale on every run.
+# It also drops an auth.json here, so this is deny-by-default like fnox and npm.
+/opencode/
