@@ -8,6 +8,9 @@ experimental = true
 quiet = true
 verbose = false
 
+[settings.github]
+credential_command = 'gh auth token --hostname "$MISE_CREDENTIAL_HOST"'
+
 [settings.npm]
 package_manager = "bun"
 
