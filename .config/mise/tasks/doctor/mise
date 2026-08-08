@@ -20,4 +20,10 @@ else
 	echo "⚠️ mise doctor reported issues (non-fatal)"
 fi
 
+if mise token github | grep -qF '(none)'; then
+	echo "⚠️ No GitHub token — mise API calls limited to 60/hr (check gh auth status)"
+else
+	echo "✅ GitHub API token resolved"
+fi
+
 exit 0
