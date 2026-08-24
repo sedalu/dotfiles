@@ -5,13 +5,33 @@ description: Capture before/after snapshots of ALL macOS defaults, diff them to 
 
 ## Context
 
-The dotfiles have two macOS settings files:
-
-- `~/.config/macos/settings.sh` — global defaults, organized by section (used on all machines)
-- `~/.config/macos/settings.caladan.sh` — machine-specific overrides for this machine
-
 The `defaults read` command (no arguments) dumps all user defaults for all domains at once in a plist-like text format.
 Diffing two such snapshots shows exactly what changed — including system settings AND app settings.
+
+### Where a captured setting goes
+
+The dotfiles track macOS settings in three layers.
+Pick the layer by what *kind* of value it is, not by which file looks closest.
+
+| Layer         | Holds                                                   | Location                                                                                |
+| ------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Preferences   | Scalar values (string, bool, int, float)                | `[bootstrap.macos.defaults]` in `mise/config.toml`; per-machine in `mise/config.<machine>.toml` |
+| Reset-catalog | Keys kept at their macOS default (`defaults delete`)    | `macos/settings.sh`                                                                       |
+| Manual        | Anything with no `defaults write` form                  | `macos/manual.md`                                                                         |
+
+Applied by `mise run install:macos`, checked by `mise run doctor:macos`.
+
+Two rules that override the obvious guess:
+
+- **`macos/settings.sh` is generated.** `mise run catalog:macos` syncs it from macos-defaults.com.
+  Never hand-add a `defaults write` line to it — a capture belongs in `[bootstrap.macos.defaults]` instead.
+- **`macos/settings.<machine>.sh` does not exist.**
+  Machine-specific values are TOML, in `mise/config.<machine>.toml` (`caladan` on this machine),
+  unioned with the base config via `MISE_ENV`.
+
+Arrays, dictionaries, and settings applied by something other than `defaults`
+(`launchctl`, a sandboxed app container, a System Settings pane with no backing key)
+go in `macos/manual.md` as prose — see the Spotlight and Dock entries there for the house style.
 
 ## Workflow
 
@@ -68,15 +88,19 @@ The `defaults read` output format groups keys under domain blocks:
     };
 ```
 
-The filtered diff only shows changed lines without their domain context.
-Reconstruct context by running:
+The filtered diff shows changed lines without their domain context,
+and the filter is imperfect — it lets timestamp churn through,
+so expect to classify some surviving lines as noise yourself.
+
+Reconstruct context by mapping each changed line back to its enclosing domain.
+Get the hunk line numbers, then walk backwards to the nearest domain header:
 
 ```bash
-diff <BEFORE> <AFTER>
+diff <BEFORE> <AFTER> | grep -E '^[0-9]'
+awk -v n=<LINE> 'NR<=n && /^    "[^"]*" =/ {d=$0} END{print d}' <AFTER>
 ```
 
-and scanning the surrounding context lines to find which `"domain" = {` block each changed key belongs to.
-The domain is always the nearest preceding line that matches `"..." =     {`.
+The domain is always the nearest preceding line matching `"..." =     {` at four-space indent.
 
 **For each changed key, determine:**
 
@@ -102,14 +126,21 @@ If there are more than 10 changes, present one domain at a time.
 
 - Keys containing `Count`, `Recent`, `Cache`, `Index`, `Sequence`, `Token`, `Nonce`
 - Values that are large blobs of encoded data
+- `_DKThrottledActivityLast_*` usage timestamps (`Apple Global Domain`, `com.apple.knowledge-agent`)
+- `com.apple.xpc.activity2` activity-scheduler timestamps
+- `com.apple.dock` `mod-count`, which bumps on any Dock edit
+- Per-app window geometry blobs (`*WindowGeometry*`, `*windowFrame*`)
 
 ### Step 5: Track / Skip Prompts
 
 For each domain's changes, ask the user to choose one of:
 
-1. **Track globally** → add to `~/.config/macos/settings.sh`
-2. **Track as machine-specific** → add to `~/.config/macos/settings.caladan.sh`
+1. **Track globally** → `[bootstrap.macos.defaults]` in `mise/config.toml`
+2. **Track as machine-specific** → `[bootstrap.macos.defaults]` in `mise/config.<machine>.toml`
 3. **Skip** → don't record
+
+For a non-scalar value there is no global/machine choice to offer — it is document-in-`manual.md` or skip.
+Say so rather than presenting the scalar options.
 
 Batch the prompt per domain to avoid asking one-by-one when a domain has multiple related changes.
 Example: "For `com.apple.dock` (tilesize + autohide-delay) — track globally, machine-specific, or skip?"
@@ -118,54 +149,52 @@ If the user wants to track some keys from a domain but not others, handle them i
 
 ### Step 6: Write Confirmed Changes
 
-For each confirmed change:
-
 **1. Get the type:**
 
 ```bash
 defaults read-type <domain> <key>
 ```
 
-Map the output to the `defaults write` flag:
+Map the output to a TOML value:
 
-- `Type is string` → `-string`
-- `Type is boolean` → `-bool`
-- `Type is integer` → `-int`
-- `Type is float` → `-float`
-- `Type is array` or `Type is dictionary` → record as a comment only
-  (arrays/dicts can't be cleanly expressed as a single `defaults write`)
+- `Type is string` → quoted string
+- `Type is boolean` → `true` / `false`
+- `Type is integer` → bare integer
+- `Type is float` → decimal with an explicit `.0` if whole
+- `Type is array` or `Type is dictionary` → not a preference; document in `macos/manual.md`
 
-**2. Format the command:**
+**2. Insert into the target config:**
 
-For changed/added values:
+Find the `[bootstrap.macos.defaults."<domain>"]` table in the chosen file,
+or add one at the end of the existing `[bootstrap.macos.defaults…]` block if the domain is new.
+Quote the domain in the table header (`NSGlobalDomain` is the one bare exception, matching the existing entries).
+Quote the key too when it contains a dot.
 
-```bash
-defaults write <domain> <key> -<type> <value>
+```toml
+[bootstrap.macos.defaults."com.apple.dock"]
+# Icon size of Dock items, in pixels.
+# https://macos-defaults.com/dock/tilesize.html
+tilesize = 36
 ```
 
-For deleted keys (reset to system default):
+Add a one-line comment above the key explaining what the setting does,
+plus the macos-defaults.com URL when the key is catalogued there.
+If you're unsure what it does, omit the comment rather than guess.
+No inline tables; semantic line breaks in comments.
+
+**3. Check the restart target:**
+
+If the domain is new and its app needs a restart to pick the change up,
+add a `"domain:App Name"` entry to `killall_targets` in `macos/settings.sh`.
+That array is hand-maintained even though the rest of the file is generated.
+
+**4. For manual entries**, append a `###` section under the machine heading in `macos/manual.md`
+stating what the setting is, why it can't be automated, and the intended value.
+
+**After writing all changes**, verify with:
 
 ```bash
-defaults delete <domain> <key>
+mise run doctor:macos
 ```
 
-**3. Add a one-line comment** above the command explaining what the setting does,
-if it can be inferred from the key name or domain.
-Use the same style as the existing settings files.
-If you're unsure, omit the comment rather than guess.
-
-**4. Insert into the target settings file:**
-
-- Find the section whose header best matches the domain's app (e.g., `# --- Dock ---` for `com.apple.dock`, `# --- Finder ---` for `com.apple.finder`)
-- Append the new entry at the end of that section, before the next section header
-- If no matching section exists, append at the bottom of the file under `# --- Captured ---` (create it if needed)
-
-**Example entry to append:**
-
-```bash
-# Dock tile size in pixels.
-defaults write com.apple.dock tilesize -int 36
-```
-
-**After writing all changes**, summarize what was added to which file
-so the user can review the diff before committing.
+then summarize what was added to which file so the user can review the diff before committing.
