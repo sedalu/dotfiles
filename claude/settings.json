@@ -48,5 +48,6 @@
   "theme": "dark-ansi",
   "autoCompactEnabled": true,
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "useAutoModeDuringPlan": true
 }
