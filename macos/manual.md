@@ -58,3 +58,18 @@ Full category list at time of capture:
 `com.apple.podcasts`, `com.apple.reminders`, `com.apple.Safari`,
 `com.apple.shortcuts`, `com.apple.systempreferences`, `com.apple.tips`,
 `com.apple.VoiceMemos`, `System.menuItems`.
+
+### Dock
+
+`persistent-apps` is an array of dictionaries carrying opaque bookmark blobs and tile GUIDs,
+so it has no `defaults write` form that round-trips —
+arrange the Dock by hand.
+
+Pinned apps, left to right:
+
+Safari, Messages, Mail, cmux, FaceTime, Phone, Calendar, Contacts,
+Reminders, Notes, TV, Music, Numbers, Games, App Store,
+iPhone Mirroring, System Settings.
+
+cmux is pinned from `~/Applications/cmux.app`,
+where the `install-app` postinstall hook places it.
