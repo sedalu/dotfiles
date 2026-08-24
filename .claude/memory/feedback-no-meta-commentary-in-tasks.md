@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 61fce5c6-9a13-4175-9267-92d446d393f8
-  modified: 2026-07-30T01:19:40.512Z
+  modified: 2026-08-09T22:23:26.009Z
 ---
 
 Don't put meta commentary — rationale, ordering explanations, "why this works" notes —
@@ -21,4 +21,10 @@ Explaining the same design twice means two places to drift.
 write it into `.claude/CLAUDE.md` (conventions, "how to add X")
 or `.github/DESIGN.md` (architecture, dependency graphs),
 and leave the task/config file clean.
+
+The test for keeping a comment: does it state a fact that changes what an editor would *do*
+(a constraint that would otherwise be "simplified" away, a non-obvious upstream behaviour)?
+If it only justifies a decision already visible in the code, cut it.
+Seth asks for a comment pass explicitly ("check for unnecessary comments") when this slips,
+so run that pass before presenting the work, not after.
 Related: [[feedback-no-history-comments]], [[feedback-config-authoring-style]].

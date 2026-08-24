@@ -18,3 +18,10 @@
 - [project_mise_raw_task_sudo_tty.md](project_mise_raw_task_sudo_tty.md) — mise task raw=true fixes sudo-needs-TTY failures but drops that task's output prefix; don't sudo the outer `mise run` instead
 - [feedback-no-meta-commentary-in-tasks.md](feedback-no-meta-commentary-in-tasks.md) — no rationale/architecture comments in task or config files; that's what CLAUDE.md and DESIGN.md are for
 - [feedback-shell-config-portable-guards.md](feedback-shell-config-portable-guards.md) — shell/ edits must no-op where the tool is absent; guard on env var, don't muck with PATH
+- [feedback-defer-live-host-writes.md](feedback-defer-live-host-writes.md) — verify phases read-only; batch all live-host writes into the final cutover
+- [feedback-store-all-passwords-in-fnox.md](feedback-store-all-passwords-in-fnox.md) — store every password in fnox even if no script reads it; isolate those in a non-default profile
+- [feedback-sembr-applies-to-every-comment.md](feedback-sembr-applies-to-every-comment.md) — SEMBR is enforced in every comment, including two-line TOML/shell ones
+- [feedback-no-sensitive-commands-in-claude-code.md](feedback-no-sensitive-commands-in-claude-code.md) — never route password prompts through the `!` prefix; hand the command to the user
+- [nas-password-source-of-truth.md](nas-password-source-of-truth.md) — macOS Passwords.app is authoritative; fnox and the Samba passdb are downstream caches
+- [feedback-hand-off-commands-last.md](feedback-hand-off-commands-last.md) — finish all work first; a command for the user goes last in the message, nothing after it
+- [feedback-commit-renames-separately.md](feedback-commit-renames-separately.md) — commit a file move on its own before editing it, so git records a rename
