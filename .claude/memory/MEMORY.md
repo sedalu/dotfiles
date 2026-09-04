@@ -26,3 +26,4 @@
 - [feedback-hand-off-commands-last.md](feedback-hand-off-commands-last.md) — finish all work first; a command for the user goes last in the message, nothing after it
 - [feedback-commit-renames-separately.md](feedback-commit-renames-separately.md) — commit a file move on its own before editing it, so git records a rename
 - [feedback-keep-mouse-clicks-enabled.md](feedback-keep-mouse-clicks-enabled.md) — don't disable Claude Code mouse clicks; tried and reverted
+- [feedback-standards-examples-two-tiers.md](feedback-standards-examples-two-tiers.md) — dev-standards: inline examples miniature, whole configs in examples/
