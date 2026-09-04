@@ -5,3 +5,6 @@
 formatter:
   type: "basic"
   force_quote_style: "double"
+  # Blank lines are authorial structure, not stray whitespace.
+  # Without this the basic formatter strips every one of them.
+  retain_line_breaks: true
