@@ -1,0 +1,40 @@
+name: "check"
+
+"on":
+  pull_request:
+  push:
+    branches: ["main"]
+
+# A superseded check run is wasted work.
+concurrency:
+  group: "check-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: "docker"
+    container:
+      # Debian rather than Alpine: the pipeline's tools ship glibc binaries.
+      image: "debian:stable-slim"
+    steps:
+      - name: "Install dependencies"
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends curl ca-certificates git nodejs
+          rm -rf /var/lib/apt/lists/*
+
+      - uses: "actions/checkout@v4"
+
+      # The only provisioning step: every tool arrives pinned, from the lockfile.
+      - name: "Install mise"
+        run: |
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location https://mise.run | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: "Run checks"
+        # mise reads the shipped workstation toolchain at mise/config.toml as a
+        # project config, where it outranks .config/mise/config.toml.
+        # CI resolves only the pipeline's own tools.
+        run: |
+          export MISE_IGNORED_CONFIG_PATHS="$PWD/mise"
+          mise run check:all
