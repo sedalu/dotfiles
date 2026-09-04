@@ -1,5 +1,5 @@
-amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v1.57.0/hk@1.57.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.57.0/hk@1.57.0#/Builtins.pkl"
 
 // Files we don't own — app-managed or generated.
 // Formatters, hygiene *fixes*, and linters skip these
@@ -33,9 +33,14 @@ local shellGlob = List(
   "docs/dev-standards/examples/mise-task-check-all"
 )
 
+// The builtins select shell files with match_any, which also matches by detected
+// type — a clause that would drag zsh in.
+// This repo's set is the explicit glob and nothing else.
+local shellSelectors = List(new FileSelector { glob = shellGlob })
+
 // --- Owned-only linters (check, no fix) ---
 local shellcheck = (Builtins.shellcheck) {
-  glob = shellGlob
+  match_any = shellSelectors
   exclude = notOurs
   check = "shellcheck --rcfile .config/shellcheckrc {{ files }}"
 }
@@ -43,7 +48,7 @@ local tombi = (Builtins.tombi) { exclude = notOurs }
 
 // --- Owned-only formatters/fixers (have a fix command) ---
 local shfmt = (Builtins.shfmt) {
-  glob = shellGlob
+  match_any = shellSelectors
   exclude = notOurs
 }
 local tombiFormat = (Builtins.tombi_format) { exclude = notOurs }
@@ -62,14 +67,13 @@ local yamlfmt = (Builtins.yamlfmt) {
   fix = "yamlfmt -conf .config/yamlfmt.yaml {{ files }}"
 }
 // ryl is the YAML *linter* (replaces `yamlfmt -lint`).
-// Config lives in .config/ryl.toml, passed explicitly:
-// ryl would discover it, but hk's other tools pass their .config/ sidecars the same way.
-// Plain `ryl check` (not --diff) so unfixable violations fail too, not just fixable drift.
+// The builtin's `check_after_diff` reruns `check` once the diff is applied,
+// so unfixable violations fail too, not just fixable drift.
 local ryl = (Builtins.ryl) {
   exclude = notOurs
   check = "ryl check -c .config/ryl.toml {{ files }}"
-  check_diff = null
-  check_list_files = null
+  check_diff = "ryl check -c .config/ryl.toml --diff {{ files }}"
+  check_list_files = "ryl check -c .config/ryl.toml --list-files {{ files }}"
   fix = "ryl check -c .config/ryl.toml --fix {{ files }}"
 }
 local typos = (Builtins.typos) {

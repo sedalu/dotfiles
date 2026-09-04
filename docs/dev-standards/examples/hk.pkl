@@ -1,7 +1,7 @@
 // Reference pipeline for linting.md.
 // Reduced to the shape: two owned steps, one all-files step, and the hooks they compose into.
-amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v1.57.0/hk@1.57.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.57.0/hk@1.57.0#/Builtins.pkl"
 
 // Files the repo does not own — app-managed or generated.
 // Declared once so a new exclusion cannot be missed at one call site.
