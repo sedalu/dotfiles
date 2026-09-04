@@ -132,6 +132,8 @@ local linters = new Mapping<String, Step> {
 hooks {
   ["pre-commit"] {
     fix = true
+    stage = false
+    fail_on_fix = true
     stash = "git"
     steps = new Mapping<String, Step> {
       ...guards
