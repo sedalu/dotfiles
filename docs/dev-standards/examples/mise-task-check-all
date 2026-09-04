@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#MISE description="Check the whole tree — what CI runs"
+#USAGE flag "--fix" help="Apply fixes instead of reporting"
+set -euo pipefail
+
+# mise wraps hk; hk invokes the tools. A task never reaches past hk to a tool,
+# and an hk step never shells back out to a task.
+if [ "${usage_fix:-false}" = "true" ]; then
+	hk fix --all
+else
+	hk check --all
+fi

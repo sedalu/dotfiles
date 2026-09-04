@@ -1,0 +1,31 @@
+# Reference config for tooling.md.
+# Shows pinning, the two entry forms, a toolchain rebuild hook, and a config-wrapper path.
+
+[settings]
+lockfile = true
+
+[env]
+# Placed ahead of the tool install directories, which is what lets a wrapper
+# in .config/mise/bin shadow the tool it wraps.
+_.path = [".config/mise/bin"]
+# Named through a variable rather than a relative path,
+# which would resolve against the caller's working directory.
+PROJECT_ROOT = "{{config_root}}"
+
+[tools]
+# Version-only entries stay inline strings.
+shellcheck = "0.11.0"
+shfmt = "3.12.0"
+
+# An entry carrying options takes the table form. Never an inline table.
+[tools.colima]
+version = "0.9.2"
+depends = "lima"
+
+# Every tool that parses Go is rebuilt when the toolchain moves,
+# or it reads new source as an older language.
+# --force is required because the tools are already installed.
+# mise [vars] do not render here; write the literal value.
+[tools.go]
+version = "1.26.2"
+postinstall = "mise install --force gopls goimports gofumpt golangci-lint"
