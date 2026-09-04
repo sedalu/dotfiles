@@ -51,6 +51,19 @@
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
+## Engineering Standards
+
+Cross-project conventions live in `$DOTFILES_DIR/docs/dev-standards/`
+(`~/.config/docs/dev-standards/`).
+They apply to every project, and `README.md` there is the index:
+it carries the short version and a table per group —
+foundations, practices, languages, and the situational files —
+each pointing to one file per topic.
+
+Read the file for the topic at hand before setting up a new repo,
+or before changing how an existing one is laid out, linted, configured, tested, or deployed.
+Load only that file; the set is split so it never has to be in context all at once.
+
 ## Authoring Style: Semantic Line Breaks
 
 When writing or editing prose and comments,
