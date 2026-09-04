@@ -64,7 +64,7 @@ That list is declared once and applied to every owned step,
 so a newly excluded path cannot be missed at one call site:
 
 ```pkl
-local notOurs = List("gh/hosts.yml", ".github/TASKS.md")
+local notOurs = List("gh/hosts.yml", "docs/TASKS.md")
 local taplo = (Builtins.taplo) { exclude = notOurs }
 ```
 
