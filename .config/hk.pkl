@@ -29,7 +29,8 @@ local shellGlob = List(
   ".config/mise/tasks/**",
   "mise/tasks/**",
   "mise/hooks/**",
-  "shell/bash/**"
+  "shell/bash/**",
+  "docs/dev-standards/examples/mise-task-check-all"
 )
 
 // --- Owned-only linters (check, no fix) ---
