@@ -46,6 +46,10 @@ local linters = new Mapping<String, Step> {
 hooks {
   ["pre-commit"] {
     fix = true
+    // Fixes land in the working tree and block the commit;
+    // nothing reaches a commit that was not read and staged by hand.
+    stage = false
+    fail_on_fix = true
     stash = "git"
     steps = new Mapping<String, Step> {
       ...formatters
