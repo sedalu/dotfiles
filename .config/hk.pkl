@@ -82,6 +82,7 @@ local typos = (Builtins.typos) {
     """
   fix = "typos --force-exclude --config .config/typos.toml --write-changes {{ files }}"
 }
+local jq = (Builtins.jq) { exclude = notOurs }
 local newlines = (Builtins.newlines) { exclude = notOurs }
 local mixedLineEnding = (Builtins.mixed_line_ending) { exclude = notOurs }
 local trailingWhitespace = (Builtins.trailing_whitespace) { exclude = notOurs }
@@ -118,6 +119,7 @@ local formatters = new Mapping<String, Step> {
   ["shfmt"] = shfmt
   ["taplo_format"] = taploFormat
   ["rumdl"] = rumdl
+  ["jq"] = jq
   ["yamlfmt"] = yamlfmt
   ["ryl"] = ryl
   ["typos"] = typos
