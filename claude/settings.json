@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "model": "opus",
   "hooks": {
     "SessionStart": [
@@ -8,6 +11,10 @@
             "type": "command",
             "command": "/Users/seth/.claude/hooks/mise-trust.sh",
             "statusMessage": "Trusting mise config..."
+          },
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
           }
         ]
       }
@@ -18,6 +25,10 @@
           {
             "type": "command",
             "command": "/Users/seth/.claude/hooks/mise-trust.sh"
+          },
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
           }
         ]
       }
@@ -29,11 +40,28 @@
           {
             "type": "command",
             "command": "rtk hook claude"
+          },
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
           }
         ]
       }
     ]
   },
+  "worktree": {
+    "baseRef": "fresh"
+  },
+  "workflowKeywordTriggerEnabled": false,
   "statusLine": {
     "type": "command",
     "command": "bash /Users/seth/.claude/statusline-command.sh"
@@ -44,10 +72,17 @@
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true
   },
+  "feedbackDrafts": "notify",
+  "askUserQuestionTimeout": "never",
+  "autoUpdatesChannel": "stable",
+  "minimumVersion": "2.1.241",
   "tui": "fullscreen",
-  "theme": "dark-ansi",
+  "theme": "auto",
+  "editorMode": "normal",
+  "preferredNotifChannel": "auto",
   "autoCompactEnabled": true,
   "remoteControlAtStartup": false,
+  "inputNeededNotifEnabled": false,
   "agentPushNotifEnabled": true,
   "useAutoModeDuringPlan": true
 }
