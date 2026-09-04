@@ -1,0 +1,31 @@
+// The workstation toolchain in mise/config.toml is the artifact this repo ships,
+// not tooling for it,
+// and it tracks `latest` deliberately — only the pipeline's own pins are managed here.
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+  mise: {
+    managerFilePatterns: ["/^\\.config/mise/config\\.toml$/"],
+  },
+  "github-actions": {
+    // Forgejo's workflow directory, not the .github/ default.
+    managerFilePatterns: ["/^\\.forgejo/workflows/.+\\.ya?ml$/"],
+  },
+  packageRules: [
+    {
+      matchManagers: ["mise", "github-actions"],
+      matchUpdateTypes: ["minor", "patch"],
+      labels: ["dependencies", "tooling"],
+      commitMessagePrefix: "chore(deps):",
+      automerge: true,
+    },
+    {
+      // A major bump gets a human reading its changelog.
+      matchManagers: ["mise", "github-actions"],
+      matchUpdateTypes: ["major"],
+      labels: ["dependencies", "tooling"],
+      commitMessagePrefix: "chore(deps):",
+      automerge: false,
+    },
+  ],
+}
