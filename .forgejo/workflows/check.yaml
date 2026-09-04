@@ -31,6 +31,13 @@ jobs:
           curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location https://mise.run | bash
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: "Trust the workspace"
+        # actions/checkout marks the workspace safe under a temporary HOME
+        # that it then discards,
+        # so libgit2 meets a repository it considers foreign-owned and refuses to open.
+        run: |
+          git config --global --add safe.directory "$PWD"
+
       - name: "Run checks"
         env:
           # Forgejo injects its own GITHUB_TOKEN,
