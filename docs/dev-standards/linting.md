@@ -65,7 +65,7 @@ so a newly excluded path cannot be missed at one call site:
 
 ```pkl
 local notOurs = List("gh/hosts.yml", "docs/TASKS.md")
-local taplo = (Builtins.taplo) { exclude = notOurs }
+local tombi = (Builtins.tombi) { exclude = notOurs }
 ```
 
 Secret scanning is the exception: it scans everything.
