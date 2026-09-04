@@ -3,22 +3,8 @@
 [bootstrap.packages]
 "brew-cask:obsidian" = "latest"
 "brew-cask:steam" = "latest"
-"mas:1480779512" = "latest"     # Banktivity: Budget & Finances
-"mas:6744373452" = "latest"     # Sid Meier's Civilization VII
-
-# Per-machine symlinks for caladan,
-# unioned with the base [dotfiles] in config.toml
-# and applied by `install:symlinks`.
-# The ~/Downloads redirect targets a non-repo source (iCloud Drive);
-# the install task's ACL-aware backup-preflight clears the deny-delete ACL on a fresh ~/Downloads
-# before `apply` replaces it with the symlink.
-[dotfiles."~/.claude/projects/-Users-seth--config/memory"]
-source = "~/.config/.claude/memory"
-mode = "symlink"
-
-[dotfiles."~/Downloads"]
-source = "~/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
-mode = "symlink"
+"mas:1480779512" = "latest"  # Banktivity: Budget & Finances
+"mas:6744373452" = "latest"  # Sid Meier's Civilization VII
 
 # Per-machine scalar macOS preferences for caladan,
 # unioned with the base [bootstrap.macos.defaults] in config.toml via MISE_ENV.
@@ -59,3 +45,17 @@ ShowDevelopMenu = true
 [bootstrap.macos.defaults."com.apple.assistant.support"]
 # Disable "Help Apple Improve Search" (2 = opted out).
 "Search Queries Data Sharing Status" = 2
+
+# Per-machine symlinks for caladan,
+# unioned with the base [dotfiles] in config.toml
+# and applied by `install:symlinks`.
+# The ~/Downloads redirect targets a non-repo source (iCloud Drive);
+# the install task's ACL-aware backup-preflight clears the deny-delete ACL on a fresh ~/Downloads
+# before `apply` replaces it with the symlink.
+[dotfiles."~/.claude/projects/-Users-seth--config/memory"]
+source = "~/.config/.claude/memory"
+mode = "symlink"
+
+[dotfiles."~/Downloads"]
+source = "~/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
+mode = "symlink"

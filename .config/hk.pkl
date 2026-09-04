@@ -39,14 +39,14 @@ local shellcheck = (Builtins.shellcheck) {
   exclude = notOurs
   check = "shellcheck --rcfile .config/shellcheckrc {{ files }}"
 }
-local taplo = (Builtins.taplo) { exclude = notOurs }
+local tombi = (Builtins.tombi) { exclude = notOurs }
 
 // --- Owned-only formatters/fixers (have a fix command) ---
 local shfmt = (Builtins.shfmt) {
   glob = shellGlob
   exclude = notOurs
 }
-local taploFormat = (Builtins.taplo_format) { exclude = notOurs }
+local tombiFormat = (Builtins.tombi_format) { exclude = notOurs }
 local rumdl = (Builtins.rumdl) {
   exclude = notOurs
   check_diff = "rumdl check --config .config/rumdl.toml --diff {{ files }}"
@@ -117,7 +117,7 @@ local formatters = new Mapping<String, Step> {
   ["mixed_line_ending"] = mixedLineEnding
   ["trailing_whitespace"] = trailingWhitespace
   ["shfmt"] = shfmt
-  ["taplo_format"] = taploFormat
+  ["tombi_format"] = tombiFormat
   ["rumdl"] = rumdl
   ["jq"] = jq
   ["yamlfmt"] = yamlfmt
@@ -128,7 +128,7 @@ local formatters = new Mapping<String, Step> {
 // Owned check-only linters.
 local linters = new Mapping<String, Step> {
   ["shellcheck"] = shellcheck
-  ["taplo"] = taplo
+  ["tombi"] = tombi
 }
 
 hooks {

@@ -23,43 +23,8 @@ package_manager = "bun"
 "brew:bash" = "latest"
 "brew:git" = "latest"
 "brew:zsh" = "latest"
-"brew:openssl@3" = "latest" # required by Python (ssl module) and networking Rust crates
-"brew:pkgconf" = "latest"   # helps compilers locate openssl and other libs when building from source
-
-# Declarative symlinks for repo-sourced config files,
-# applied by `mise dotfiles apply` (wired into `install:symlinks`).
-# Per-machine entries live in config.<machine>.toml;
-# all [dotfiles] tables union across loaded files (see miserc.toml).
-# The install task backs up any conflicting non-symlink target to .bak first,
-# since `apply --force` overwrites without a backup of its own.
-[dotfiles."~/.claude"]
-source = "~/.config/claude"
-mode = "symlink"
-
-[dotfiles."~/.bash_profile"]
-source = "~/.config/shell/bash/.bash_profile"
-mode = "symlink"
-
-[dotfiles."~/.bashrc"]
-source = "~/.config/shell/bash/.bashrc"
-mode = "symlink"
-
-[dotfiles."~/.zshenv"]
-source = "~/.config/shell/zsh/.zshenv"
-mode = "symlink"
-
-[dotfiles."~/.ssh/config"]
-source = "~/.config/ssh/config"
-mode = "symlink"
-
-# Go environment file (GOPATH/GOMODCACHE/GOCACHE), rendered from go/env.tmpl.
-# Declarative replacement for the old `go env -w` install task:
-# `go` reads this file natively in every context (interactive or not, mise or not),
-# which a mise [env] block — scoped to mise-activated shells only — would miss.
-# template mode (not symlink) so a stray `go env -w` can't write back into the repo.
-[dotfiles."~/.config/go/env"]
-source = "~/.config/go/env.tmpl"
-mode = "template"
+"brew:openssl@3" = "latest"  # required by Python (ssl module) and networking Rust crates
+"brew:pkgconf" = "latest"  # helps compilers locate openssl and other libs when building from source
 
 # Scalar macOS `defaults write` preferences,
 # applied by `mise bootstrap macos-defaults apply` (wired into `install:macos`).
@@ -106,6 +71,41 @@ NSAutomaticPeriodSubstitutionEnabled = true
 # Use F1–F12 as standard function keys.
 # https://macos-defaults.com/keyboard/applekeyboardfnstate.html
 "com.apple.keyboard.fnState" = true
+
+# Declarative symlinks for repo-sourced config files,
+# applied by `mise dotfiles apply` (wired into `install:symlinks`).
+# Per-machine entries live in config.<machine>.toml;
+# all [dotfiles] tables union across loaded files (see miserc.toml).
+# The install task backs up any conflicting non-symlink target to .bak first,
+# since `apply --force` overwrites without a backup of its own.
+[dotfiles."~/.claude"]
+source = "~/.config/claude"
+mode = "symlink"
+
+[dotfiles."~/.bash_profile"]
+source = "~/.config/shell/bash/.bash_profile"
+mode = "symlink"
+
+[dotfiles."~/.bashrc"]
+source = "~/.config/shell/bash/.bashrc"
+mode = "symlink"
+
+[dotfiles."~/.zshenv"]
+source = "~/.config/shell/zsh/.zshenv"
+mode = "symlink"
+
+[dotfiles."~/.ssh/config"]
+source = "~/.config/ssh/config"
+mode = "symlink"
+
+# Go environment file (GOPATH/GOMODCACHE/GOCACHE), rendered from go/env.tmpl.
+# Declarative replacement for the old `go env -w` install task:
+# `go` reads this file natively in every context (interactive or not, mise or not),
+# which a mise [env] block — scoped to mise-activated shells only — would miss.
+# template mode (not symlink) so a stray `go env -w` can't write back into the repo.
+[dotfiles."~/.config/go/env"]
+source = "~/.config/go/env.tmpl"
+mode = "template"
 
 [shell_alias]
 # eza -> ls

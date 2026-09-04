@@ -1,6 +1,6 @@
 # macOS-only tools, loaded automatically via auto_env (see miserc.toml).
 [tools]
-mas = "latest" # Mac App Store CLI; drives the "mas:" entries below
+mas = "latest"  # Mac App Store CLI; drives the "mas:" entries below
 
 # cmux terminal — ships a notarized .app in a DMG,
 # moved to ~/Applications by the install-app hook.
@@ -16,11 +16,11 @@ platforms.macos-arm64.asset_pattern = "cmux-macos.dmg"
 "brew-cask:ghostty" = "latest"
 "brew-cask:tailscale-app" = "latest"
 "brew-cask:ungoogled-chromium" = "latest"
-"mas:682658836" = "latest"                           # GarageBand
-"mas:408981434" = "latest"                           # iMovie
-"mas:361285480" = "latest"                           # Keynote
-"mas:361309726" = "latest"                           # Pages
-"mas:361304891" = "latest"                           # Numbers
+"mas:682658836" = "latest"  # GarageBand
+"mas:408981434" = "latest"  # iMovie
+"mas:361285480" = "latest"  # Keynote
+"mas:361309726" = "latest"  # Pages
+"mas:361304891" = "latest"  # Numbers
 
 # Login shell for this account, converged by `mise bootstrap user apply`
 # (wired into install:login-shell; checked by doctor:login-shell).
