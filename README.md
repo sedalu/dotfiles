@@ -23,7 +23,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR`
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`) |
 | `.config/`      | hk pipeline + linter sidecars (shellcheck, rumdl, …)  |
 | `starship.toml` | Starship prompt config                                |
-| `DESIGN.md`     | [System architecture and design rationale](DESIGN.md) |
+| `docs/`         | [Design rationale](docs/DESIGN.md), dev standards, and the task reference |
 
 ## Setup
 
@@ -64,7 +64,7 @@ mise run doctor    # run health checks
 | `update`  | Update dotfiles (mise, system packages, zsh-plugins)  |
 | `doctor`  | Run all dotfiles health checks             |
 
-See [`TASKS.md`](TASKS.md) for the complete, auto-generated reference of every task
+See [`docs/TASKS.md`](docs/TASKS.md) for the complete, auto-generated reference of every task
 (including the `worktree:` namespace);
 regenerate it with `mise run catalog:tasks`.
 
@@ -125,7 +125,7 @@ Export `HK=0` to bypass a hook.
 
 Formatters and linters only touch files we own (app-managed and generated files are excluded),
 but secret scanning (`gitleaks`, in `git` mode) covers every committed line.
-See [`DESIGN.md`](DESIGN.md#10-linting-formatting--secret-scanning-hk) for the full design.
+See [`docs/DESIGN.md`](docs/DESIGN.md#10-linting-formatting--secret-scanning-hk) for the full design.
 
 ## Login Shell
 
