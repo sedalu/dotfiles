@@ -15,6 +15,7 @@ platforms.macos-arm64.asset_pattern = "cmux-macos.dmg"
 "brew-cask:font-jetbrains-mono-nerd-font" = "latest"
 "brew-cask:ghostty" = "latest"
 "brew-cask:tailscale-app" = "latest"
+"brew-cask:ungoogled-chromium" = "latest"
 "mas:682658836" = "latest"                           # GarageBand
 "mas:408981434" = "latest"                           # iMovie
 "mas:361285480" = "latest"                           # Keynote
