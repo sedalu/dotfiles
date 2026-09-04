@@ -1,10 +1,12 @@
 # rumdl config. Passed via `rumdl check --config .config/rumdl.toml` in hk.pkl.
 # Disabled rules:
-#   MD013 (line length): our docs use semantic line breaks (one clause per line)
+#   MD013 (line length):
+#     our docs use semantic line breaks (one clause per line)
 #     that exceed 80 columns by design.
-#   MD041 (first line must be a top-level heading): every violation here is a
-#     frontmatter-led file with a mandated format (Claude skills/memory), which
-#     can't carry an H1 — the rule only ever false-positives in this repo.
+#   MD041 (first line must be a top-level heading):
+#     every violation here is a frontmatter-led file with a mandated format (Claude skills/memory),
+#     which can't carry an H1 —
+#     the rule only ever false-positives in this repo.
 # Every other rule stays on to keep markdown structurally consistent.
 
 [global]

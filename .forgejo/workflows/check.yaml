@@ -33,11 +33,12 @@ jobs:
 
       - name: "Run checks"
         env:
-          # Forgejo injects its own GITHUB_TOKEN, which the GitHub API rejects
-          # outright; mise reads it when resolving release assets.
+          # Forgejo injects its own GITHUB_TOKEN,
+          # which the GitHub API rejects outright;
+          # mise reads it when resolving release assets.
           MISE_GITHUB_TOKEN: "${{ secrets.GH_PAT }}"
-        # mise reads the shipped workstation toolchain at mise/config.toml as a
-        # project config, where it outranks .config/mise/config.toml.
+        # mise reads the shipped workstation toolchain at mise/config.toml as a project config,
+        # where it outranks .config/mise/config.toml.
         # CI resolves only the pipeline's own tools.
         run: |
           export MISE_IGNORED_CONFIG_PATHS="$PWD/mise"
