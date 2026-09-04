@@ -59,7 +59,7 @@ local rumdl = (Builtins.rumdl) {
 local yamlfmt = (Builtins.yamlfmt) {
   exclude = notOurs
   check_diff = null
-  fix = "yamlfmt -conf .config/yamlfmt.yml {{ files }}"
+  fix = "yamlfmt -conf .config/yamlfmt.yaml {{ files }}"
 }
 // ryl is the YAML *linter* (replaces `yamlfmt -lint`).
 // Config lives in .config/ryl.toml, passed explicitly:
