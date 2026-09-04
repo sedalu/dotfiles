@@ -6,7 +6,7 @@ and the git directory lives at `$DOTFILES_GIT`
 (typically `$XDG_DATA_DIR/dotfiles.git` or `~/.local/share/dotfiles.git`).
 Use `git` directly from the worktree for repo operations.
 
-See [`.github/DESIGN.md`](../.github/DESIGN.md) for detailed system architecture and design rationale.
+See [`docs/DESIGN.md`](../docs/DESIGN.md) for detailed system architecture and design rationale.
 
 ## Directory layout
 
@@ -144,7 +144,7 @@ Git hooks are wired in `git/config` (`[hook]` entries → `hk run <event> --from
 export `HK=0` to bypass.
 
 - **Scope is only files we own** — formatters and linters carry an `exclude` list (`notOurs` in `hk.pkl`):
-  app-managed and generated files (`gh/hosts.yml`, `claude/settings.json`, Claude memory, `obsidian/`, `.github/TASKS.md`, …)
+  app-managed and generated files (`gh/hosts.yml`, `claude/settings.json`, Claude memory, `obsidian/`, `docs/TASKS.md`, …)
   are skipped so we don't fight the owning app or churn generated output.
   Shell steps use an explicit glob (extensionless `bin/`, mise tasks/hooks).
   zsh is excluded — shfmt/shellcheck don't support it.
@@ -159,7 +159,7 @@ export `HK=0` to bypass.
   `# shellcheck shell=bash` atop shebang-less sourced files,
   and targeted `# shellcheck disable=` with a reason.
 
-See [`.github/DESIGN.md`](../.github/DESIGN.md) §10 for the full rationale.
+See [`docs/DESIGN.md`](../docs/DESIGN.md) §10 for the full rationale.
 
 ## Sensitive files
 
@@ -172,7 +172,7 @@ and `gitleaks` (via hk) blocks committed/pushed secrets — see [Code quality (h
 
 Automation uses `mise run` with tasks defined in `.config/mise/tasks/` —
 a project-local mise scope, available anywhere under `$DOTFILES_DIR` but not globally
-(see [`.github/DESIGN.md`](../.github/DESIGN.md) §9).
+(see [`docs/DESIGN.md`](../docs/DESIGN.md) §9).
 The global `worktree:*` tasks stay in `mise/tasks/`. Key tasks:
 
 | Task               | Purpose                                    |
@@ -180,8 +180,8 @@ The global `worktree:*` tasks stay in `mise/tasks/`. Key tasks:
 | `install`      | Install dotfiles (system packages, symlinks, plugins) |
 | `update`       | Update dotfiles (mise, system packages, zsh-plugins)  |
 | `doctor`       | Run all dotfiles health checks             |
-| `catalog:tasks` | Regenerate `.github/TASKS.md` from task Usage specs       |
+| `catalog:tasks` | Regenerate `docs/TASKS.md` from task Usage specs       |
 
 User-facing tasks carry `#USAGE`/`#MISE description`;
 internal subtasks set `#MISE hide=true` so only top-level tasks surface in `mise tasks` and the generated reference.
-`.github/TASKS.md` is the full auto-generated listing — regenerate it with `catalog:tasks`, never by hand.
+`docs/TASKS.md` is the full auto-generated listing — regenerate it with `catalog:tasks`, never by hand.

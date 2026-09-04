@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-#USAGE complete "Regenerate the task reference in .github/TASKS.md"
-#MISE description="Regenerate the task reference in .github/TASKS.md"
+#USAGE complete "Regenerate the task reference in docs/TASKS.md"
+#MISE description="Regenerate the task reference in docs/TASKS.md"
 #MISE sources=[".config/mise/tasks/**/*"]
-#MISE outputs=[".github/TASKS.md"]
+#MISE outputs=["docs/TASKS.md"]
 set -euo pipefail
 
 # Regenerate the full task reference from each task's Usage spec,
@@ -10,7 +10,7 @@ set -euo pipefail
 # The curated at-a-glance table in README.md is maintained by hand;
 # this is the complete, always-current listing.
 # sources/outputs let mise skip the regen when no task file has changed.
-DOC="$DOTFILES_DIR/.github/TASKS.md"
+DOC="$DOTFILES_DIR/docs/TASKS.md"
 
 mise generate task-docs --style detailed --inject --output "$DOC"
 

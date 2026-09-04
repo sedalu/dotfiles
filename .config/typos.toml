@@ -5,7 +5,7 @@
 [default.extend-words]
 # Words typos misreads, e.g.:
 # "caladan" = "caladan"
-# Asimov "Foundation" worldbuilding name in .github/TODO.md (not "Zone"/"Xeon").
+# Asimov "Foundation" worldbuilding name in docs/TODO.md (not "Zone"/"Xeon").
 "Zeon" = "Zeon"
 
 [default.extend-identifiers]

@@ -2,7 +2,7 @@
 
 Complete reference for every `mise run` task in this repo:
 the tree-scoped dotfiles-management tasks and the global `worktree:*` tasks.
-For the day-to-day summary, see the [Mise Tasks table in the README](README.md#mise-tasks).
+For the day-to-day summary, see the [Mise Tasks table in the README](../README.md#mise-tasks).
 
 > [!NOTE]
 > This section is generated from each task's Usage spec by
@@ -11,45 +11,44 @@ For the day-to-day summary, see the [Mise Tasks table in the README](README.md#m
 <!-- mise-tasks -->
 ## `bootstrap`
 
-- **Usage**: `bootstrap [repo-url]`
+- **Usage:** `bootstrap [repo-url]`
 
 ### Arguments
-
-#### `[repo-url]`
+- **`[repo-url]`**
 
 ## `catalog:macos`
 
-- **Usage**: `catalog:macos`
+- **Usage:** `catalog:macos`
 
 Sync macOS defaults catalog from macos-defaults.com
 
 ## `catalog:tasks`
 
-- **Usage**: `catalog:tasks`
+- **Usage:** `catalog:tasks`
 
-Regenerate the task reference in .github/TASKS.md
+Regenerate the task reference in docs/TASKS.md
 
 ## `doctor`
 
-- **Usage**: `doctor`
+- **Usage:** `doctor`
 
 Run all dotfiles health checks
 
 ## `install`
 
-- **Usage**: `install`
+- **Usage:** `install`
 
 Install dotfiles
 
 ## `machine`
 
-- **Usage**: `machine`
+- **Usage:** `machine`
 
 Set machine name (OS hostname + DOTFILES_MACHINE)
 
 ## `update`
 
-- **Usage**: `update`
+- **Usage:** `update`
 
 Update dotfiles
 
@@ -58,27 +57,24 @@ Update dotfiles
 Create a worktree for a new or existing remote branch
 
 
-- **Usage**: `worktree:branch [--from <from>] [--name <name>] <branch>`
+- **Usage:** `worktree:branch [--from <from>] [--name <name>] <branch>`
 
 ### Arguments
-
-#### `<branch>`
+- **`<branch>`**
 
 ### Flags
-
-#### `--from <from>`
-
-#### `--name <name>`
+- **`--from <from>`**
+- **`--name <name>`**
 
 ## `worktree:branches`
 
-- **Usage**: `worktree:branches`
+- **Usage:** `worktree:branches`
 
 List remote branches
 
 ## `worktree:fetch`
 
-- **Usage**: `worktree:fetch`
+- **Usage:** `worktree:fetch`
 
 Fetch all branches from origin
 
@@ -87,21 +83,20 @@ Fetch all branches from origin
 Bootstrap a bare-worktree repo (clone URL or convert existing)
 
 
-- **Usage**: `worktree:init [url]`
+- **Usage:** `worktree:init [url]`
 
 ### Arguments
-
-#### `[url]`
+- **`[url]`**
 
 ## `worktree:list`
 
-- **Usage**: `worktree:list`
+- **Usage:** `worktree:list`
 
 List all worktrees
 
 ## `worktree:prune`
 
-- **Usage**: `worktree:prune`
+- **Usage:** `worktree:prune`
 
 Prune stale worktree references
 
@@ -110,32 +105,30 @@ Prune stale worktree references
 Remove a worktree and prune stale references
 
 
-- **Usage**: `worktree:remove <n>`
+- **Usage:** `worktree:remove <n>`
 
 ### Arguments
-
-#### `<n>`
+- **`<n>`**
 
 ## `worktree:review`
 
 Switch the pr/ worktree to a given branch
 
 
-- **Usage**: `worktree:review <branch>`
+- **Usage:** `worktree:review <branch>`
 
 ### Arguments
-
-#### `<branch>`
+- **`<branch>`**
 
 ## `worktree:status`
 
-- **Usage**: `worktree:status`
+- **Usage:** `worktree:status`
 
 Show status of all worktrees (branch, dirty, ahead/behind)
 
 ## `worktree:sync`
 
-- **Usage**: `worktree:sync`
+- **Usage:** `worktree:sync`
 
 Fetch origin and pull all worktrees
 <!-- /mise-tasks -->

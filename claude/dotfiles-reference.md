@@ -151,7 +151,7 @@ mise run doctor    # check dotfiles health
 
 ## Related Resources
 
-- **Full design doc:** `~/.config/.github/DESIGN.md` — Architecture decisions, environment variables, shell load order, bare repo pattern
+- **Full design doc:** `~/.config/docs/DESIGN.md` — Architecture decisions, environment variables, shell load order, bare repo pattern
 - **Worktree tasks:** `~/.config/mise/tasks/worktree/` — Individual task definitions
 - **Dotfiles tasks:** `~/.config/.config/mise/tasks/` — Individual task definitions (project-local scope)
 - **Mise config:** `~/.config/mise/config.toml` — Tool versions and configurations
