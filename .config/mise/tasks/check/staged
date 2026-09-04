@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Check the staged set"
+set -euo pipefail
+
+hk check

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Check the whole tree — what CI runs"
+set -euo pipefail
+
+hk check --all

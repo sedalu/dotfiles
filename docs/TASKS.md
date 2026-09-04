@@ -11,6 +11,9 @@ For the day-to-day summary, see the [Mise Tasks table in the README](../README.m
 <!-- mise-tasks -->
 ## `bootstrap`
 
+Bootstrap dotfiles on a fresh machine
+
+
 - **Usage:** `bootstrap [repo-url]`
 
 ### Arguments
@@ -28,11 +31,63 @@ Sync macOS defaults catalog from macos-defaults.com
 
 Regenerate the task reference in docs/TASKS.md
 
+## `check`
+
+- Depends: check:staged
+
+- **Usage:** `check`
+
+Check the default scope — the staged set
+
+## `check:all`
+
+- **Usage:** `check:all`
+
+Check the whole tree — what CI runs
+
+## `check:pr`
+
+- **Usage:** `check:pr`
+
+Check the diff against the default branch
+
+## `check:staged`
+
+- **Usage:** `check:staged`
+
+Check the staged set
+
 ## `doctor`
 
 - **Usage:** `doctor`
 
 Run all dotfiles health checks
+
+## `fix`
+
+- Depends: fix:staged
+
+- **Usage:** `fix`
+
+Fix the default scope — the staged set
+
+## `fix:all`
+
+- **Usage:** `fix:all`
+
+Fix the whole tree
+
+## `fix:pr`
+
+- **Usage:** `fix:pr`
+
+Fix the diff against the default branch
+
+## `fix:staged`
+
+- **Usage:** `fix:staged`
+
+Fix the staged set
 
 ## `install`
 

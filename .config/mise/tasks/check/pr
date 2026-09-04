@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Check the diff against the default branch"
+set -euo pipefail
+
+hk check --pr

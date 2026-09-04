@@ -137,9 +137,12 @@ Config lives in `.config/`:
   These *are* passed explicitly (`--rcfile`, `--config`) from the steps in `hk.pkl`,
   since the tools' own auto-discovery doesn't look in this subdir.
 
-Every tool (`hk`, `shellcheck`, `shfmt`, `taplo`, `rumdl`, `yamlfmt`, `typos`, `gitleaks`) installs via mise.
-`hk check` lints staged files and `hk fix` auto-formats them (default scope);
-add `--all` to sweep the whole tree (drift check / CI).
+The pipeline's tools (`hk`, `shellcheck`, `shfmt`, `tombi`, `rumdl`, `ryl`, `yamlfmt`, `typos`, `gitleaks`, `jq`)
+are pinned in `.config/mise/config.toml` — the project scope, separate from the workstation
+toolchain this repo ships in `mise/config.toml`.
+Run the pipeline through its tasks, never `hk` directly:
+`check` and `fix` take the staged set, `check:all` and `fix:all` the whole tree (what CI runs),
+`check:pr` and `fix:pr` the diff against the default branch.
 Git hooks are wired in `git/config` (`[hook]` entries → `hk run <event> --from-hook`);
 export `HK=0` to bypass.
 
@@ -181,7 +184,9 @@ The global `worktree:*` tasks stay in `mise/tasks/`. Key tasks:
 | `update`       | Update dotfiles (mise, system packages, zsh-plugins)  |
 | `doctor`       | Run all dotfiles health checks             |
 | `catalog:tasks` | Regenerate `docs/TASKS.md` from task Usage specs       |
+| `check` / `fix` | Lint or format the staged set (`:all`, `:pr` for other scopes) |
 
-User-facing tasks carry `#USAGE`/`#MISE description`;
+User-facing tasks carry a `#MISE description`;
+a task taking arguments declares them with `#USAGE arg`/`flag` and reads them as `$usage_<name>`;
 internal subtasks set `#MISE hide=true` so only top-level tasks surface in `mise tasks` and the generated reference.
 `docs/TASKS.md` is the full auto-generated listing — regenerate it with `catalog:tasks`, never by hand.

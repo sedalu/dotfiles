@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Fix the diff against the default branch"
+set -euo pipefail
+
+hk fix --pr

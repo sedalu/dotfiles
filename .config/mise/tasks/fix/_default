@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Fix the default scope — the staged set"
+#MISE depends=["fix:staged"]
+set -euo pipefail
