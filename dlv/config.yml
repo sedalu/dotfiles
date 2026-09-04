@@ -1,8 +1,6 @@
 # Configuration file for the delve debugger.
-
 # This is the default configuration file. Available options are provided, but disabled.
 # Delete the leading hash mark to enable an item.
-
 # Uncomment the following line and set your preferred ANSI color for source
 # line numbers in the (list) command. The default is 34 (dark blue). See
 # https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit
