@@ -1,0 +1,20 @@
+[settings]
+lockfile = true
+
+[env]
+# Runs the git hooks under `mise x`,
+# so they resolve this config's tools even in a shell that has not activated mise.
+HK_MISE = "1"
+
+# The toolchain the hk pipeline runs on.
+[tools]
+"aqua:owenlamont/ryl" = "0.21"
+gitleaks = "8.30"
+hk = "1.57"
+jq = "1.8"
+rumdl = "0.2"
+shellcheck = "0.11"
+shfmt = "3.14"
+taplo = "0.10"
+typos = "1.50"
+yamlfmt = "0.21"
