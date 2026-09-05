@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Install system packages from [bootstrap.packages]"
 #MISE description="Install system packages from [bootstrap.packages]"
 #MISE hide=true
 set -euo pipefail

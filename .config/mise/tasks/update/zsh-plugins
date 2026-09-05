@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Update zsh plugins"
 #MISE description="Update zsh plugins"
 #MISE hide=true
 

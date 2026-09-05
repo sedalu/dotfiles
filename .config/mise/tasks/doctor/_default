@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Run all dotfiles health checks"
 #MISE description="Run all dotfiles health checks"
 set -euo pipefail
 

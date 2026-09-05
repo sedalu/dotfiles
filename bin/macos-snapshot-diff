@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-#USAGE complete "Diff two macOS defaults snapshots, filtering noise"
-#USAGE arg "<before>" "Before snapshot file"
-#USAGE arg "<after>" "After snapshot file"
+#USAGE about "Diff two macOS defaults snapshots, filtering noise"
+#USAGE arg "<before>" help="Before snapshot file"
+#USAGE arg "<after>" help="After snapshot file"
 set -euo pipefail
 
 before="$1"

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check the login shell"
 #MISE description="Check the login shell"
 #MISE hide=true
 set -euo pipefail

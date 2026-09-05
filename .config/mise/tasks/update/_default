@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Update dotfiles"
 #MISE description="Update dotfiles"
 set -euo pipefail
 

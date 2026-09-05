@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-#USAGE complete "Generate bash and zsh completions for a tool and write them to the XDG data directories."
-#USAGE flag "--tool <tool>" "The tool name (default: $MISE_TOOL_NAME)"
-#USAGE flag "--version <version>" "The tool version (default: $MISE_TOOL_VERSION)"
-#USAGE arg "[args]..." "Completion command args, use {} as shell name placeholder (e.g. 'completions {}')"
+#USAGE about "Generate bash and zsh completions for a tool and write them to the XDG data directories."
+#USAGE flag "--tool <tool>" help="The tool name (default: $MISE_TOOL_NAME)"
+#USAGE flag "--version <version>" help="The tool version (default: $MISE_TOOL_VERSION)"
+#USAGE arg "[args]..." help="Completion command args, use {} as shell name placeholder (e.g. 'completions {}')"
 set -euo pipefail
 
 # --- config -----------------------------

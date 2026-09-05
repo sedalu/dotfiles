@@ -17,7 +17,7 @@ Bootstrap dotfiles on a fresh machine
 - **Usage:** `bootstrap [repo-url]`
 
 ### Arguments
-- **`[repo-url]`**
+- **`[repo-url]`** — URL of the dotfiles git repository (or set DOTFILES_REPO in ~/.dotfiles)
 
 ## `catalog:macos`
 
@@ -115,11 +115,11 @@ Create a worktree for a new or existing remote branch
 - **Usage:** `worktree:branch [--from <from>] [--name <name>] <branch>`
 
 ### Arguments
-- **`<branch>`**
+- **`<branch>`** — Branch to create, or an existing remote branch to check out
 
 ### Flags
-- **`--from <from>`**
-- **`--name <name>`**
+- **`--from <from>`** — Base branch for new branches (default: remote HEAD)
+- **`--name <name>`** — Override the worktree directory name
 
 ## `worktree:branches`
 
@@ -141,7 +141,7 @@ Bootstrap a bare-worktree repo (clone URL or convert existing)
 - **Usage:** `worktree:init [url]`
 
 ### Arguments
-- **`[url]`**
+- **`[url]`** — Repository to clone; omit to convert the clone in the current directory
 
 ## `worktree:list`
 
@@ -160,10 +160,10 @@ Prune stale worktree references
 Remove a worktree and prune stale references
 
 
-- **Usage:** `worktree:remove <n>`
+- **Usage:** `worktree:remove <name>`
 
 ### Arguments
-- **`<n>`**
+- **`<name>`** — Worktree directory name to remove
 
 ## `worktree:review`
 
@@ -173,7 +173,7 @@ Switch the pr/ worktree to a given branch
 - **Usage:** `worktree:review <branch>`
 
 ### Arguments
-- **`<branch>`**
+- **`<branch>`** — Branch to check out in the pr/ worktree
 
 ## `worktree:status`
 

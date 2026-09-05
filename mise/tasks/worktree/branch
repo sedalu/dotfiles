@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #MISE description="Create a worktree for a new or existing remote branch"
-#USAGE arg "<branch>"
-#USAGE flag "--from <from>" "Base branch for new branches (default: remote HEAD)"
-#USAGE flag "--name <name>" "Override the worktree directory name"
+#USAGE arg "<branch>" help="Branch to create, or an existing remote branch to check out"
+#USAGE flag "--from <from>" help="Base branch for new branches (default: remote HEAD)"
+#USAGE flag "--name <name>" help="Override the worktree directory name"
 # shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
 # shellcheck source=SCRIPTDIR/_bare_root

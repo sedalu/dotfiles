@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check [dotfiles] symlinks point to correct targets"
 #MISE description="Check [dotfiles] symlinks point to correct targets"
 #MISE depends=["doctor:repo"]
 #MISE hide=true

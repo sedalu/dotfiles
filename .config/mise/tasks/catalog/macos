@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Sync macOS defaults catalog from macos-defaults.com"
 #MISE description="Sync macOS defaults catalog from macos-defaults.com"
 set -euo pipefail
 

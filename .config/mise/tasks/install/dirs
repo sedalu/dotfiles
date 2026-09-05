@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Create required XDG directories"
 #MISE description="Create required XDG directories"
 #MISE hide=true
 set -euo pipefail

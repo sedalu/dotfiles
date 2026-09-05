@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check essential tools are on PATH"
 #MISE description="Check essential tools are on PATH"
 #MISE hide=true
 set -euo pipefail

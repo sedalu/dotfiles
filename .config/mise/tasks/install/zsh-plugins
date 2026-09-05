@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Clone zsh plugins to XDG_DATA_HOME"
 #MISE description="Clone zsh plugins to XDG_DATA_HOME"
 #MISE hide=true
 set -euo pipefail

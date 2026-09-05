@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Install dotfiles"
 #MISE description="Install dotfiles"
 set -euo pipefail
 

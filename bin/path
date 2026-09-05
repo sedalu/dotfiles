@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#USAGE complete "Print each entry in \$PATH on its own line."
+#USAGE about "Print each entry in $PATH on its own line."
 
 set -euo pipefail
 

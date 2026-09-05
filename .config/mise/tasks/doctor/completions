@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Spot-check shell completions for key tools (soft warning)"
 #MISE description="Spot-check shell completions for key tools (soft warning)"
 #MISE depends=["doctor:dirs"]
 #MISE hide=true

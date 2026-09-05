@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-#USAGE complete "Copy font files from the mise install path to the system font directory."
-#USAGE flag "--path <path>" "Directory containing the font files (default: \$MISE_TOOL_INSTALL_PATH)."
-#MISE description="Copy font files from the mise install path to the system font directory."
-#MISE hide=true
+#USAGE about "Copy font files from the mise install path to the system font directory."
+#USAGE flag "--path <path>" help="Directory containing the font files (default: $MISE_TOOL_INSTALL_PATH)."
 set -euo pipefail
 
 # --- config -----------------------------

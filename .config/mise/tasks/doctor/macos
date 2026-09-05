@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check macOS defaults match tracked settings"
 #MISE description="Check macOS defaults match tracked settings"
 #MISE hide=true
 set -euo pipefail

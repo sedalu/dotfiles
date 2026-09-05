@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Bootstrap a bare-worktree repo (clone URL or convert existing)"
-#USAGE arg "[url]"
+#USAGE arg "[url]" help="Repository to clone; omit to convert the clone in the current directory"
 set -euo pipefail
 
 cd "${MISE_ORIGINAL_CWD:-$PWD}"

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check zsh plugins are installed (soft warning)"
 #MISE description="Check zsh plugins are installed (soft warning)"
 #MISE depends=["doctor:dirs"]
 #MISE hide=true

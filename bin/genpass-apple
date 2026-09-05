@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#USAGE complete "Generate an Apple-style segmented random password."
-#USAGE arg "[segments]" "Number of hyphen-separated segments (default: 3)."
+#USAGE about "Generate an Apple-style segmented random password."
+#USAGE arg "[segments]" help="Number of hyphen-separated segments (default: 3)."
 
 set -euo pipefail
 

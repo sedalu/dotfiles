@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#USAGE complete "Generate a random password."
-#USAGE arg "[length]" "Password length (default: 32)."
+#USAGE about "Generate a random password."
+#USAGE arg "[length]" help="Password length (default: 32)."
 
 set -euo pipefail
 

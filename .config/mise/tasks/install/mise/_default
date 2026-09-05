@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Install mise from mise.run"
 #MISE description="Install mise from mise.run"
 #MISE hide=true
 set -euo pipefail

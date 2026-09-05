@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Set up Obsidian vault structure and templates"
 #MISE description="Set up Obsidian vault structure and templates"
 #MISE hide=true
 set -euo pipefail

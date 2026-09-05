@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check dotfiles bare repo is configured correctly"
 #MISE description="Check dotfiles bare repo is configured correctly"
 #MISE depends=["doctor:tools"]
 #MISE hide=true

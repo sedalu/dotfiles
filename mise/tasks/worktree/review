@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Switch the pr/ worktree to a given branch"
-#USAGE arg "<branch>"
+#USAGE arg "<branch>" help="Branch to check out in the pr/ worktree"
 # shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
 # shellcheck source=SCRIPTDIR/_bare_root

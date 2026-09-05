@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check required directories exist"
 #MISE description="Check required directories exist"
 #MISE hide=true
 set -euo pipefail

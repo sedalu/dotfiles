@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-#USAGE complete "Bootstrap dotfiles on a fresh machine."
 #MISE description="Bootstrap dotfiles on a fresh machine"
-#USAGE arg "[repo-url]" "URL of the dotfiles git repository (or set DOTFILES_REPO in ~/.dotfiles)"
+#USAGE arg "[repo-url]" help="URL of the dotfiles git repository (or set DOTFILES_REPO in ~/.dotfiles)"
 
 set -euo pipefail
 

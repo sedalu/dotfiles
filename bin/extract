@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#USAGE complete "Extract an archive file."
-#USAGE arg "<file>" "Path to the archive file to extract."
+#USAGE about "Extract an archive file."
+#USAGE arg "<file>" help="Path to the archive file to extract."
 
 set -euo pipefail
 

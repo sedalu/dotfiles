@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Symlink config files declared in [dotfiles]"
 #MISE description="Symlink config files declared in [dotfiles]"
 #MISE hide=true
 set -euo pipefail

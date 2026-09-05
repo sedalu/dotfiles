@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-#USAGE complete "Mount a DMG from the mise install path and copy the .app bundle to ~/Applications."
-#USAGE flag "--path <path>" "Directory containing the DMG (default: \$MISE_TOOL_INSTALL_PATH)."
-#USAGE flag "--app <name>" "Name of the .app bundle to install (default: first .app found on the volume)."
-#USAGE flag "--dest <dir>" "Destination directory for the .app bundle (default: ~/Applications)."
-#USAGE flag "--force" "Install even when the destination holds this version or newer, or the app is running."
-#MISE description="Mount a DMG from the mise install path and copy the .app bundle to ~/Applications."
-#MISE hide=true
+#USAGE about "Mount a DMG from the mise install path and copy the .app bundle to ~/Applications."
+#USAGE flag "--path <path>" help="Directory containing the DMG (default: $MISE_TOOL_INSTALL_PATH)."
+#USAGE flag "--app <name>" help="Name of the .app bundle to install (default: first .app found on the volume)."
+#USAGE flag "--dest <dir>" help="Destination directory for the .app bundle (default: ~/Applications)."
+#USAGE flag "--force" help="Install even when the destination holds this version or newer, or the app is running."
 set -euo pipefail
 
 # --- config -----------------------------

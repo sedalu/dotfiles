@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check SSH setup is healthy"
 #MISE description="Check SSH setup is healthy"
 #MISE hide=true
 set -euo pipefail

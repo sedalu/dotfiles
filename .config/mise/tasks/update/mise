@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Update mise managed tools"
 #MISE description="Update mise managed tools"
 #MISE hide=true
 # raw=true: pkg-cask upgrades (e.g. tailscale-app) may need a sudo prompt,

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check machine name configuration"
 #MISE description="Check machine name configuration"
 #MISE hide=true
 set -euo pipefail

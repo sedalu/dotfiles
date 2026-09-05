@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Set machine name (OS hostname + DOTFILES_MACHINE)"
 #MISE description="Set machine name (OS hostname + DOTFILES_MACHINE)"
 
 set -euo pipefail

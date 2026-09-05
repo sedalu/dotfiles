@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Check mas and App Store sign-in status"
 #MISE description="Check mas and App Store sign-in status"
 #MISE hide=true
 

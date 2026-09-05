@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Re-apply macOS defaults settings"
 #MISE description="Re-apply macOS defaults settings"
 #MISE depends=["install:macos"]
 #MISE hide=true

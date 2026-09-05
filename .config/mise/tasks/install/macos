@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#USAGE complete "Apply macOS defaults settings"
 #MISE description="Apply macOS defaults settings"
 #MISE hide=true
 set -euo pipefail

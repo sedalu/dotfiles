@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#USAGE complete "List processes listening on TCP ports."
-#USAGE arg "[port]" "Port number to filter by. Lists all listening ports if omitted."
+#USAGE about "List processes listening on TCP ports."
+#USAGE arg "[port]" help="Port number to filter by. Lists all listening ports if omitted."
 
 set -euo pipefail
 
