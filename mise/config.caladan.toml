@@ -52,10 +52,6 @@ ShowDevelopMenu = true
 # The ~/Downloads redirect targets a non-repo source (iCloud Drive);
 # the install task's ACL-aware backup-preflight clears the deny-delete ACL on a fresh ~/Downloads
 # before `apply` replaces it with the symlink.
-[dotfiles."~/.claude/projects/-Users-seth--config/memory"]
-source = "~/.config/.claude/memory"
-mode = "symlink"
-
 [dotfiles."~/Downloads"]
 source = "~/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
 mode = "symlink"

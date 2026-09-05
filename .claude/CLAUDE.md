@@ -159,7 +159,7 @@ Git hooks are wired in `git/config` (`[hook]` entries → `hk run <event> --from
 export `HK=0` to bypass.
 
 - **Scope is only files we own** — formatters and linters carry an `exclude` list (`notOurs` in `hk.pkl`):
-  app-managed and generated files (`gh/hosts.yml`, `claude/settings.json`, Claude memory, `obsidian/`, `docs/TASKS.md`, …)
+  app-managed and generated files (`gh/hosts.yml`, `claude/settings.json`, `obsidian/`, `docs/TASKS.md`, …)
   are skipped so we don't fight the owning app or churn generated output.
   Shell steps use an explicit glob (extensionless `bin/`, mise tasks/hooks).
   zsh is excluded — shfmt/shellcheck don't support it.
