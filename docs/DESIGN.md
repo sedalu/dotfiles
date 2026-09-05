@@ -16,16 +16,27 @@ gitdir: /Users/<user>/.local/share/dotfiles.git
 
 This means plain `git` commands work from the worktree without `--git-dir`/`--work-tree` flags.
 
-The `.gitignore` is `*` (ignore everything).
-Files are added explicitly with `git add -f`.
-The config `advice.addIgnoredFile = false` suppresses the resulting warnings.
+The root `.gitignore` is a targeted deny-list, not a blanket `*`.
+Most of the worktree is ours and is tracked normally.
+The exceptions are named explicitly:
+trees where nothing is ours (`homebrew/`, `colima/`, `npm/`, `opencode/`),
+and deny-by-default subtrees holding secrets or app-owned state,
+which re-include only the files this repo maintains —
+`go/` (the `env.tmpl` template, not the rendered `env`),
+`fnox/` (`config.toml`, not the keys beside it),
+and `claude/`, whose own `.gitignore` allow-lists the five files we maintain
+out of the runtime directory Claude Code owns.
+
+`git add` therefore works normally across most of the worktree.
+Inside a deny-by-default subtree a newly tracked file needs `git add -f`,
+and `advice.addIgnoredFile = false` suppresses the warning that would otherwise print.
 
 **Why this approach:**
 
 - No symlink farm — configs live in-place at their XDG paths
 - Apps find real files where they expect them
 - Standard git workflow (`status`, `diff`, `log`) works normally
-- Selective tracking via explicit `git add -f`
+- Selective tracking — an app's own files are ignored, ours are tracked normally
 
 ## 2. Environment Variables
 
