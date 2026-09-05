@@ -9,14 +9,15 @@ source "$(dirname "$0")/_repo_root"
 
 BRANCH="${usage_branch}"
 
-if [ ! -d "$ROOT/pr" ]; then
-	echo "fatal: no pr/ worktree in $ROOT" >&2
-	exit 1
+# Detached throughout, so the checkout never collides with a branch another worktree holds.
+if git -C "$MAIN" show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+	REF="origin/$BRANCH"
+else
+	REF="$BRANCH"
 fi
 
-# Detached, so the checkout never collides with a branch another worktree holds.
-if git -C "$MAIN" show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
-	git -C "$ROOT/pr" checkout --detach "origin/$BRANCH"
+if [ -d "$ROOT/pr" ]; then
+	git -C "$ROOT/pr" checkout --detach "$REF"
 else
-	git -C "$ROOT/pr" checkout --detach "$BRANCH"
+	git -C "$MAIN" worktree add --detach "$ROOT/pr" "$REF"
 fi
