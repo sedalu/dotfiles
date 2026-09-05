@@ -9,11 +9,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/seth/.claude/hooks/mise-trust.sh",
-            "statusMessage": "Trusting mise config..."
-          },
-          {
-            "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
           }
         ]
@@ -22,10 +17,6 @@
     "CwdChanged": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/seth/.claude/hooks/mise-trust.sh"
-          },
           {
             "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
