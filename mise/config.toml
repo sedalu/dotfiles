@@ -179,10 +179,6 @@ yamlfmt = "latest"
 
 # Sub-table tools (with postinstall hooks or extra options)
 
-[tools."aqua:tamasfe/taplo"]
-version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
-
 # ryl — the YAML linter (replaces yamlfmt's -lint role; see hk.pkl).
 [tools."aqua:owenlamont/ryl"]
 version = "latest"
@@ -238,6 +234,10 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
 [tools.starship]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions completions {}"
+
+[tools.tombi]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
 [tools.xh]
 version = "latest"

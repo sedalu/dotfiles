@@ -2,73 +2,105 @@
 
 [[language]]
 name = "bash"
-indent = { tab-width = 4, unit = "    " }
-formatter = { command = "shfmt", args = ["-i", "4"] }
 auto-format = true
+
+[language.indent]
+tab-width = 4
+unit = "    "
+
+[language.formatter]
+command = "shfmt"
+args = ["-i", "4"]
 
 # Go
 
 [[language]]
 name = "go"
 auto-format = true
-formatter = { command = "gofumpt" }
+
+[language.formatter]
+command = "gofumpt"
 
 [[language]]
 name = "gomod"
 auto-format = true
-formatter = { command = "gofumpt" }
+
+[language.formatter]
+command = "gofumpt"
 
 # YAML
 
 [[language]]
 name = "yaml"
-formatter = { command = "prettier", args = ["--parser", "yaml"] }
 auto-format = true
+
+[language.formatter]
+command = "prettier"
+args = ["--parser", "yaml"]
 
 # Python
 
 [[language]]
 name = "python"
 language-servers = ["pyright", "ruff"]
-formatter = { command = "ruff", args = ["format", "-"] }
 auto-format = true
+
+[language.formatter]
+command = "ruff"
+args = ["format", "-"]
 
 # TypeScript
 
 [[language]]
 name = "typescript"
-formatter = { command = "prettier", args = ["--parser", "typescript"] }
 auto-format = true
+
+[language.formatter]
+command = "prettier"
+args = ["--parser", "typescript"]
 
 # TOML
 
 [[language]]
 name = "toml"
-formatter = { command = "taplo", args = ["fmt", "-"] }
+language-servers = ["tombi"]
 auto-format = true
+
+[language.formatter]
+command = "tombi"
+args = ["format", "-"]
 
 # JSON
 
 [[language]]
 name = "json"
-formatter = { command = "prettier", args = ["--parser", "json"] }
 auto-format = true
+
+[language.formatter]
+command = "prettier"
+args = ["--parser", "json"]
 
 # Rust
 
 [[language]]
 name = "rust"
 language-servers = ["rust-analyzer"]
-formatter = { command = "rustfmt", args = ["--edition", "2021"] }
 auto-format = true
+
+[language.formatter]
+command = "rustfmt"
+args = ["--edition", "2021"]
 
 # Markdown
 
 [[language]]
 name = "markdown"
 language-servers = ["markdown-oxide", "marksman"]
-formatter = { command = "prettier", args = ["--parser", "markdown"] }
 auto-format = true
+
+[language.formatter]
+command = "prettier"
+args = ["--parser", "markdown"]
 
 [language-server.gopls.config]
 gofumpt = true
