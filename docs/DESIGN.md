@@ -329,8 +329,11 @@ so tasks placed under `mise/tasks/` are visible from every directory on the mach
 Moving the dotfiles tasks to `.config/mise/tasks/` — one of mise's default file-task dirs, discovered by walking up from the cwd —
 scopes them to the `$DOTFILES_DIR` subtree without leaking into the global task namespace.
 mise won't load a non-global config until it's trusted,
-so `shell/env.sh` exports `MISE_TRUSTED_CONFIG_PATHS="$DOTFILES_DIR/.config/mise"`;
-this can't live in the global `config.toml`, since `trusted_config_paths` there is parsed before variables expand.
+and nothing here configures that: `mise run` trusts its active config unconditionally at startup,
+so the first task a fresh machine runs records the grant in mise's own trust store.
+A `trusted_config_paths` entry would be worse than redundant —
+it is checked ahead of the persisted ignore list,
+so it blanket-trusts whatever later lands under the path, outranking a deliberate `mise trust --ignore`.
 The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
 
 The same collision reaches the *config* files, and there it is not benign.
@@ -345,6 +348,26 @@ platform and machine layers intact, while the project pins win at project scope.
 One residue: the platform layer (`mise/config.macos.toml`) is matched by mise's environment patterns,
 which the setting does not cover, so it still loads locally.
 It carries only `mas` and `cmux`, and keeping the pipeline's tools out of it keeps that harmless.
+
+### Worktree Projects
+
+The `worktree:*` tasks build and drive the sibling-checkout layout in
+[`dev-standards/git.md`](dev-standards/git.md): `main/` is a normal clone holding the git directory,
+and each branch is a linked worktree beside it.
+
+The layout is load-bearing. mise shares trust across a repo's worktrees —
+a config inside a linked worktree inherits the trust of the equivalent path in the main checkout —
+but only when the shared git directory is literally named `.git`.
+A bare repository has no main checkout to inherit from,
+so under the `.bare/` layout these tasks used to build,
+every worktree was a fresh, untrusted config root.
+`worktree:init` converts such a layout in place when run inside one.
+
+This tree is not one of those projects.
+`$DOTFILES_DIR` is a live installation at a path its consumers hardcode,
+so it cannot move aside to make room for a `main/` sibling,
+and `dev-standards/git.md` carves out that case.
+Its git directory is `dotfiles.git` rather than `.git`, so it shares no trust either way.
 
 ### Install Dependencies
 

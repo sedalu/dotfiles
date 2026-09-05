@@ -112,6 +112,8 @@ Update dotfiles
 Create a worktree for a new or existing remote branch
 
 
+- Depends: worktree:fetch
+
 - **Usage:** `worktree:branch [--from <from>] [--name <name>] <branch>`
 
 ### Arguments
@@ -135,13 +137,13 @@ Fetch all branches from origin
 
 ## `worktree:init`
 
-Bootstrap a bare-worktree repo (clone URL or convert existing)
+Bootstrap a worktree project (clone a URL, or convert the checkout in the current directory)
 
 
 - **Usage:** `worktree:init [url]`
 
 ### Arguments
-- **`[url]`** — Repository to clone; omit to convert the clone in the current directory
+- **`[url]`** — Repository to clone; omit to convert the checkout in the current directory
 
 ## `worktree:list`
 
@@ -163,12 +165,14 @@ Remove a worktree and prune stale references
 - **Usage:** `worktree:remove <name>`
 
 ### Arguments
-- **`<name>`** — Worktree directory name to remove
+- **`<name>`** — Worktree directory name, or the branch name it was created from
 
 ## `worktree:review`
 
 Switch the pr/ worktree to a given branch
 
+
+- Depends: worktree:fetch
 
 - **Usage:** `worktree:review <branch>`
 
@@ -182,6 +186,8 @@ Switch the pr/ worktree to a given branch
 Show status of all worktrees (branch, dirty, ahead/behind)
 
 ## `worktree:sync`
+
+- Depends: worktree:fetch
 
 - **Usage:** `worktree:sync`
 

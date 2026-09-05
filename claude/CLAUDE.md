@@ -86,14 +86,21 @@ See `~/Projects/ref/CLAUDE.md` for the full inventory.
 
 ## Shared Dotfiles & Tasks
 
-Bare-worktree setup at `$DOTFILES_DIR` (`~/.config`) enables parallel branch management
-and provides mise tasks for both worktree operations and dotfiles maintenance.
+The dotfiles tree at `$DOTFILES_DIR` (`~/.config`) ships two sets of mise tasks:
+the `worktree:*` namespace, which is global and operates on other repos,
+and the dotfiles-maintenance tasks, scoped to this tree.
+`~/.config` is itself a live installation rather than a worktree project,
+so the `worktree:*` tasks do not apply to it — commit to it directly.
 
-**Common daily-use tasks** (global — run from anywhere):
+**Worktree tasks** (global — run from inside any worktree project):
 
-- `worktree:branch [branch-name]` — Create a worktree for development on a new or existing branch
+A worktree project is a directory of sibling checkouts: `main/` is a normal clone
+holding the git directory, and each branch is a linked worktree beside it.
+
+- `worktree:init [url]` — Clone a repo into that layout, or convert the checkout you are in
+- `worktree:branch <branch>` — Create a worktree for a new or existing remote branch
 - `worktree:status` — Monitor all worktrees for dirty state and ahead/behind remote
-- `worktree:sync [branch]` — Keep worktree in sync with remote
+- `worktree:sync` — Fetch origin and fast-forward every worktree
 - `worktree:list` — View all active worktrees and branches
 
 **Bootstrap & maintenance tasks** (scoped to the dotfiles tree — `cd $DOTFILES_DIR` first):
@@ -103,4 +110,4 @@ and provides mise tasks for both worktree operations and dotfiles maintenance.
 - `doctor` — Health check
 
 See `$DOTFILES_DIR/docs/TASKS.md` (`~/.config/docs/TASKS.md`) for the complete task reference,
-and `$DOTFILES_DIR/docs/DESIGN.md` for the bare-repo layout, worktree workflows, and environment variables.
+and `$DOTFILES_DIR/docs/DESIGN.md` for the bare-repo layout, worktree projects, and environment variables.
