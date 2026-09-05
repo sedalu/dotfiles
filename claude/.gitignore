@@ -1,24 +1,15 @@
-# Auto-generated / ephemeral — do not track
-cache/
-sessions/
-backups/
-shell-snapshots/
-file-history/
-plans/
-plugins/
-projects/
-history.jsonl
-mcp-needs-auth-cache.json
-session-env
-hooks/.rtk-hook.sha256
-settings.local.json
-paste-cache/
-tasks/
-telemetry/
-daemon/
-daemon.lock
-daemon.log
-daemon.status.json
-.last-cleanup
-stats-cache.json
-jobs/
+# Allow-list: Claude owns this directory, so ignore everything
+# and opt in only the files this repo maintains.
+*
+
+!.gitignore
+!CLAUDE.md
+!settings.json
+!statusline-command.sh
+
+# A parent directory must be re-included before anything inside it can be.
+!hooks/
+!hooks/*.sh
+
+!skills/
+!skills/**
