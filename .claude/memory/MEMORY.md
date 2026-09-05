@@ -28,4 +28,4 @@
 - [feedback-keep-mouse-clicks-enabled.md](feedback-keep-mouse-clicks-enabled.md) — don't disable Claude Code mouse clicks; tried and reverted
 - [feedback-standards-examples-two-tiers.md](feedback-standards-examples-two-tiers.md) — dev-standards: inline examples miniature, whole configs in examples/
 - [forgejo-actions-logs-via-ssh.md](forgejo-actions-logs-via-ssh.md) — read Forgejo CI logs via ssh heighligner + docker exec forgejo + zstdcat
-- [mise-project-config-shadowed-in-dotfiles.md](mise-project-config-shadowed-in-dotfiles.md) — mise/config.toml outranks .config/mise/config.toml in ~/.config; use MISE_IGNORED_CONFIG_PATHS
+- [mise-project-config-shadowed-in-dotfiles.md](mise-project-config-shadowed-in-dotfiles.md) — mise/config.toml shadows project pins in ~/.config; fixed by override_config_filenames in .config/miserc.toml

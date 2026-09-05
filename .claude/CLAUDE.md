@@ -26,7 +26,7 @@ See [`docs/DESIGN.md`](../docs/DESIGN.md) for detailed system architecture and d
 | `lib/`          | Shell helper libraries                                          |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)              |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)           |
-| `.config/`      | hk pipeline (`hk.pkl`) + linter sidecars (shellcheck, rumdl, typos) |
+| `.config/`      | Project scope: hk pipeline (`hk.pkl`), linter sidecars, `mise/` pins, `miserc.toml` |
 | `starship.toml` | Starship prompt config                                          |
 
 ## Tooling: mise-first approach
@@ -140,6 +140,10 @@ Config lives in `.config/`:
 The pipeline's tools (`hk`, `shellcheck`, `shfmt`, `tombi`, `rumdl`, `ryl`, `yamlfmt`, `typos`, `gitleaks`, `jq`)
 are pinned in `.config/mise/config.toml` — the project scope, separate from the workstation
 toolchain this repo ships in `mise/config.toml`.
+Those two collide: `mise/config.toml` is also a filename mise looks for in the cwd,
+where it outranks `.config/mise/config.toml` and shadows every pin.
+`.config/miserc.toml` drops the `mise/*` entries from `override_config_filenames` to stop that,
+and `doctor:pins` fails if it ever comes back.
 Run the pipeline through its tasks, never `hk` directly:
 `check` and `fix` take the staged set, `check:all` and `fix:all` the whole tree (what CI runs),
 `check:pr` and `fix:pr` the diff against the default branch.

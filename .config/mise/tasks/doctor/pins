@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#MISE description="Check the project tool pins resolve, not the workstation's"
+#MISE hide=true
+set -euo pipefail
+
+config=".config/mise/config.toml"
+
+# `mise config get` prints the table as `key = "version"`,
+# quoting any key that carries a backend prefix.
+tools="$(mise config get -f "$DOTFILES_DIR/$config" tools |
+	awk -F' *= *' '/=/ { gsub(/"/, "", $1); print $1 }')"
+
+resolved="$(mise ls --current --json | jq -r 'to_entries[] | "\(.key)\t\(.value[0].source.path)"')"
+
+fail=0
+while read -r tool; do
+	[[ -n "$tool" ]] || continue
+	source_path="$(awk -F'\t' -v t="$tool" '$1 == t { print $2 }' <<<"$resolved")"
+	if [[ -z "$source_path" ]]; then
+		echo "❌ $tool — pinned here but absent from the resolved toolset"
+		((fail++)) || true
+		continue
+	fi
+	source_path="${source_path#"$DOTFILES_DIR"/}"
+	if [[ "$source_path" == "$config" ]]; then
+		echo "✅ $tool"
+	else
+		echo "❌ $tool — resolves from $source_path, shadowing the pin"
+		((fail++)) || true
+	fi
+done <<<"$tools"
+
+if ((fail > 0)); then
+	echo "❌ $fail pin(s) shadowed — see override_config_filenames in .config/miserc.toml"
+	exit 1
+fi
+echo "✅ All project pins resolve from $config"

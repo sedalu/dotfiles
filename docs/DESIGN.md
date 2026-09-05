@@ -322,6 +322,19 @@ so `shell/env.sh` exports `MISE_TRUSTED_CONFIG_PATHS="$DOTFILES_DIR/.config/mise
 this can't live in the global `config.toml`, since `trusted_config_paths` there is parsed before variables expand.
 The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
 
+The same collision reaches the *config* files, and there it is not benign.
+`mise/config.toml` is both this machine's global mise config and a filename mise looks for in the cwd,
+and the local list is later-wins with every `mise/*` entry ranked above every `.config/mise/*` one.
+Inside the worktree the workstation toolchain therefore outranked the project config,
+so the pipeline's pins resolved to the workstation's `latest` and only CI ran the versions we pinned.
+`.config/miserc.toml` — an early-init file mise reads by walking up from the cwd — drops the three `mise/*`
+entries from `override_config_filenames`, which leaves that file loading as the *global* config,
+platform and machine layers intact, while the project pins win at project scope.
+`doctor:pins` asserts exactly that, so a regression fails a health check instead of going unnoticed.
+One residue: the platform layer (`mise/config.macos.toml`) is matched by mise's environment patterns,
+which the setting does not cover, so it still loads locally.
+It carries only `mas` and `cmux`, and keeping the pipeline's tools out of it keeps that harmless.
+
 ### Install Dependencies
 
 ```text

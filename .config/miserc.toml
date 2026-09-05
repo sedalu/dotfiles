@@ -1,0 +1,32 @@
+# Early-init settings for this repo.
+# mise reads `<dir>/.config/miserc.toml` walking up from the cwd,
+# so this binds to the $DOTFILES_DIR subtree and nothing outside it.
+#
+# The worktree root is $XDG_CONFIG_HOME, which makes `mise/config.toml` —
+# the workstation toolchain — match a *local* config filename as well as the global one.
+# Local wins, and `mise/*` outranks `.config/mise/*`,
+# so every pin in the project config was being shadowed by the workstation's `latest`.
+# Dropping the three `mise/*` entries below leaves that file loading as the global config,
+# platform and machine layers intact, while the project pins take effect at project scope.
+# See docs/DESIGN.md §9.
+#
+# This is mise's own default list minus those three;
+# the setting replaces the list rather than filtering it.
+override_config_filenames = [
+  ".config/mise/conf.d/*.toml",
+  ".config/mise/config.toml",
+  ".config/mise/mise.toml",
+  ".config/mise.toml",
+  ".mise/conf.d/*.toml",
+  ".mise/config.toml",
+  ".rtx.toml",
+  "mise.toml",
+  ".mise.toml",
+  ".config/mise/config.local.toml",
+  ".config/mise/mise.local.toml",
+  ".config/mise.local.toml",
+  ".mise/config.local.toml",
+  ".rtx.local.toml",
+  "mise.local.toml",
+  ".mise.local.toml",
+]

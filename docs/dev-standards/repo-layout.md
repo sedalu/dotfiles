@@ -66,6 +66,9 @@ Three tools are worth naming:
 - **mise** — always the directory form, `.config/mise/config.toml`.
   It is discovered natively and outranks `.mise/config.toml`.
   Tasks live in `.config/mise/tasks/`, and the lockfile lands beside the config.
+  Early-init settings — the ones mise resolves before it reads any config,
+  such as `override_config_filenames` and `ignored_config_paths` —
+  go in `.config/miserc.toml`, which mise finds by walking up from the working directory.
 - **fnox** — searches by filename against each ancestor directory
   and binds no environment variable, so it lands on rule 3.
   A `.config/fnox.toml` reached through a wrapper forfeits the `.local.toml` overlay,
