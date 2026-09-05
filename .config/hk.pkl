@@ -11,8 +11,6 @@ local notOurs = List(
   "gh/config.yml",          // gh-managed
   "claude/settings.json",   // Claude / update-config skill writes this
   "claude/settings.local.json",
-  "claude/MEMORY.md",       // Claude auto-memory index (global)
-  "claude/memory/**",       // Claude auto-memory (global)
   ".claude/memory/**",      // Claude auto-memory (this repo's project memory)
   "obsidian/**",            // obsidian-git plugin data
   "cmux/**",                // cmux app config

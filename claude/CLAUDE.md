@@ -108,5 +108,5 @@ and provides mise tasks for both worktree operations and dotfiles maintenance.
 - `update` — Update tools and configurations
 - `doctor` — Health check
 
-See `/Users/seth/.claude/dotfiles-reference.md` for detailed worktree workflows,
-environment variables, and complete task documentation.
+See `$DOTFILES_DIR/docs/TASKS.md` (`~/.config/docs/TASKS.md`) for the complete task reference,
+and `$DOTFILES_DIR/docs/DESIGN.md` for the bare-repo layout, worktree workflows, and environment variables.
