@@ -35,6 +35,10 @@
           {
             "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/hook-bypass-guard.sh"
           }
         ]
       },

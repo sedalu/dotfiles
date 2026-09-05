@@ -87,8 +87,10 @@ they rewrite words, add and drop imports, and edit the module requirements —
 and staging that silently commits work nobody reviewed.
 Keep `stash = "git"` so fixes are computed against the staged content rather than the dirty tree.
 
-`HK=0` bypasses the hooks.
-Bypassing is for a broken hook, not for a failing check.
+`HK=0` bypasses the hooks, as does git's own `--no-verify`.
+Bypassing is for a broken hook, not for a failing or a slow check.
+A Claude Code hook asks before running either one,
+so an agent cannot decide on its own to stop enforcing the pipeline.
 
 A bypass obliges a repair.
 Fix the hook before the next push,
