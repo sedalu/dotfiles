@@ -1,44 +1,82 @@
 #!/usr/bin/env bash
-#MISE description="Bootstrap a bare-worktree repo (clone URL or convert existing)"
-#USAGE arg "[url]" help="Repository to clone; omit to convert the clone in the current directory"
+#MISE description="Bootstrap a worktree project (clone a URL, or convert the checkout in the current directory)"
+#USAGE arg "[url]" help="Repository to clone; omit to convert the checkout in the current directory"
+# shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
 
 cd "${MISE_ORIGINAL_CWD:-$PWD}"
 URL="${usage_url:-}"
 
 if [ -n "$URL" ]; then
-	# --- Clone URL as bare worktree layout ---
 	NAME=$(basename "$URL" .git)
-	mkdir -p "$NAME"
-	cd "$NAME"
-	git clone --bare "$URL" .bare
-	git -C .bare config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-	git -C .bare fetch origin
-	git -C .bare worktree add ../main main 2>/dev/null ||
-		git -C .bare worktree add ../main -b main origin/main
-	git -C .bare worktree add ../pr -b pr-review origin/main
-	echo "Created bare-worktree layout in $(pwd)"
-else
-	# --- Convert existing clone in $PWD ---
-	if [ ! -d .git ]; then
-		echo "fatal: no .git directory found — run with a URL or from inside a regular clone" >&2
+	if [ -e "$NAME" ]; then
+		echo "fatal: $PWD/$NAME already exists" >&2
 		exit 1
 	fi
-	mv .git .bare
-	git -C .bare config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-	git -C .bare fetch origin
+	git clone "$URL" "$NAME/main"
+	git -C "$NAME/main" worktree add ../pr --detach
+	echo "Created worktree project in $PWD/$NAME"
+	exit 0
+fi
 
-	# Determine default branch
-	DEFAULT_BRANCH=$(git -C .bare symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||') || true
-	if [ -z "$DEFAULT_BRANCH" ]; then
-		DEFAULT_BRANCH="main"
+if [ -d .bare ]; then
+	# Convert the retired .bare layout: make the main/ linked worktree the main checkout,
+	# so mise shares its trust with every worktree cut afterward.
+	if [ ! -d main ]; then
+		echo "fatal: .bare found but no main/ worktree beside it" >&2
+		exit 1
+	fi
+	if [ -n "$(git -C main status --porcelain --untracked-files=no)" ]; then
+		echo "fatal: main/ has uncommitted changes — commit or stash them first" >&2
+		exit 1
 	fi
 
-	git -C .bare worktree add ../main "$DEFAULT_BRANCH" 2>/dev/null ||
-		git -C .bare worktree add ../main -b main "origin/$DEFAULT_BRANCH"
-	git -C .bare worktree add ../pr -b pr-review "origin/$DEFAULT_BRANCH"
+	rm main/.git
+	mv .bare main/.git
+	# The linked worktree's HEAD and index are what main/ is actually checked out to;
+	# the bare repo's own HEAD is not.
+	mv main/.git/worktrees/main/HEAD main/.git/HEAD
+	mv main/.git/worktrees/main/index main/.git/index
+	if [ -f main/.git/worktrees/main/logs/HEAD ]; then
+		# A bare repo keeps no reflog, so the directory it lands in may not exist yet.
+		mkdir -p main/.git/logs
+		mv main/.git/worktrees/main/logs/HEAD main/.git/logs/HEAD
+	fi
+	rm -rf main/.git/worktrees/main
 
-	# Remove leftover working tree files (they now live in main/)
-	find . -maxdepth 1 ! -name . ! -name .bare ! -name main ! -name pr -exec rm -rf {} +
-	echo "Converted to bare-worktree layout in $(pwd)"
+	git -C main config core.bare false
+	git -C main config core.logallrefupdates true
+
+	REPAIR=()
+	for wt in */; do
+		[ "$wt" = "main/" ] && continue
+		[ -e "${wt}.git" ] && REPAIR+=("$PWD/${wt%/}")
+	done
+	[ ${#REPAIR[@]} -gt 0 ] && git -C main worktree repair "${REPAIR[@]}"
+	git -C main worktree prune
+
+	echo "Converted $PWD to the main-checkout layout"
+	exit 0
 fi
+
+if [ ! -d .git ]; then
+	echo "fatal: no .git or .bare directory found — run with a URL, or from inside a checkout" >&2
+	exit 1
+fi
+
+if [ -e main ]; then
+	echo "fatal: $PWD/main already exists" >&2
+	exit 1
+fi
+
+# Move the whole checkout into main/. Nothing is deleted,
+# so untracked and gitignored content comes along.
+ENTRIES=()
+while IFS= read -r -d '' entry; do
+	ENTRIES+=("$entry")
+done < <(find . -maxdepth 1 -mindepth 1 ! -name main -print0)
+
+mkdir main
+[ ${#ENTRIES[@]} -gt 0 ] && mv "${ENTRIES[@]}" main/
+git -C main worktree add ../pr --detach
+echo "Converted $PWD to the main-checkout layout"

@@ -1,0 +1,10 @@
+# shellcheck shell=bash
+# Defines: default_branch <repo-dir>, which prints the remote's default branch.
+# Sourced by worktree:branch and worktree:init — not a standalone task.
+
+default_branch() {
+	local ref
+	ref=$(git -C "$1" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null) || true
+	ref="${ref#origin/}"
+	printf '%s\n' "${ref:-main}"
+}

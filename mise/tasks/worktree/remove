@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 #MISE description="Remove a worktree and prune stale references"
-#USAGE arg "<name>" help="Worktree directory name to remove"
+#MISE depends_post=["worktree:prune"]
+#USAGE arg "<name>" help="Worktree directory name, or the branch name it was created from"
 # shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
-# shellcheck source=SCRIPTDIR/_bare_root
-source "$(dirname "$0")/_bare_root"
+# shellcheck source=SCRIPTDIR/_repo_root
+source "$(dirname "$0")/_repo_root"
 
-git -C "$BARE" worktree remove "$ROOT/${usage_name}"
-mise run worktree:prune
+# Accept a branch name too, sanitized the same way worktree:branch names the directory.
+NAME="${usage_name//\//-}"
+
+git -C "$MAIN" worktree remove "$ROOT/$NAME"

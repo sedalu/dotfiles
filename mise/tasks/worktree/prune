@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #MISE description="Prune stale worktree references"
 set -euo pipefail
-# shellcheck source=SCRIPTDIR/_bare_root
-source "$(dirname "$0")/_bare_root"
+# shellcheck source=SCRIPTDIR/_repo_root
+source "$(dirname "$0")/_repo_root"
 
-git -C "$BARE" worktree prune --verbose
+git -C "$MAIN" worktree prune --verbose

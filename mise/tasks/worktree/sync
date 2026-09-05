@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 #MISE description="Fetch origin and pull all worktrees"
-# shellcheck source=SCRIPTDIR/_list_worktrees
+#MISE depends=["worktree:fetch"]
 set -euo pipefail
-
-echo "Fetching origin..."
-mise run worktree:fetch
+# shellcheck source=SCRIPTDIR/_list_worktrees
+source "$(dirname "$0")/_list_worktrees"
 
 while read -r WT; do
 	NAME="${WT##*/}"
+	# A detached worktree (pr/) or a branch with no upstream has nothing to pull.
+	if ! git -C "$WT" rev-parse --abbrev-ref '@{u}' >/dev/null 2>&1; then
+		echo "Skipping $NAME (no upstream)"
+		continue
+	fi
 	echo "Pulling $NAME..."
 	git -C "$WT" pull --ff-only 2>&1 | sed "s/^/  /"
-done < <(source "$(dirname "$0")/_list_worktrees")
+done < <(list_worktrees)

@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 #MISE description="Switch the pr/ worktree to a given branch"
+#MISE depends=["worktree:fetch"]
 #USAGE arg "<branch>" help="Branch to check out in the pr/ worktree"
 # shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
-# shellcheck source=SCRIPTDIR/_bare_root
-source "$(dirname "$0")/_bare_root"
+# shellcheck source=SCRIPTDIR/_repo_root
+source "$(dirname "$0")/_repo_root"
 
-mise run worktree:fetch
-git -C "$ROOT/pr" checkout "${usage_branch}"
+BRANCH="${usage_branch}"
+
+if [ ! -d "$ROOT/pr" ]; then
+	echo "fatal: no pr/ worktree in $ROOT" >&2
+	exit 1
+fi
+
+# Detached, so the checkout never collides with a branch another worktree holds.
+if git -C "$MAIN" show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+	git -C "$ROOT/pr" checkout --detach "origin/$BRANCH"
+else
+	git -C "$ROOT/pr" checkout --detach "$BRANCH"
+fi
