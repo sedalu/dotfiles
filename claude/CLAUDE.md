@@ -22,6 +22,8 @@
 - Diff behavior between main and your changes when relevant
 - Ask yourself: "Would a staff engineer approve this?"
 - Run tests, check logs, demonstrate correctness
+- Give a high-level summary of what changed at each step, not only at the end
+- Close out with a short review: what landed, what surprised you, what is still open
 
 ### 4. Demand Elegance (Balanced)
 
@@ -36,14 +38,6 @@
 - Point at logs, errors, failing tests – then resolve them
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
-
-## Task Management
-
-1. **Plan First**: Write plan to `.tasks/todo.md` with checkable items
-2. **Verify Plan**: Check in before starting implementation
-3. **Track Progress**: Mark items complete as you go
-4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `.tasks/todo.md`
 
 ## Core Principles
 
