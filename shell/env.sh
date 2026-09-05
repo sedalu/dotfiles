@@ -69,14 +69,6 @@ source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/shell/path.sh"
 export DOTFILES_DIR="${DOTFILES_DIR:-$XDG_CONFIG_HOME}"
 export DOTFILES_GIT="${DOTFILES_GIT:-$XDG_DATA_HOME/dotfiles.git}"
 
-# Trust the project-local mise task scope under $DOTFILES_DIR/.config/mise.
-# The dotfiles tasks live there, scoped to this tree rather than the global config dir,
-# and mise refuses to load a non-global config until it is trusted.
-# This lives here, where $DOTFILES_DIR is defined,
-# because trusted_config_paths in the global config.toml is parsed too early to expand vars.
-# The list is comma-separated; append so any existing value is preserved.
-export MISE_TRUSTED_CONFIG_PATHS="${MISE_TRUSTED_CONFIG_PATHS:+$MISE_TRUSTED_CONFIG_PATHS,}$DOTFILES_DIR/.config/mise"
-
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	_dotfiles_raw_host="$(scutil --get LocalHostName 2>/dev/null || hostname)"
 else
