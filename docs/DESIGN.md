@@ -416,9 +416,14 @@ That single clause matters: the builtins otherwise add a detected-type selector,
 which would pull zsh into the tools that cannot parse it.
 
 YAML is split between two tools.
-`ryl` owns linting and `yamlfmt` owns formatting, replacing yamlfmt's own `-lint` pass.
+`ryl` owns the rules and `yamlfmt` owns the layout.
 Each rule in `ryl.toml` that overlaps a layout decision is set to match what yamlfmt emits,
 so the two never fight.
+yamlfmt's `-lint` is not a second linter but its own format-drift check,
+so it stays as the step's `check_diff` — without it `check` would see no YAML at all,
+and drift would surface only when `fix` rewrote the file.
+Both `-lint` and the fix command pass `-conf`,
+since a check reading different settings than the fix is worse than no check.
 
 ### Secrets See Everything
 

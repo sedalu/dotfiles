@@ -179,7 +179,7 @@ yamlfmt = "latest"
 
 # Sub-table tools (with postinstall hooks or extra options)
 
-# ryl — the YAML linter (replaces yamlfmt's -lint role; see hk.pkl).
+# ryl — the YAML rule linter (layout drift is yamlfmt's -lint; see hk.pkl).
 [tools."aqua:owenlamont/ryl"]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate-completions {}"

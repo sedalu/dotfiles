@@ -54,14 +54,14 @@ local rumdl = (Builtins.rumdl) {
   check_diff = "rumdl check --config .config/rumdl.toml --diff {{ files }}"
   fix = "rumdl check --config .config/rumdl.toml --fix {{ files }}"
 }
-// ryl owns YAML linting, so yamlfmt formats only:
-// with no check command it is skipped in check runs. See DESIGN.md §10.
+// ryl owns YAML rules; yamlfmt owns layout, and `-lint` is its own drift check.
+// Both halves need the config flag, or check and fix disagree. See DESIGN.md §10.
 local yamlfmt = (Builtins.yamlfmt) {
   exclude = notOurs
-  check_diff = null
+  check_diff = "yamlfmt -lint -conf .config/yamlfmt.yaml {{ files }}"
   fix = "yamlfmt -conf .config/yamlfmt.yaml {{ files }}"
 }
-// ryl is the YAML *linter* (replaces `yamlfmt -lint`).
+// ryl is the YAML *rule* linter; yamlfmt's `-lint` covers layout, not rules.
 // The builtin's `check_after_diff` reruns `check` once the diff is applied,
 // so unfixable violations fail too, not just fixable drift.
 local ryl = (Builtins.ryl) {
