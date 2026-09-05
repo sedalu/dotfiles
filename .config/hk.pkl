@@ -25,6 +25,7 @@ local shellGlob = List(
   "**/*.sh",
   "**/*.bash",
   "bin/**",
+  ".config/mise/bin/**",
   ".config/mise/tasks/**",
   "mise/tasks/**",
   "mise/hooks/**",
@@ -39,7 +40,6 @@ local shellSelectors = List(new FileSelector { glob = shellGlob })
 local shellcheck = (Builtins.shellcheck) {
   match_any = shellSelectors
   exclude = notOurs
-  check = "shellcheck --rcfile .config/shellcheckrc {{ files }}"
 }
 local tombi = (Builtins.tombi) { exclude = notOurs }
 
@@ -49,38 +49,15 @@ local shfmt = (Builtins.shfmt) {
   exclude = notOurs
 }
 local tombiFormat = (Builtins.tombi_format) { exclude = notOurs }
-local rumdl = (Builtins.rumdl) {
-  exclude = notOurs
-  check_diff = "rumdl check --config .config/rumdl.toml --diff {{ files }}"
-  fix = "rumdl check --config .config/rumdl.toml --fix {{ files }}"
-}
+local rumdl = (Builtins.rumdl) { exclude = notOurs }
 // ryl owns YAML rules; yamlfmt owns layout, and `-lint` is its own drift check.
-// Both halves need the config flag, or check and fix disagree. See DESIGN.md §10.
-local yamlfmt = (Builtins.yamlfmt) {
-  exclude = notOurs
-  check_diff = "yamlfmt -lint -conf .config/yamlfmt.yaml {{ files }}"
-  fix = "yamlfmt -conf .config/yamlfmt.yaml {{ files }}"
-}
+// See DESIGN.md §10.
+local yamlfmt = (Builtins.yamlfmt) { exclude = notOurs }
 // ryl is the YAML *rule* linter; yamlfmt's `-lint` covers layout, not rules.
 // The builtin's `check_after_diff` reruns `check` once the diff is applied,
 // so unfixable violations fail too, not just fixable drift.
-local ryl = (Builtins.ryl) {
-  exclude = notOurs
-  check = "ryl check -c .config/ryl.toml {{ files }}"
-  check_diff = "ryl check -c .config/ryl.toml --diff {{ files }}"
-  check_list_files = "ryl check -c .config/ryl.toml --list-files {{ files }}"
-  fix = "ryl check -c .config/ryl.toml --fix {{ files }}"
-}
-local typos = (Builtins.typos) {
-  exclude = notOurs
-  check_diff = """
-    output=$(typos --force-exclude --config .config/typos.toml --diff {{ files }})
-    [ -z "$output" ] && exit 0
-    printf "%s" "$output"
-    exit 1
-    """
-  fix = "typos --force-exclude --config .config/typos.toml --write-changes {{ files }}"
-}
+local ryl = (Builtins.ryl) { exclude = notOurs }
+local typos = (Builtins.typos) { exclude = notOurs }
 local jq = (Builtins.jq) { exclude = notOurs }
 local newlines = (Builtins.newlines) { exclude = notOurs }
 local mixedLineEnding = (Builtins.mixed_line_ending) { exclude = notOurs }

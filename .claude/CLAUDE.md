@@ -26,7 +26,7 @@ See [`docs/DESIGN.md`](../docs/DESIGN.md) for detailed system architecture and d
 | `lib/`          | Shell helper libraries                                          |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)              |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)           |
-| `.config/`      | Project scope: hk pipeline (`hk.pkl`), linter sidecars, `mise/` pins, `miserc.toml` |
+| `.config/`      | Project scope: hk pipeline (`hk.pkl`), linter sidecars, `mise/` pins + wrappers, `miserc.toml` |
 | `starship.toml` | Starship prompt config                                          |
 
 ## Tooling: mise-first approach
@@ -133,9 +133,17 @@ Config lives in `.config/`:
 - **`hk.pkl`** — pipeline definition (steps + `check`/`fix`/`pre-commit`/`pre-push` hooks),
   pkl amending hk's `Config.pkl`.
   hk discovers this itself — `.config/hk.pkl` is in its default search path, so no `HK_FILE` needed.
-- **`shellcheckrc`, `rumdl.toml`, `typos.toml`** — per-tool sidecars.
-  These *are* passed explicitly (`--rcfile`, `--config`) from the steps in `hk.pkl`,
-  since the tools' own auto-discovery doesn't look in this subdir.
+- **`shellcheckrc`, `rumdl.toml`, `ryl.toml`, `yamlfmt.yaml`, `typos.toml`, `tombi.toml`** — per-tool sidecars.
+  No step passes one as a flag.
+  Each reaches its tool by the highest rung it supports on the `repo-layout.md` ladder:
+  `tombi.toml`/`rumdl.toml`/`ryl.toml` are found natively,
+  `shellcheckrc` comes from `SHELLCHECK_OPTS` in `.config/mise/config.toml`,
+  and `yamlfmt.yaml`/`typos.toml` come from wrappers in `.config/mise/bin/`
+  that `_.path` puts ahead of the tools.
+  Adding a flag at a call site would configure only that one command of the step,
+  leaving the step's other commands on the tool's defaults.
+  A sidecar that stops arriving is silent — the tool just uses its defaults —
+  so `doctor:linter-configs` probes all five and fails if any stops reaching its tool.
 
 The pipeline's tools (`hk`, `shellcheck`, `shfmt`, `tombi`, `rumdl`, `ryl`, `yamlfmt`, `typos`, `gitleaks`, `jq`)
 are pinned in `.config/mise/config.toml` — the project scope, separate from the workstation

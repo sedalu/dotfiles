@@ -6,6 +6,15 @@ lockfile = true
 # so they resolve this config's tools even in a shell that has not activated mise.
 HK_MISE = "1"
 
+# Wrappers that supply a config flag their tool has no other way to receive.
+# `_.path` puts them ahead of the tool install dirs;
+# PROJECT_ROOT is how they name the config.
+_.path = [".config/mise/bin"]
+PROJECT_ROOT = "{{config_root}}"
+
+# shellcheck takes extra flags from here; its own search never looks in `.config/`.
+SHELLCHECK_OPTS = "--rcfile={{config_root}}/.config/shellcheckrc"
+
 # The toolchain the hk pipeline runs on.
 [tools]
 "aqua:owenlamont/ryl" = "0.21"

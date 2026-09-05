@@ -1,6 +1,7 @@
 # ShellCheck configuration for the dotfiles repo.
-# Passed explicitly via `shellcheck --rcfile .config/shellcheckrc` in .config/hk.pkl
-# (auto-discovery looks beside each script, not in this subdir).
+# Named by `SHELLCHECK_OPTS` in .config/mise/config.toml,
+# since shellcheck's own search looks beside each script and in `$XDG_CONFIG_HOME`,
+# never in this subdir.
 
 # Follow `# shellcheck source=...` directives so sourced libraries resolve.
 # This is the only setting that *must* live here: external-sources is rejected

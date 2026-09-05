@@ -1,4 +1,5 @@
 # ryl — YAML rule linter (layout drift is yamlfmt's `-lint`; see .config/hk.pkl).
+# Discovered natively — `.config/ryl.toml` is one of the names ryl searches for.
 #
 # ryl enables no rules by default, so this file is the whole ruleset.
 # It is tuned to coexist with yamlfmt (the formatter):

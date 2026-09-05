@@ -1,5 +1,6 @@
 # typos spell-checker config.
-# Passed explicitly via `typos --config .config/typos.toml` in .config/hk.pkl.
+# typos names its config only by flag,
+# so `.config/mise/bin/typos` supplies it on every invocation.
 # Seed the allow-list as false positives surface from `hk check --all`.
 
 [default.extend-words]

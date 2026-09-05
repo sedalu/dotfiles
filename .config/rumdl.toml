@@ -1,4 +1,5 @@
-# rumdl config. Passed via `rumdl check --config .config/rumdl.toml` in hk.pkl.
+# rumdl config.
+# Discovered natively — `.config/rumdl.toml` is one of the names rumdl searches for.
 # Disabled rules:
 #   MD013 (line length):
 #     our docs use semantic line breaks (one clause per line)

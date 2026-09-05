@@ -393,16 +393,52 @@ Full fresh-machine sequence (`.config/mise/tasks/bootstrap`):
 ## 10. Linting, Formatting & Secret Scanning (hk)
 
 [hk](https://hk.jdx.dev) drives all code quality.
-The pipeline is declared in `.config/hk.pkl` (pkl, amending hk's `Config.pkl`);
-per-tool sidecars (`shellcheckrc`, `rumdl.toml`, `ryl.toml`, `yamlfmt.yaml`, `typos.toml`) live beside it
-and are passed explicitly,
-since each tool's auto-discovery looks beside the target file, not in `.config/`.
-`tombi.toml` is the exception: tombi resolves a `tombi.toml` under `.config/` natively,
-treating the parent directory as the project root.
+The pipeline is declared in `.config/hk.pkl` (pkl, amending hk's `Config.pkl`),
+with the per-tool sidecars beside it.
 Every tool — `hk` itself plus `shellcheck`, `shfmt`, `tombi`, `rumdl`, `ryl`, `yamlfmt`, `typos`, `jq`, and `gitleaks` —
 is pinned in `.config/mise/config.toml` with a lockfile beside it,
 which is the project scope: the workstation toolchain this repo *ships* lives in `mise/config.toml`
 and is a different thing entirely.
+
+### Reaching the Sidecars
+
+No step passes its config as a flag.
+Each sidecar reaches its tool by the highest rung it supports on the ladder in
+[`repo-layout.md`](dev-standards/repo-layout.md#where-a-config-file-goes):
+
+| Sidecar                                    | Rung | How the tool finds it                                                  |
+| ------------------------------------------ | ---- | ---------------------------------------------------------------------- |
+| `tombi.toml`, `rumdl.toml`, `ryl.toml`     | 1    | native search — each already looks under `.config/`                    |
+| `shellcheckrc`                             | 2    | `SHELLCHECK_OPTS` in `.config/mise/config.toml`                        |
+| `yamlfmt.yaml`, `typos.toml`               | 3    | a wrapper in `.config/mise/bin/`, put ahead of the tool on `PATH`      |
+
+The flags this replaced were not merely verbose, they were partial.
+An hk builtin carries several commands per step — `check`, `check_diff`, `check_list_files`, `fix` —
+and a flag added to one leaves the rest reading the tool's defaults:
+the shellcheck step flagged `check` and left the builtin's `check_diff`,
+so the path that runs under `fix` and `pre-commit` saw no `external-sources` at all.
+Moving the config off the call site makes every command of every step read the same settings by construction,
+and makes an interactive run in a terminal read them too.
+
+`_.path` and `PROJECT_ROOT` in `.config/mise/config.toml` are what put the wrappers in front:
+mise places `_.path` ahead of the tool install directories,
+and each wrapper resolves its real binary with `mise which`,
+which reads the toolset rather than `PATH` and so cannot find the wrapper again.
+Because this repo's mise scope is the whole `$DOTFILES_DIR` worktree,
+that shadowing is in effect for any run anywhere under it, not just for hk —
+which is the intent, since these are the repo's own linters.
+
+A config that is not found does not fail; the tool silently uses its defaults,
+so `doctor:linter-configs` guards all five the way `doctor:pins` guards the pins.
+Each probe asserts a rule this repo *changed* —
+a long Markdown line passing (MD013 off), `Zeon` accepted, a blank line surviving yamlfmt,
+an unquoted YAML string rejected (ryl enables no rules by default),
+SC1091 staying quiet on a `source=` directive.
+The probes match the exit code exactly rather than merely non-zero,
+because a tool that cannot run at all must not read as one reporting the violation it was asked to find:
+ryl without a config exits 2, and its rule violation exits 1.
+Each of the five is confirmed to go red — with the sidecar moved aside,
+the wrapper removed, or `SHELLCHECK_OPTS` deleted — and green again once restored.
 
 ### Step Classes
 
@@ -433,9 +469,9 @@ YAML is split between two tools.
 Each rule in `ryl.toml` that overlaps a layout decision is set to match what yamlfmt emits,
 so the two never fight.
 yamlfmt's `-lint` is not a second linter but its own format-drift check,
-so it stays as the step's `check_diff` — without it `check` would see no YAML at all,
+so the builtin's `check_diff` is left in place — without it `check` would see no YAML at all,
 and drift would surface only when `fix` rewrote the file.
-Both `-lint` and the fix command pass `-conf`,
+Both halves read `yamlfmt.yaml` through the wrapper,
 since a check reading different settings than the fix is worse than no check.
 
 ### Secrets See Everything

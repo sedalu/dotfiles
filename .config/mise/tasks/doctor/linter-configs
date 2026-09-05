@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+#MISE description="Check each linter sidecar still reaches its tool"
+#MISE hide=true
+set -euo pipefail
+
+# A linter whose config is not found does not fail — it silently uses its defaults.
+# Each probe asserts a rule `.config/` changed,
+# so a sidecar that stopped arriving shows up as the wrong verdict rather than as silence.
+# The exit code is matched exactly: a tool that cannot run at all
+# must not be mistaken for one reporting the violation we asked it to find.
+# rumdl and ryl walk up from the probe file, so the probes live inside the worktree.
+
+probe_dir="$(mktemp -d "$DOTFILES_DIR/.doctor-linter-configs.XXXXXX")"
+trap 'rm -rf "$probe_dir"' EXIT
+
+fail=0
+
+# verdict <tool> <expected exit> <what the sidecar changed> <command...>
+verdict() {
+	local tool=$1 want=$2 rule=$3 rc=0
+	shift 3
+	"$@" >/dev/null 2>&1 || rc=$?
+	if [[ $rc -eq $want ]]; then
+		echo "✅ $tool — $rule"
+	else
+		echo "❌ $tool — $rule: not reaching the tool (exit $rc, wanted $want)"
+		((fail++)) || true
+	fi
+}
+
+# MD013 is disabled, so an over-long line passes.
+# It has to be breakable prose: MD013 leaves a long unbroken token alone by default.
+{
+	echo "# Probe"
+	echo
+	echo "This sentence is deliberately written to run well past the eighty column limit that MD013 enforces."
+} >"$probe_dir/long-line.md"
+verdict rumdl 0 ".config/rumdl.toml (native discovery)" \
+	rumdl check "$probe_dir/long-line.md"
+
+# quoted-strings is enabled here and off in ryl's own defaults,
+# so an unquoted value is a violation (exit 1) rather than ryl's no-config error (exit 2).
+printf 'probe: unquoted\n' >"$probe_dir/unquoted.yaml"
+verdict ryl 1 ".config/ryl.toml (native discovery)" \
+	ryl check "$probe_dir/unquoted.yaml"
+
+# retain_line_breaks keeps the blank line the basic formatter would otherwise strip.
+printf 'a: "1"\n\nb: "2"\n' >"$probe_dir/blank-line.yaml"
+verdict yamlfmt 0 ".config/yamlfmt.yaml (wrapper)" \
+	yamlfmt -lint "$probe_dir/blank-line.yaml"
+
+# "Zeon" is in extend-words, so it is not a misspelling of "Zone".
+printf 'Zeon\n' >"$probe_dir/allowed-word.txt"
+verdict typos 0 ".config/typos.toml (wrapper)" \
+	typos --force-exclude "$probe_dir/allowed-word.txt"
+
+# external-sources lets shellcheck follow a `source=` directive instead of raising SC1091.
+printf '#!/usr/bin/env bash\nprobe_lib=1\n' >"$probe_dir/lib.sh"
+# shellcheck disable=SC2016  # the probe script's own expansions, written out literally
+printf '%s\n' \
+	'#!/usr/bin/env bash' \
+	'# shellcheck source=SCRIPTDIR/lib.sh' \
+	'source "$(dirname "$0")/lib.sh"' \
+	'echo "$probe_lib"' >"$probe_dir/sourcing.sh"
+verdict shellcheck 0 ".config/shellcheckrc (SHELLCHECK_OPTS)" \
+	shellcheck "$probe_dir/sourcing.sh"
+
+if ((fail > 0)); then
+	echo "❌ $fail sidecar(s) not reaching their tool — see DESIGN.md §10"
+	exit 1
+fi
+echo "✅ All linter sidecars reach their tool"

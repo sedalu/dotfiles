@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# yamlfmt names its config only by flag, so every invocation gets it here.
+set -euo pipefail
+exec "$(mise which yamlfmt)" -conf "$PROJECT_ROOT/.config/yamlfmt.yaml" "$@"

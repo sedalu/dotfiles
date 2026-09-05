@@ -1,4 +1,6 @@
 # yamlfmt — YAML formatter config (see .config/hk.pkl).
+# yamlfmt names its config only by flag,
+# so `.config/mise/bin/yamlfmt` supplies it on every invocation.
 # ryl owns linting and enforces that every string is double-quoted;
 # yamlfmt preserves quotes,
 # and force_quote_style normalizes any it touches to double,

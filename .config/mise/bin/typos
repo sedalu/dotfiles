@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# typos names its config only by flag, so every invocation gets it here.
+set -euo pipefail
+exec "$(mise which typos)" --config "$PROJECT_ROOT/.config/typos.toml" "$@"
