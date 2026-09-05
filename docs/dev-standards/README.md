@@ -11,6 +11,12 @@ in the repo itself, or in its Claude session.
 
 - Every rule is imperative and binding.
   Where a repo differs, the repo is drift to migrate, not a local exception.
+- These rules govern a repo's own tooling, not the artifact it defines.
+  Where the subject of a repo is itself configuration —
+  a dotfiles tree, a stack definition, a published template —
+  that content is the deliverable and answers to its consumer,
+  not to the conventions the repo is built with.
+  [repo-layout.md](repo-layout.md) draws the same line at the root.
 - A file that binds only in some situations names that situation in its first line.
   No rule here names a repository.
 - Load the file for the topic at hand, not the set.

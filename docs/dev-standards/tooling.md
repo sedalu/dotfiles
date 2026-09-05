@@ -21,7 +21,10 @@ it selects rumdl over markdownlint, ryl over yamllint, and biome over prettier.
 
 ## Pinning
 
-- Declare explicit versions. Never `latest`.
+- Pin at least to a major version, and prefer a minor. Never `latest`.
+  The pin states the policy and the lockfile states the fact:
+  `hk = "1.57"` resolves to whatever patch is current the first time it is installed,
+  and stays there for everyone until the lock is moved.
 - Change a version with `mise use <tool>@<version>`, or `mise upgrade` to move it forward.
   Both write the config and the lockfile together.
 - Set `lockfile = true` so mise creates and maintains `mise.lock`,
