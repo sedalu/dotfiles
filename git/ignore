@@ -1,1 +1,4 @@
 **/.claude/settings.local.json
+
+# macOS Finder metadata — written by browsing any tree, never content
+.DS_Store
