@@ -16,22 +16,22 @@ Pick the layer by what *kind* of value it is, not by which file looks closest.
 | Layer         | Holds                                                   | Location                                                                                |
 | ------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | Preferences   | Scalar values (string, bool, int, float)                | `[bootstrap.macos.defaults]` in `mise/config.toml`; per-machine in `mise/config.<machine>.toml` |
-| Reset-catalog | Keys kept at their macOS default (`defaults delete`)    | `macos/settings.sh`                                                                       |
-| Manual        | Anything with no `defaults write` form                  | `macos/manual.md`                                                                         |
+| Reset-catalog | Keys kept at their macOS default (`defaults delete`)    | `lib/dotfiles/macos-settings.sh`                                                          |
+| Manual        | Anything with no `defaults write` form                  | `docs/macos-manual.md`                                                                    |
 
 Applied by `mise run install:macos`, checked by `mise run doctor:macos`.
 
 Two rules that override the obvious guess:
 
-- **`macos/settings.sh` is generated.** `mise run catalog:macos` syncs it from macos-defaults.com.
+- **`lib/dotfiles/macos-settings.sh` is generated.** `mise run catalog:macos` syncs it from macos-defaults.com.
   Never hand-add a `defaults write` line to it — a capture belongs in `[bootstrap.macos.defaults]` instead.
-- **`macos/settings.<machine>.sh` does not exist.**
+- **`lib/dotfiles/macos-settings.<machine>.sh` does not exist.**
   Machine-specific values are TOML, in `mise/config.<machine>.toml` (`caladan` on this machine),
   unioned with the base config via `MISE_ENV`.
 
 Arrays, dictionaries, and settings applied by something other than `defaults`
 (`launchctl`, a sandboxed app container, a System Settings pane with no backing key)
-go in `macos/manual.md` as prose — see the Spotlight and Dock entries there for the house style.
+go in `docs/macos-manual.md` as prose — see the Spotlight and Dock entries there for the house style.
 
 ## Workflow
 
@@ -139,7 +139,7 @@ For each domain's changes, ask the user to choose one of:
 2. **Track as machine-specific** → `[bootstrap.macos.defaults]` in `mise/config.<machine>.toml`
 3. **Skip** → don't record
 
-For a non-scalar value there is no global/machine choice to offer — it is document-in-`manual.md` or skip.
+For a non-scalar value there is no global/machine choice to offer — it is document-in-`macos-manual.md` or skip.
 Say so rather than presenting the scalar options.
 
 Batch the prompt per domain to avoid asking one-by-one when a domain has multiple related changes.
@@ -161,7 +161,7 @@ Map the output to a TOML value:
 - `Type is boolean` → `true` / `false`
 - `Type is integer` → bare integer
 - `Type is float` → decimal with an explicit `.0` if whole
-- `Type is array` or `Type is dictionary` → not a preference; document in `macos/manual.md`
+- `Type is array` or `Type is dictionary` → not a preference; document in `docs/macos-manual.md`
 
 **2. Insert into the target config:**
 
@@ -185,10 +185,10 @@ No inline tables; semantic line breaks in comments.
 **3. Check the restart target:**
 
 If the domain is new and its app needs a restart to pick the change up,
-add a `"domain:App Name"` entry to `killall_targets` in `macos/settings.sh`.
+add a `"domain:App Name"` entry to `killall_targets` in `lib/dotfiles/macos-settings.sh`.
 That array is hand-maintained even though the rest of the file is generated.
 
-**4. For manual entries**, append a `###` section under the machine heading in `macos/manual.md`
+**4. For manual entries**, append a `###` section under the machine heading in `docs/macos-manual.md`
 stating what the setting is, why it can't be automated, and the intended value.
 
 **After writing all changes**, verify with:

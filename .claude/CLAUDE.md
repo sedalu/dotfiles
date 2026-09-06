@@ -20,10 +20,9 @@ See [`docs/DESIGN.md`](../docs/DESIGN.md) for detailed system architecture and d
 | `gh/`           | GitHub CLI config and hosts                                     |
 | `bat/`          | Bat syntax highlighting config and themes                       |
 | `claude/`       | Claude Code config: settings, hooks, statusline (symlinked to `~/.claude`) |
-| `macos/`        | macOS reset-catalog (`settings.sh`) + manual notes (`manual.md`); scalar prefs live in `[bootstrap.macos.defaults]` |
 | `fnox/`         | fnox secret management config (macOS Keychain)                  |
 | `lazygit/`      | Lazygit TUI config and Catppuccin theme                         |
-| `lib/`          | Shell helper libraries                                          |
+| `lib/`          | Shell helper libraries + the macOS reset-catalog (`dotfiles/macos-settings.sh`) |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)              |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`)           |
 | `.config/`      | Project scope: hk pipeline (`hk.pkl`), linter sidecars, `mise/` pins + wrappers, `miserc.toml` |
@@ -106,8 +105,8 @@ that calls `mise/hooks/install-fonts` to move the font files to the user's font 
 - **macOS defaults** — scalar `defaults write` preferences go in `[bootstrap.macos.defaults]`
   (`mise/config.toml`, per-machine in `config.<machine>.toml`).
   Keys you want kept at the macOS default (`defaults delete`)
-  and the `killall_targets` restart map stay in `macos/settings.sh`;
-  settings with no `defaults` equivalent are documented in `macos/manual.md`.
+  and the `killall_targets` restart map stay in `lib/dotfiles/macos-settings.sh`;
+  settings with no `defaults` equivalent are documented in `docs/macos-manual.md`.
   mise can't express absent keys, arrays, or app restarts, so those never go in the TOML.
 - **Login shell** — declared in `[bootstrap.user].login_shell`
   (`mise/config.macos.toml`; Homebrew zsh, macOS-only since the path is arch-specific).

@@ -251,15 +251,15 @@ macOS configuration is split by what mise can express:
   (`mise/config.toml` + per-machine `config.${MACHINE}.toml`)
   and applied/verified by mise itself — `mise bootstrap macos-defaults apply` and `status --missing`.
 - **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map —
-  stays in `macos/settings.sh`, because mise can express neither an absent key nor an app restart.
+  stays in `lib/dotfiles/macos-settings.sh`, because mise can express neither an absent key nor an app restart.
   It is synced from macos-defaults.com by `catalog:macos`.
 - **Manual-only settings** with no `defaults` equivalent (Tips, Mail, Spotlight categories)
-  are documented in `macos/manual.md`.
+  are documented in `docs/macos-manual.md`.
 
 | Config file                         | Defines                                                  | Used by                                     |
 | ----------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
 | `[bootstrap.macos.defaults]`        | Scalar `defaults write` preferences (base + per-machine) | install:macos, doctor:macos                 |
-| `macos/settings.sh`                 | `defaults delete` reset-catalog + `killall_targets` map  | install:macos, doctor:macos, catalog:macos  |
+| `lib/dotfiles/macos-settings.sh`    | `defaults delete` reset-catalog + `killall_targets` map  | install:macos, doctor:macos, catalog:macos  |
 | `lib/dotfiles/macos.sh`             | Reset-catalog parsing helpers                            | install:macos, doctor:macos, catalog:macos  |
 | `[bootstrap.user].login_shell`      | Login shell (Homebrew zsh), per macOS machine            | install:login-shell, doctor:login-shell     |
 
@@ -267,7 +267,7 @@ macOS configuration is split by what mise can express:
 and restarts only the apps whose domains actually changed —
 write-domains from mise `status` (taken before apply), delete-domains from a before/after snapshot.
 `doctor:macos` gates on `status --missing`, then checks each catalog key is absent.
-Per-machine reset-catalog deletes are still supported via an optional `macos/settings.${MACHINE}.sh` sidecar (none currently).
+Per-machine reset-catalog deletes are still supported via an optional `lib/dotfiles/macos-settings.${MACHINE}.sh` sidecar (none currently).
 Symlinks are likewise declared in `[dotfiles]` (see §8).
 
 The **login shell** is a separate `[bootstrap.user]` concern, declared in `config.macos.toml`

@@ -10,7 +10,7 @@ fi
 # --- Config ---
 REPO_URL="https://github.com/yannbertrand/macos-defaults.git"
 CACHE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/macos-defaults"
-SETTINGS_FILE="$DOTFILES_DIR/macos/settings.sh"
+SETTINGS_FILE="$DOTFILES_DIR/lib/dotfiles/macos-settings.sh"
 
 # --- Clone or update ---
 if [[ -d "$CACHE_DIR/.git" ]]; then

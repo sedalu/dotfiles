@@ -9,7 +9,7 @@
 # Per-machine scalar macOS preferences for caladan,
 # unioned with the base [bootstrap.macos.defaults] in config.toml via MISE_ENV.
 # Settings with no `defaults write` equivalent (Tips, Mail, Spotlight categories)
-# are documented in macos/manual.md.
+# are documented in docs/macos-manual.md.
 [bootstrap.macos.defaults."io.tailscale.ipn.macsys"]
 # Hide the Tailscale menu-bar app's Dock icon.
 HideDockIcon = true

@@ -10,7 +10,7 @@ For comparison, the automatable layers are:
   (`mise/config.toml` plus per-machine `mise/config.<machine>.toml`),
   applied by `mise run install:macos`.
 - **Reset-catalog** — keys tracked at their macOS default (`defaults delete`),
-  in `macos/settings.sh`.
+  in `lib/dotfiles/macos-settings.sh`.
 
 ## caladan
 

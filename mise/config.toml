@@ -30,7 +30,7 @@ package_manager = "bun"
 # applied by `mise bootstrap macos-defaults apply` (wired into `install:macos`).
 # Per-machine entries live in config.<machine>.toml and union via MISE_ENV (see miserc.toml).
 # Only scalar writes belong here;
-# the `defaults delete` reset-catalog and killall restart logic stay in macos/settings.sh,
+# the `defaults delete` reset-catalog and killall restart logic stay in lib/dotfiles/macos-settings.sh,
 # since mise can express neither an absent key nor an app restart.
 [bootstrap.macos.defaults."com.apple.dock"]
 # Dock position.

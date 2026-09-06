@@ -43,10 +43,10 @@ defaults() {
 }
 
 killall_targets=()
-# shellcheck source=SCRIPTDIR/../../../../macos/settings.sh
-. "$DOTFILES_DIR/macos/settings.sh"
+# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/macos-settings.sh
+. "$DOTFILES_DIR/lib/dotfiles/macos-settings.sh"
 
-machine_file="$DOTFILES_DIR/macos/settings.${DOTFILES_MACHINE}.sh"
+machine_file="$DOTFILES_DIR/lib/dotfiles/macos-settings.${DOTFILES_MACHINE}.sh"
 if [[ -f "$machine_file" ]]; then
 	echo "  📎 Machine: $DOTFILES_MACHINE"
 	# shellcheck source=/dev/null

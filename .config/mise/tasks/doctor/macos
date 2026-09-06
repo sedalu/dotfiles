@@ -25,7 +25,7 @@ else
 fi
 
 # --- Reset-catalog: each tracked key must be absent ---
-echo "🧹 Reset-catalog (macos/settings.sh):"
+echo "🧹 Reset-catalog (lib/dotfiles/macos-settings.sh):"
 _dw_domains=() _dw_keys=()
 while IFS= read -r file; do
 	macos_parse_defaults "$file"

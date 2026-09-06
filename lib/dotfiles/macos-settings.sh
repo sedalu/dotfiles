@@ -1,10 +1,10 @@
 # shellcheck shell=bash
-# macos/settings.sh — macOS reset-catalog + restart targets
+# lib/dotfiles/macos-settings.sh — macOS reset-catalog + restart targets
 #
 # `defaults delete` entries track keys we keep at their macOS default,
 # synced from macos-defaults.com by `mise run catalog:macos`.
 # Scalar preferences live in [bootstrap.macos.defaults] (mise/config*.toml);
-# settings with no defaults equivalent are documented in macos/manual.md.
+# settings with no defaults equivalent are documented in docs/macos-manual.md.
 # Apply:  mise run install:macos
 # Check:  mise run doctor:macos
 

@@ -16,7 +16,7 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR`
 | `bat/`          | Bat syntax highlighting config                        |
 | `lazygit/`      | Lazygit TUI config                                    |
 | `claude/`       | Claude Code config: settings, hooks, statusline       |
-| `macos/`        | macOS reset-catalog + manual notes (`manual.md`)      |
+| `lib/`          | Shell helper libraries + the macOS reset-catalog      |
 | `mas/`          | Mac App Store app list                                |
 | `fnox/`         | Secret management config (macOS Keychain)             |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
@@ -103,8 +103,8 @@ mise run install:macos   # apply preferences + reset-catalog
 mise run doctor:macos    # check for drift
 ```
 
-Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `macos/settings.sh`;
-settings with no `defaults` equivalent are documented in `macos/manual.md`.
+Keys kept at their macOS default (`defaults delete`) and the app-restart map stay in `lib/dotfiles/macos-settings.sh`;
+settings with no `defaults` equivalent are documented in [`docs/macos-manual.md`](docs/macos-manual.md).
 
 ## Linting & Git Hooks
 

@@ -3,8 +3,8 @@
 
 # Collect reset-catalog file paths (global + machine sidecar).
 macos_settings_files() {
-	local files=("$DOTFILES_DIR/macos/settings.sh")
-	local machine_file="$DOTFILES_DIR/macos/settings.${DOTFILES_MACHINE}.sh"
+	local files=("$DOTFILES_DIR/lib/dotfiles/macos-settings.sh")
+	local machine_file="$DOTFILES_DIR/lib/dotfiles/macos-settings.${DOTFILES_MACHINE}.sh"
 	[[ -f "$machine_file" ]] && files+=("$machine_file")
 	printf '%s\n' "${files[@]}"
 }
