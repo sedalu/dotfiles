@@ -17,7 +17,6 @@ XDG-based dotfiles managed as a bare git repo at `$DOTFILES_DIR`
 | `lazygit/`      | Lazygit TUI config                                    |
 | `claude/`       | Claude Code config: settings, hooks, statusline       |
 | `lib/`          | Shell helper libraries + the macOS reset-catalog      |
-| `mas/`          | Mac App Store app list                                |
 | `fnox/`         | Secret management config (macOS Keychain)             |
 | `ssh/`          | SSH config template (symlinked to `~/.ssh/config`)    |
 | `bin/`          | Custom scripts (`extract`, `genpass`, `path`, `port`) |
@@ -92,6 +91,11 @@ Homebrew casks install as `brew-cask:` entries in `[bootstrap.packages]`
 (macOS-only → `mise/config.macos.toml`), poured by mise without the `brew` CLI:
 mise copies `.app` bundles with `ditto`
 and installs `pkg` casks via `sudo installer`.
+
+Mac App Store apps are `mas:<adam-id>` entries in `[bootstrap.packages]`
+(universal → `mise/config.macos.toml`, machine-specific → `config.<machine>.toml`),
+each carrying the app's name as a trailing comment since the key is only digits.
+Find an id with `mas search <name>` and confirm it still resolves with `mas info <id>`.
 
 ## macOS Settings
 
