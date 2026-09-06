@@ -13,7 +13,7 @@ See [`docs/DESIGN.md`](../docs/DESIGN.md) for detailed system architecture and d
 | Directory       | Purpose                                                         |
 | --------------- | --------------------------------------------------------------- |
 | `shell/`        | Shared env (`env.sh`, `interactive.sh`) + bash/zsh dirs         |
-| `mise/`         | Tool versions (`config.toml`), tasks, and hooks                 |
+| `mise/`         | Tool versions (`config.toml`), tasks, hooks, and tool wrappers (`bin/`) |
 | `git/`          | User-level git config and ignore                                |
 | `ghostty/`      | Ghostty terminal config                                         |
 | `helix/`        | Helix editor config and language servers                        |

@@ -363,6 +363,12 @@ so under the `.bare/` layout these tasks used to build,
 every worktree was a fresh, untrusted config root.
 `worktree:init` converts such a layout in place when run inside one.
 
+The root of such a project is not itself a repo, so git tooling cannot open there —
+which is where you land after `cd`-ing to a project.
+`mise/bin/lazygit` closes that gap: outside a repo it walks up to the enclosing project
+and offers its worktrees, and everywhere else it hands straight off to the real binary.
+`lib/worktree.sh` holds the discovery both it and the `worktree:*` tasks share.
+
 This tree is not one of those projects.
 `$DOTFILES_DIR` is a live installation at a path its consumers hardcode,
 so it cannot move aside to make room for a `main/` sibling,

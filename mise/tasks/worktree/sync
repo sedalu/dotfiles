@@ -2,8 +2,8 @@
 #MISE description="Fetch origin and pull all worktrees"
 #MISE depends=["worktree:fetch"]
 set -euo pipefail
-# shellcheck source=SCRIPTDIR/_list_worktrees
-source "$(dirname "$0")/_list_worktrees"
+# shellcheck source=SCRIPTDIR/_repo_root
+source "$(dirname "$0")/_repo_root"
 
 while read -r WT; do
 	NAME="${WT##*/}"

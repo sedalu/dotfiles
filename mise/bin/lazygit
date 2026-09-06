@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# lazygit cannot open a worktree project's root, since the root itself is not a repo.
+# From outside a repo, offer the enclosing project's worktrees instead.
+set -euo pipefail
+# shellcheck source=SCRIPTDIR/../../lib/worktree.sh
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/worktree.sh"
+
+REAL="$(mise which lazygit)"
+
+# A repo the user named by hand is lazygit's business alone.
+for arg in "$@"; do
+	case "$arg" in
+	-p | --path | -w | --work-tree | -g | --git-dir) exec "$REAL" "$@" ;;
+	esac
+done
+
+if git rev-parse --git-dir >/dev/null 2>&1; then
+	exec "$REAL" "$@"
+fi
+
+worktree_root || exec "$REAL" "$@"
+
+WORKTREES=()
+while IFS= read -r wt; do
+	WORKTREES+=("$wt")
+done < <(list_worktrees)
+
+if [ "${#WORKTREES[@]}" -gt 1 ]; then
+	SELECTED=$(printf '%s\n' "${WORKTREES[@]}" | sed "s|^$ROOT/||" |
+		fzf --prompt="worktree > " --height="~40%" --no-multi) || exit 0
+	SELECTED="$ROOT/$SELECTED"
+else
+	SELECTED="${WORKTREES[0]}"
+fi
+
+cd "$SELECTED"
+exec "$REAL" "$@"

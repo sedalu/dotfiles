@@ -1,20 +1,12 @@
 # shellcheck shell=bash
 # Sets: MAIN (the main checkout, which holds the git directory), ROOT (its parent).
+# Defines: list_worktrees.
 # Sourced by worktree:* tasks — not a standalone task.
 
-dir="${MISE_ORIGINAL_CWD:-$PWD}"
-while [ "$dir" != "/" ]; do
-	# A main checkout's .git is a directory;
-	# a linked worktree's is a file holding a gitdir: pointer.
-	if [ -d "$dir/main/.git" ]; then
-		MAIN="$dir/main"
-		# shellcheck disable=SC2034  # ROOT consumed by the worktree:* tasks that source this file
-		ROOT="$dir"
-		break
-	fi
-	dir=$(dirname "$dir")
-done
-if [ -z "${MAIN:-}" ]; then
+# shellcheck source=SCRIPTDIR/../../../lib/worktree.sh
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/worktree.sh"
+
+if ! worktree_root; then
 	echo "fatal: not inside a worktree project (no main/.git found)" >&2
 	exit 1
 fi
