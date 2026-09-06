@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# mise/tasks/ref/_path — map a clone URL to its path under $REF_REPOS_DIR
+# mise/tasks/ref/_path — resolve a repo spec to its clone URL and its path under $REF_REPOS_DIR
 
 : "${REF_REPOS_DIR:?REF_REPOS_DIR is not set — is shell/env.sh loaded?}"
 
@@ -29,4 +29,26 @@ ref_repo_path() {
 	fi
 
 	printf '%s\n' "$rest"
+}
+
+# Expand a repo spec into a clone URL.
+# Anything already carrying a scheme, or a colon ahead of the first slash (git's scp-style form),
+# is a clone URL and passes through untouched.
+# A bare `<host>/<owner>/<repo>` is only missing a scheme, so it gains https.
+# The host is never inferred:
+# the checkout path has to say who publishes the code.
+ref_clone_url() {
+	local spec="${1%/}"
+
+	if [[ $spec == *://* || ${spec%%/*} == *:* ]]; then
+		printf '%s\n' "$spec"
+		return
+	fi
+
+	if [[ $spec != *?/?*/?* ]]; then
+		echo "fatal: cannot derive a clone URL from '$spec' — expected <host>/<owner>/<repo> or a clone URL" >&2
+		return 1
+	fi
+
+	printf 'https://%s\n' "$spec"
 }

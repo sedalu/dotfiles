@@ -27,7 +27,8 @@ and the path always says who publishes the code.
 **Find what is already checked out** — `mise run ref:list`.
 The output is `<host>/<owner>/<repo>`, one per line.
 
-**Get a repo, whether or not it exists yet** — `mise run ref:get <clone-url>`.
+**Get a repo, whether or not it exists yet** — `mise run ref:get <repo>`.
+Name it by its checkout path — `github.com/jdx/mise`, `codeberg.org/forgejo/forgejo` — or pass a full clone URL.
 It clones if absent, fast-forwards if present, and prints the checkout path either way.
 Run it before reading a repo you did not just clone:
 a checkout that has sat for a month answers questions about a month-old release.

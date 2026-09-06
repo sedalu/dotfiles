@@ -80,8 +80,9 @@ See <https://sembr.org>.
 
 Upstream git checkouts live under `$REF_REPOS_DIR` (`~/.cache/ref/<host>/<owner>/<repo>`).
 Prefer them over the network — and over memory — when answering anything about a third-party tool.
-`mise run ref:get <url>` clones or refreshes one and prints its path,
+`mise run ref:get <repo>` clones or refreshes one and prints its path,
 so clone freely.
+It takes a bare `<host>/<owner>/<repo>` as readily as a full clone URL.
 They are read-only and disposable;
 never leave work that matters in one.
 
@@ -106,7 +107,8 @@ holding the git directory, and each branch is a linked worktree beside it.
 
 **Reference-repo tasks** (global — run from anywhere):
 
-- `ref:get <url>` — Clone or fast-forward an upstream checkout and print its path
+- `ref:get <repo>` — Clone or fast-forward an upstream checkout and print its path
+  (`<host>/<owner>/<repo>`, or a clone URL)
 - `ref:list` — List every checkout as `<host>/<owner>/<repo>`
 
 **Bootstrap & maintenance tasks** (scoped to the dotfiles tree — `cd $DOTFILES_DIR` first):

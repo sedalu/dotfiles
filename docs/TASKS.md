@@ -106,10 +106,10 @@ Set machine name (OS hostname + DOTFILES_MACHINE)
 Clone or refresh a reference checkout and print its path
 
 
-- **Usage:** `ref:get <url>`
+- **Usage:** `ref:get <repo>`
 
 ### Arguments
-- **`<url>`** — Clone URL of the upstream repository
+- **`<repo>`** — &lt;host>/&lt;owner>/&lt;repo>, or a full clone URL
 
 ## `ref:list`
 
