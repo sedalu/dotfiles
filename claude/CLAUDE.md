@@ -78,16 +78,17 @@ See <https://sembr.org>.
 
 ## Reference Checkouts
 
-`~/Projects/ref/` holds upstream git checkouts for source browsing and research.
-Use these instead of fetching from the internet when possible.
-Pull when a repo looks stale or when asked.
-Agents may clone new repos here when a reference checkout would be useful.
-See `~/Projects/ref/CLAUDE.md` for the full inventory.
+Upstream git checkouts live under `$REF_REPOS_DIR` (`~/.cache/ref/<host>/<owner>/<repo>`).
+Prefer them over the network — and over memory — when answering anything about a third-party tool.
+`mise run ref:get <url>` clones or refreshes one and prints its path,
+so clone freely.
+They are read-only and disposable;
+never leave work that matters in one.
 
 ## Shared Dotfiles & Tasks
 
-The dotfiles tree at `$DOTFILES_DIR` (`~/.config`) ships two sets of mise tasks:
-the `worktree:*` namespace, which is global and operates on other repos,
+The dotfiles tree at `$DOTFILES_DIR` (`~/.config`) ships two kinds of mise tasks:
+the global namespaces `worktree:*` and `ref:*`, which operate on other repos,
 and the dotfiles-maintenance tasks, scoped to this tree.
 `~/.config` is itself a live installation rather than a worktree project,
 so the `worktree:*` tasks do not apply to it — commit to it directly.
@@ -102,6 +103,11 @@ holding the git directory, and each branch is a linked worktree beside it.
 - `worktree:status` — Monitor all worktrees for dirty state and ahead/behind remote
 - `worktree:sync` — Fetch origin and fast-forward every worktree
 - `worktree:list` — View all active worktrees and branches
+
+**Reference-repo tasks** (global — run from anywhere):
+
+- `ref:get <url>` — Clone or fast-forward an upstream checkout and print its path
+- `ref:list` — List every checkout as `<host>/<owner>/<repo>`
 
 **Bootstrap & maintenance tasks** (scoped to the dotfiles tree — `cd $DOTFILES_DIR` first):
 
