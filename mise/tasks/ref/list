@@ -4,8 +4,9 @@ set -euo pipefail
 # shellcheck source=SCRIPTDIR/_path
 source "$(dirname "$0")/_path"
 
-# The layout is exactly <host>/<owner>/<repo>,
-# so clamping the depth lists the checkouts without descending into their contents.
-find "$REF_REPOS_DIR" -mindepth 3 -maxdepth 3 -type d 2>/dev/null |
+# A checkout is whatever holds a .git, not whatever sits at a fixed depth:
+# a forge with nested groups puts a repo below <host>/<owner>/<repo>.
+# Pruning at each match keeps the walk out of the working trees.
+find "$REF_REPOS_DIR" -type d -exec test -e '{}/.git' \; -print -prune 2>/dev/null |
 	sed "s|^$REF_REPOS_DIR/||" |
 	sort
