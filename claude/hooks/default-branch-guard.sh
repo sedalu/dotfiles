@@ -18,61 +18,25 @@
 # No `-e`: a probe that fails must let the tool call through rather than block on a hook bug.
 set -uo pipefail
 
+# A relative path would resolve against ~/.claude, which is a symlink into this tree,
+# so the library is reached through the same variable the mise tasks use.
+# shellcheck source=SCRIPTDIR/../../lib/claude-hooks.sh
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/claude-hooks.sh" || exit 0
+
 KEY=defaultBranch.allowDirectCommits
 
 payload=$(cat)
-
-field() {
-	printf '%s' "$payload" | jq -r "$1" 2>/dev/null || true
-}
 
 event=$(field '.hook_event_name // ""')
 tool=$(field '.tool_name // ""')
 cwd=$(field '.cwd // ""')
 
-deny() {
-	jq -n --arg reason "$1" '{
-		hookSpecificOutput: {
-			hookEventName: "PreToolUse",
-			permissionDecision: "deny",
-			permissionDecisionReason: $reason
-		}
-	}'
-	exit 0
-}
-
-# Walks each git invocation in a command line and reports its subcommand plus its arguments.
-# Splitting on shell separators keeps the invocations in a compound command apart,
-# and git's own options are stepped over to reach the subcommand.
-git_invocations() {
-	local cmd=$1 segment i n
-	local -a tok
-	while IFS= read -r segment; do
-		read -r -a tok <<<"$segment"
-		i=0
-		n=${#tok[@]}
-		while [ "$i" -lt "$n" ]; do
-			if [ "${tok[i]}" = "git" ]; then
-				i=$((i + 1))
-				while [ "$i" -lt "$n" ]; do
-					case "${tok[i]}" in
-					-C | -c | --git-dir | --work-tree) i=$((i + 2)) ;;
-					-*) i=$((i + 1)) ;;
-					*) break ;;
-					esac
-				done
-				[ "$i" -lt "$n" ] && printf '%s\n' "${tok[*]:i}"
-			fi
-			i=$((i + 1))
-		done
-	done < <(printf '%s\n' "$cmd" | tr ';|&' '\n')
-}
-
 # True when a command would write the opt-out key.
 # Reading it and removing it are both fine — only granting the exception is gated.
 sets_exception_key() {
-	local invocation
-	while IFS= read -r invocation; do
+	local line invocation
+	while IFS= read -r line; do
+		invocation=$(invocation_cmd "$line")
 		case "$invocation" in
 		config\ *) ;;
 		*) continue ;;
@@ -85,40 +49,6 @@ sets_exception_key() {
 		*--get* | *--list* | *--unset*) continue ;;
 		esac
 		return 0
-	done < <(git_invocations "$1")
-	return 1
-}
-
-# Subcommands that write a commit onto the current branch.
-# `switch`, `checkout`, `stash`, `restore`, `reset`, and `clean` are absent on purpose:
-# each one moves work off the default branch or discards it, which is the way out of here.
-locking=" commit merge rebase am cherry-pick revert "
-
-first_locking_subcommand() {
-	local invocation sub args word
-	while IFS= read -r invocation; do
-		read -r -a args <<<"$invocation"
-		sub=${args[0]}
-		if [[ $locking == *" $sub "* ]]; then
-			printf '%s\n' "$sub"
-			return 0
-		fi
-		# A bare `git push` publishes the current branch.
-		# An explicit remote and refspec names what to push,
-		# so pushing a feature branch while standing here is legitimate.
-		if [ "$sub" = push ]; then
-			local operands=0
-			for word in "${args[@]:1}"; do
-				case "$word" in
-				-*) ;;
-				*) operands=$((operands + 1)) ;;
-				esac
-			done
-			if [ "$operands" -lt 2 ]; then
-				printf 'push\n'
-				return 0
-			fi
-		fi
 	done < <(git_invocations "$1")
 	return 1
 }
@@ -152,23 +82,6 @@ allowed=$(git config --bool --get "$KEY" 2>/dev/null)
 # A detached HEAD is not the default branch, and a commit there lands on no branch at all.
 current=$(git branch --show-current 2>/dev/null)
 [ -n "$current" ] || exit 0
-
-default_branch() {
-	local ref candidate
-	ref=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
-	if [ -n "$ref" ]; then
-		printf '%s\n' "${ref#origin/}"
-		return
-	fi
-	for candidate in main master; do
-		if git show-ref --verify --quiet "refs/heads/$candidate"; then
-			printf '%s\n' "$candidate"
-			return
-		fi
-	done
-	ref=$(git config --get init.defaultBranch 2>/dev/null)
-	printf '%s\n' "${ref:-main}"
-}
 
 [ "$current" = "$(default_branch)" ] || exit 0
 

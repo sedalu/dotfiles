@@ -16,11 +16,12 @@
 # No `-e`: a probe that fails must let the tool call through rather than block on a hook bug.
 set -uo pipefail
 
-payload=$(cat)
+# A relative path would resolve against ~/.claude, which is a symlink into this tree,
+# so the library is reached through the same variable the mise tasks use.
+# shellcheck source=SCRIPTDIR/../../lib/claude-hooks.sh
+source "${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/lib/claude-hooks.sh" || exit 0
 
-field() {
-	printf '%s' "$payload" | jq -r "$1" 2>/dev/null || true
-}
+payload=$(cat)
 
 event=$(field '.hook_event_name // ""')
 tool=$(field '.tool_name // ""')
@@ -28,17 +29,6 @@ tool=$(field '.tool_name // ""')
 
 command=$(field '.tool_input.command // ""')
 [ -n "$command" ] || exit 0
-
-ask() {
-	jq -n --arg reason "$1" '{
-		hookSpecificOutput: {
-			hookEventName: "PreToolUse",
-			permissionDecision: "ask",
-			permissionDecisionReason: $reason
-		}
-	}'
-	exit 0
-}
 
 remedy="Bypassing is for a broken hook, not a failing or a slow one. Run the command without it. If a hook is genuinely broken, say so and hand the bypass to the human rather than running it."
 
@@ -57,37 +47,10 @@ for token in "${tokens[@]}"; do
 	esac
 done
 
-# Walks each git invocation in a command line and reports its subcommand plus its arguments.
-# Splitting on shell separators keeps the invocations in a compound command apart,
-# and git's own options are stepped over to reach the subcommand.
-git_invocations() {
-	local cmd=$1 segment i n
-	local -a tok
-	while IFS= read -r segment; do
-		read -r -a tok <<<"$segment"
-		i=0
-		n=${#tok[@]}
-		while [ "$i" -lt "$n" ]; do
-			if [ "${tok[i]}" = "git" ]; then
-				i=$((i + 1))
-				while [ "$i" -lt "$n" ]; do
-					case "${tok[i]}" in
-					-C | -c | --git-dir | --work-tree) i=$((i + 2)) ;;
-					-*) i=$((i + 1)) ;;
-					*) break ;;
-					esac
-				done
-				[ "$i" -lt "$n" ] && printf '%s\n' "${tok[*]:i}"
-			fi
-			i=$((i + 1))
-		done
-	done < <(printf '%s\n' "$cmd" | tr ';|&' '\n')
-}
-
 # `-n` is --no-verify on commit, but --dry-run on push,
 # so the short form is only a bypass under commit.
-while IFS= read -r invocation; do
-	read -r -a args <<<"$invocation"
+while IFS= read -r line; do
+	read -r -a args <<<"$(invocation_cmd "$line")"
 	[ "${args[0]:-}" = commit ] || continue
 	for word in "${args[@]:1}"; do
 		case "$word" in
