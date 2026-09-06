@@ -64,6 +64,25 @@ so values from `~/.dotfiles` take precedence.
 | `DOTFILES_OS`      | `uname -s` lowercased                            | OS identifier          |
 | `DOTFILES_SHELL`   | `basename $SHELL`                                | Default shell name     |
 
+### Reference Repos
+
+| Variable         | Default                | Purpose                              |
+| ---------------- | ---------------------- | ------------------------------------ |
+| `REF_REPOS_DIR`  | `$XDG_CACHE_HOME/ref`  | Upstream checkouts for source lookup |
+
+Set conditionally like the `DOTFILES_*` vars,
+so `~/.dotfiles` can move it.
+The tree is keyed by remote as `<host>/<owner>/<repo>`,
+which makes the path derivable from a clone URL rather than a name someone picked,
+so two projects sharing a name cannot collide.
+
+It lives in cache rather than data
+because every checkout is re-cloneable from its own `origin`:
+there is no inventory to lose,
+nothing is seeded,
+and repos arrive on demand through `ref:get` when a question needs them.
+That also keeps hundreds of megabytes of upstream git history out of Time Machine.
+
 ### Override Mechanism
 
 `~/.dotfiles` is sourced at the top of `env.sh` (and at the top of `.bash_profile` / `.zshenv`).
@@ -334,7 +353,7 @@ so the first task a fresh machine runs records the grant in mise's own trust sto
 A `trusted_config_paths` entry would be worse than redundant —
 it is checked ahead of the persisted ignore list,
 so it blanket-trusts whatever later lands under the path, outranking a deliberate `mise trust --ignore`.
-The `worktree:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
+The `worktree:*` and `ref:*` tasks deliberately stay global under `mise/tasks/` — they operate on any repo, not just this one.
 
 The same collision reaches the *config* files, and there it is not benign.
 `mise/config.toml` is both this machine's global mise config and a filename mise looks for in the cwd,

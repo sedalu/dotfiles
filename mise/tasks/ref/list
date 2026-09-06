@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#MISE description="List every reference checkout"
+set -euo pipefail
+# shellcheck source=SCRIPTDIR/_path
+source "$(dirname "$0")/_path"
+
+# The layout is exactly <host>/<owner>/<repo>,
+# so clamping the depth lists the checkouts without descending into their contents.
+find "$REF_REPOS_DIR" -mindepth 3 -maxdepth 3 -type d 2>/dev/null |
+	sed "s|^$REF_REPOS_DIR/||" |
+	sort

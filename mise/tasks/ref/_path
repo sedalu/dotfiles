@@ -1,0 +1,32 @@
+# shellcheck shell=bash
+# mise/tasks/ref/_path — map a clone URL to its path under $REF_REPOS_DIR
+
+: "${REF_REPOS_DIR:?REF_REPOS_DIR is not set — is shell/env.sh loaded?}"
+
+# Derive <host>/<owner>/<repo> from a clone URL.
+# Two shapes reach this:
+# a real URL with a scheme, and git's scp-style host:path form.
+# They are handled separately
+# because only the scp form treats a colon as the path separator —
+# swapping colons blindly would mangle the port in ssh://host:2222/owner/repo.
+ref_repo_path() {
+	local url="$1" rest
+
+	if [[ $url == *://* ]]; then
+		rest="${url#*://}"
+		rest="${rest#*@}"
+	else
+		rest="${url#*@}"
+		rest="${rest/://}"
+	fi
+
+	rest="${rest%.git}"
+	rest="${rest%/}"
+
+	if [[ $rest != *?/?*/?* ]]; then
+		echo "fatal: cannot derive <host>/<owner>/<repo> from '$url'" >&2
+		return 1
+	fi
+
+	printf '%s\n' "$rest"
+}

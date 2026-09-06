@@ -187,7 +187,7 @@ and `gitleaks` (via hk) blocks committed/pushed secrets — see [Code quality (h
 Automation uses `mise run` with tasks defined in `.config/mise/tasks/` —
 a project-local mise scope, available anywhere under `$DOTFILES_DIR` but not globally
 (see [`docs/DESIGN.md`](../docs/DESIGN.md) §9).
-The global `worktree:*` tasks stay in `mise/tasks/`. Key tasks:
+The global `worktree:*` and `ref:*` tasks stay in `mise/tasks/`. Key tasks:
 
 | Task               | Purpose                                    |
 | ------------------ | ------------------------------------------ |

@@ -101,6 +101,22 @@ Install dotfiles
 
 Set machine name (OS hostname + DOTFILES_MACHINE)
 
+## `ref:get`
+
+Clone or refresh a reference checkout and print its path
+
+
+- **Usage:** `ref:get <url>`
+
+### Arguments
+- **`<url>`** — Clone URL of the upstream repository
+
+## `ref:list`
+
+- **Usage:** `ref:list`
+
+List every reference checkout
+
 ## `update`
 
 - **Usage:** `update`

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#MISE description="Clone or refresh a reference checkout and print its path"
+#USAGE arg "<url>" help="Clone URL of the upstream repository"
+# shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
+set -euo pipefail
+# shellcheck source=SCRIPTDIR/_path
+source "$(dirname "$0")/_path"
+
+DEST="$REF_REPOS_DIR/$(ref_repo_path "$usage_url")"
+
+if [ -d "$DEST/.git" ]; then
+	git -C "$DEST" pull --ff-only --quiet
+else
+	mkdir -p "$(dirname "$DEST")"
+	git clone --quiet "$usage_url" "$DEST"
+fi
+
+printf '%s\n' "$DEST"
