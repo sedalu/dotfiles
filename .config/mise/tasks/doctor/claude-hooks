@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#MISE description="Check the Claude Code guards still load and enforce"
+#MISE hide=true
+set -euo pipefail
+
+# The guards fail open on purpose:
+# one that cannot source lib/claude-hooks.sh exits 0 and allows everything,
+# which looks exactly like a session where nothing was worth blocking.
+# So each probe drives a hook end to end and matches its decision,
+# and a library that stopped resolving shows up as the wrong verdict rather than as silence.
+
+hooks_dir="$DOTFILES_DIR/claude/hooks"
+settings="$DOTFILES_DIR/claude/settings.json"
+fail=0
+
+# Every hook settings.json registers has to be there and be runnable.
+while IFS= read -r cmd; do
+	case "$cmd" in
+	*/hooks/*) ;;
+	*) continue ;;
+	esac
+	if [[ -x $cmd ]]; then
+		echo "✅ registered — ${cmd##*/}"
+	else
+		echo "❌ registered — ${cmd##*/}: not executable at $cmd"
+		((fail++)) || true
+	fi
+done < <(jq -r '.hooks | to_entries[].value[].hooks[].command' "$settings" | sort -u)
+
+probe="$(mktemp -d)"
+trap 'rm -rf "$probe"' EXIT
+
+# A main checkout is a clone named `main` whose `.git` is a directory; `plain` is neither.
+for name in main plain; do
+	git init -q -b main "$probe/$name"
+	git -C "$probe/$name" -c user.email=probe@probe -c user.name=probe \
+		commit -q --allow-empty -m probe
+done
+
+# verdict <hook> <expected decision> <what it proves> <cwd> <command>
+verdict() {
+	local hook=$1 want=$2 rule=$3 cwd=$4 cmd=$5 out got
+	out=$(jq -nc --arg c "$cwd" --arg m "$cmd" \
+		'{hook_event_name: "PreToolUse", tool_name: "Bash", cwd: $c, tool_input: {command: $m}}' |
+		"$hooks_dir/$hook" 2>/dev/null) || true
+	got=allow
+	[[ -n $out ]] && got=$(printf '%s' "$out" | jq -r '.hookSpecificOutput.permissionDecision // "allow"' 2>/dev/null)
+	if [[ $got == "$want" ]]; then
+		echo "✅ $hook — $rule"
+	else
+		echo "❌ $hook — $rule: decided '$got', wanted '$want'"
+		((fail++)) || true
+	fi
+}
+
+verdict main-checkout-guard.sh deny "pins the main checkout to its default branch" \
+	"$probe/main" "git switch -c probe"
+verdict main-checkout-guard.sh deny "seals the main checkout against commits" \
+	"$probe/main" "git commit -m probe"
+verdict main-checkout-guard.sh allow "leaves the way back to the default branch open" \
+	"$probe/main" "git switch main"
+verdict main-checkout-guard.sh allow "leaves an ordinary checkout alone" \
+	"$probe/plain" "git switch -c probe"
+verdict default-branch-guard.sh deny "denies a commit on the default branch" \
+	"$probe/plain" "git commit -m probe"
+verdict hook-bypass-guard.sh ask "asks before a pipeline bypass" \
+	"$probe/plain" "HK=0 git commit -m probe"
+
+if ((fail)); then
+	echo "❌ $fail Claude Code hook check(s) failed"
+	exit 1
+fi
+echo "✅ Claude Code guards load and enforce"

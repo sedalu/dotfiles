@@ -9,6 +9,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "/Users/seth/.claude/hooks/main-checkout-guard.sh"
+          },
+          {
+            "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
           }
         ]
@@ -17,6 +21,10 @@
     "CwdChanged": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/main-checkout-guard.sh"
+          },
           {
             "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
@@ -34,6 +42,10 @@
           },
           {
             "type": "command",
+            "command": "/Users/seth/.claude/hooks/main-checkout-guard.sh"
+          },
+          {
+            "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
           },
           {
@@ -45,6 +57,10 @@
       {
         "matcher": "Write|Edit|NotebookEdit",
         "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/main-checkout-guard.sh"
+          },
           {
             "type": "command",
             "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"

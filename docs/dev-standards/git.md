@@ -53,6 +53,16 @@ A repo using worktrees is a directory of sibling checkouts:
 `main/` holds the git directory and is never worked in.
 Each branch is a linked worktree beside it, never nested inside it.
 
+A second Claude Code hook enforces this layout.
+It denies any command that would take `main/` off the default branch —
+a switch, a checkout, a detach, a rename —
+and denies edits and commits there on whatever branch it is on.
+The hook above stops at checkouts that are *on* the default branch,
+so without that second half a `main/` already moved off it is the one place left unguarded.
+Returning to the default branch stays allowed, as does the work `main/` exists for:
+fetching, pruning, and adding worktrees.
+`worktree:branch` cuts the sibling to work in.
+
 This layout is what mise's worktree trust sharing requires.
 A config inside a linked worktree inherits the trust of the equivalent path in the main checkout,
 so trusting `main/` once covers every branch cut afterward.

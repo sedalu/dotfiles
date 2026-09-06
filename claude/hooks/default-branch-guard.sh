@@ -10,6 +10,10 @@
 # an agent that could grant itself the exception is not gated by it,
 # so the command is handed to the human to run.
 #
+# A worktree project's main checkout is not this hook's to police:
+# leaving the default branch there is the violation rather than the remedy,
+# so main-checkout-guard.sh owns that directory and this one defers.
+#
 # Events handled:
 #   PreToolUse / Write, Edit, NotebookEdit — deny an edit that would dirty the default branch
 #   PreToolUse / Bash                      — deny a git command that would lock changes onto it
@@ -74,6 +78,11 @@ fi
 
 cd "$dir" 2>/dev/null || exit 0
 git rev-parse --git-dir >/dev/null 2>&1 || exit 0
+
+# A worktree project's main checkout belongs to main-checkout-guard.sh, on every event.
+# That hook pins the branch and seals the checkout,
+# and its remedy is `worktree:branch` rather than the `git switch -c` this one prints.
+main_checkout . >/dev/null 2>&1 && exit 0
 
 # `--bool` normalizes every spelling git accepts for true.
 allowed=$(git config --bool --get "$KEY" 2>/dev/null)
