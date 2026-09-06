@@ -14,4 +14,6 @@ dotfiles_dirs=(
 	"$XDG_STATE_HOME/zsh"
 	"$XDG_CACHE_HOME/zsh/init"
 	"$XDG_DATA_HOME/zsh/site-functions"
+	# reference repos
+	"$REF_REPOS_DIR"
 )

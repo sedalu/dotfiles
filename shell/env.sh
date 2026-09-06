@@ -79,6 +79,15 @@ unset _dotfiles_raw_host
 export DOTFILES_OS="${DOTFILES_OS:-$(uname -s | tr '[:upper:]' '[:lower:]')}"
 export DOTFILES_SHELL="${DOTFILES_SHELL:-$(basename "$SHELL")}"
 
+# --- Reference repos --------------------
+
+# Upstream checkouts cloned on demand for source browsing,
+# keyed by remote as <host>/<owner>/<repo>.
+# Cache, not data:
+# every checkout is re-cloneable from its own origin,
+# so nothing here is worth backing up.
+export REF_REPOS_DIR="${REF_REPOS_DIR:-$XDG_CACHE_HOME/ref}"
+
 # --- Editor -----------------------------
 
 export EDITOR="$XDG_DATA_HOME/mise/shims/hx"
