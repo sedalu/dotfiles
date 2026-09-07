@@ -3,8 +3,18 @@
 Renovate proposes every version bump. Nothing is bumped by hand on a schedule.
 
 Its config placement is fixed by the forge and lands on rule 4 of [repo-layout.md](repo-layout.md):
-`renovate.json5` under `.github/` or `.forgejo/`.
-Set `managerFilePatterns` for the mise manager so it finds a config moved to `.config/`.
+`renovate.json5` under `.github/` on GitHub, `.forgejo/` on Forgejo.
+The two are not interchangeable.
+Renovate discards every `.<platform>/renovate.json*` candidate
+whose platform is not the one it is running against,
+so a repo on Forgejo never reads `.github/renovate.json5`
+and a repo on GitHub never reads `.forgejo/renovate.json5`.
+
+Do not set `managerFilePatterns` for the mise manager.
+Its defaults already cover every layout these standards allow,
+`.config/mise/config.toml` and `.config/mise.toml` included.
+The option replaces the defaults rather than extending them,
+so setting it means a config that moves later silently stops being seen.
 
 ## What a Renovate PR must do
 
@@ -14,6 +24,10 @@ Set `managerFilePatterns` for the mise manager so it finds a config moved to `.c
 - **Pass the same required checks as any other PR.**
   This is the entire safety argument for automating updates:
   the pipeline in [ci.md](ci.md) is what makes an unattended bump acceptable.
+  It only holds if the forge enforces it.
+  Renovate arms the platform's native "merge when checks succeed" as it opens the pull request,
+  so a branch with no required context has nothing to wait for and merges on creation.
+  Confirm the protection rule in [git.md](git.md) before enabling automerge anywhere.
 
 ## Grouping and merge policy
 

@@ -17,6 +17,8 @@ is running a version no one pinned.
 ## Triggers and gating
 
 - Every pull request runs `check:all`, and it is a required check.
+  Required means the forge's branch protection names its context —
+  see [git.md](git.md). Nothing else makes a check binding.
 - The default branch runs it again on push,
   because a merge can produce a tree neither parent had.
 - Concurrency is keyed on the ref, and older in-flight runs are cancelled.

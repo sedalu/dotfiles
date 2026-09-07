@@ -40,6 +40,38 @@ and reports a default branch that is already dirty when a session starts.
 Setting the key is itself denied to an agent, which is handed the command to pass to a person.
 An exception the enforced party can grant itself is not an exception.
 
+### Protected branches
+
+The rules above are local discipline, and a hook binds only the checkout it is installed in.
+The forge has to enforce the same thing on its own side.
+
+Where a repo takes its changes through pull requests,
+its default branch carries a protection rule:
+
+- **No direct push.** Every change arrives as a pull request.
+- **Status checks required**, naming the check from [ci.md](ci.md) explicitly.
+  Turning the toggle on is not sufficient:
+  a rule with status checks enabled and no context listed matches nothing and passes everything.
+  On Forgejo a context is `<workflow> / <job> (<event>)`,
+  so the `ci` workflow's `ci` job reports as `ci / ci (pull_request)`.
+  A required context that has not reported yet reads as pending and blocks the merge,
+  so a renamed workflow fails closed rather than opening the gate.
+- **Merge blocked on an outdated branch**,
+  so a check that passed is a check that passed against the tree being merged.
+
+Status checks are the half that gets left off,
+because nothing looks wrong while a person is clicking every merge button.
+It stops being invisible the moment something merges unattended.
+[dependencies.md](dependencies.md) allows automerge for tooling updates,
+and Renovate arms the forge's own "merge when checks succeed" as it opens the pull request —
+before any check has reported.
+With no required context there is nothing to wait for, and it merges immediately.
+
+The exception above is the same exception here.
+A checkout granted `defaultBranch.allowDirectCommits` commits to its default branch by design,
+so protecting that branch on the forge denies the thing the exception permits.
+They are two halves of one decision about a repo, not two independent settings.
+
 ### Worktree layout
 
 A repo using worktrees is a directory of sibling checkouts:
