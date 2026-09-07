@@ -3,12 +3,17 @@
 Renovate proposes every version bump. Nothing is bumped by hand on a schedule.
 
 Its config placement is fixed by the forge and lands on rule 4 of [repo-layout.md](repo-layout.md):
-`renovate.json5` under `.github/` on GitHub, `.forgejo/` on Forgejo.
-The two are not interchangeable.
-Renovate discards every `.<platform>/renovate.json*` candidate
-whose platform is not the one it is running against,
-so a repo on Forgejo never reads `.github/renovate.json5`
-and a repo on GitHub never reads `.forgejo/renovate.json5`.
+`renovate.json5` under `.forgejo/`.
+
+**That path is not discovered on its own**, and whatever runs Renovate has to declare it.
+Discovery walks a fixed list — `renovate.json{,c,5}`, `.github/renovate.json{,c,5}`,
+`.gitlab/renovate.json{,c,5}`, `.renovaterc`, `.renovaterc.json{,c,5}`, `package.json` —
+and `.forgejo/` is not in it on any platform.
+`getConfigFileNames()` takes a platform argument that would add it,
+but `detectConfigFile()` calls it without one,
+so the platform-specific names reach config validation and never reach discovery.
+Set `configFileNames` (`RENOVATE_CONFIG_FILE_NAMES`), which prepends to that list.
+The declaration and the file move together or not at all.
 
 Do not set `managerFilePatterns` for the mise manager.
 Its defaults already cover every layout these standards allow,
@@ -28,6 +33,22 @@ so setting it means a config that moves later silently stops being seen.
   Renovate arms the platform's native "merge when checks succeed" as it opens the pull request,
   so a branch with no required context has nothing to wait for and merges on creation.
   Confirm the protection rule in [git.md](git.md) before enabling automerge anywhere.
+
+## Two ways it reports success having done nothing
+
+Both are silent, and both were met before Renovate ever opened a pull request here.
+
+- **The config is at a path Renovate does not look in.**
+  The repository finishes `disabled-no-config`.
+  Under `onboarding: false` nothing is written anywhere —
+  no issue, no pull request, no non-zero exit.
+- **The clone fails.**
+  The repository finishes `external-host-error` with `cloned: false`,
+  and **Renovate still exits 0**, so the job reports green.
+
+A run that did nothing and a run with nothing to do look identical from the outside.
+Read `Repository finished` in the log and require `result: done` —
+a green check is not evidence that anything was examined.
 
 ## Grouping and merge policy
 
