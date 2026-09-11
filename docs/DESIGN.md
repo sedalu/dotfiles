@@ -16,6 +16,14 @@ gitdir: /Users/<user>/.local/share/dotfiles.git
 
 This means plain `git` commands work from the worktree without `--git-dir`/`--work-tree` flags.
 
+The git directory also records the worktree itself, as `core.worktree = $DOTFILES_DIR`.
+The `.git` file only helps a tool that starts from the worktree.
+One that opens the repo from `$GIT_DIR` — which git exports to every hook —
+would otherwise take the git directory's parent, `~/.local/share`, as the worktree.
+hk does exactly that inside a git hook,
+so without the setting its pre-commit stash scans the whole of `~/.local/share`.
+`bootstrap` sets it and `doctor:repo` checks it.
+
 The root `.gitignore` is a targeted deny-list, not a blanket `*`.
 Most of the worktree is ours and is tracked normally.
 The exceptions are named explicitly:
@@ -457,7 +465,7 @@ Full fresh-machine sequence (`.config/mise/tasks/bootstrap`):
 
 1. Load `~/.dotfiles` overrides
 2. Clone repo with `--separate-git-dir`
-3. Write `.git` pointer file
+3. Write `.git` pointer file and set `core.worktree`
 4. Set `advice.addIgnoredFile = false`
 5. Source `env.sh` directly from checkout
 6. Run `machine` (interactive hostname setup)

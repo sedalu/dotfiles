@@ -27,6 +27,14 @@ else
 		fi
 	fi
 
+	worktree="$(git --git-dir="$DOTFILES_GIT" config core.worktree 2>/dev/null)" || worktree=""
+	if [[ "$worktree" == "$DOTFILES_DIR" ]]; then
+		echo "✅ core.worktree = $DOTFILES_DIR"
+	else
+		echo "❌ core.worktree is '$worktree' (run: git --git-dir=\"$DOTFILES_GIT\" config core.worktree \"$DOTFILES_DIR\")"
+		((fail++)) || true
+	fi
+
 	advice="$(git --git-dir="$DOTFILES_GIT" config advice.addIgnoredFile 2>/dev/null)" || advice=""
 	if [[ "$advice" == "false" ]]; then
 		echo "✅ advice.addIgnoredFile = false"

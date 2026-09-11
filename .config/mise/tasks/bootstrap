@@ -35,13 +35,14 @@ if [[ -d "$DOTFILES_GIT" ]]; then
 else
 	mkdir -p "$(dirname "$DOTFILES_GIT")"
 	git clone --separate-git-dir "$DOTFILES_GIT" "$DOTFILES_REPO" "$DOTFILES_DIR"
-	#    git --git-dir="$DOTFILES_GIT" config core.worktree "$DOTFILES_DIR"
-	#    git --git-dir="$DOTFILES_GIT" checkout
 	echo "✔ Done."
 fi
 
 # Wire up $DOTFILES_DIR/.git so plain git commands work without --git-dir.
 echo "gitdir: $DOTFILES_GIT" >"$DOTFILES_DIR/.git"
+
+# Record the worktree in the git dir too, for tools that open the repo from $GIT_DIR.
+git --git-dir="$DOTFILES_GIT" config core.worktree "$DOTFILES_DIR"
 
 # Suppress "ignored file" warnings — the dotfiles .gitignore uses * (ignore all)
 # so every `git add` would otherwise print a noisy hint.
