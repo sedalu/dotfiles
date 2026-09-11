@@ -192,7 +192,7 @@ The global `worktree:*` and `ref:*` tasks stay in `mise/tasks/`. Key tasks:
 | Task               | Purpose                                    |
 | ------------------ | ------------------------------------------ |
 | `install`      | Install dotfiles (system packages, symlinks, plugins) |
-| `update`       | Update dotfiles (mise, system packages, zsh-plugins)  |
+| `update`       | Update dotfiles (pull, mise, system packages, zsh-plugins)  |
 | `doctor`       | Run all dotfiles health checks             |
 | `catalog:tasks` | Regenerate `docs/TASKS.md` from task Usage specs       |
 | `check` / `fix` | Lint or format the staged set (`:all`, `:pr` for other scopes) |

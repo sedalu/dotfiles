@@ -51,7 +51,7 @@ On an already-configured machine, use mise tasks:
 
 ```sh
 mise run install   # install mise, system packages, symlinks, zsh plugins
-mise run update    # update mise, system packages, zsh plugins
+mise run update    # pull, then update mise, system packages, zsh plugins
 mise run doctor    # run health checks
 ```
 
@@ -60,7 +60,7 @@ mise run doctor    # run health checks
 | Task               | Description                                |
 | ------------------ | ------------------------------------------ |
 | `install` | Install dotfiles (system packages, symlinks, plugins) |
-| `update`  | Update dotfiles (mise, system packages, zsh-plugins)  |
+| `update`  | Update dotfiles (pull, mise, system packages, zsh-plugins)  |
 | `doctor`  | Run all dotfiles health checks             |
 
 See [`docs/TASKS.md`](docs/TASKS.md) for the complete, auto-generated reference of every task

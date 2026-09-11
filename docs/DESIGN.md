@@ -411,11 +411,18 @@ install
 ### Update Dependencies
 
 ```text
-update
+update               (pulls first: `git pull --ff-only`)
 ├── mise             (also runs `mise bootstrap packages upgrade`)
 ├── macos            (parallel, darwin only)
 └── zsh-plugins      (parallel)
 ```
+
+`update` runs on every machine, so it never writes to the repo.
+It pulls, upgrades the workstation toolchain from `$HOME` — where the project config does not load —
+and installs the pipeline's pins at the versions the committed lockfile records.
+If it bumped the pins itself,
+each machine would rewrite the lockfile at a different moment with a different result,
+and the machines and CI would stop agreeing on the versions the lockfile exists to fix.
 
 ### Doctor Dependencies
 

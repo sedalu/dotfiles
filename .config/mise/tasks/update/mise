@@ -14,7 +14,12 @@ set -euo pipefail
 # (e.g. "mise is already up to date") and stays quiet when there's nothing to do.
 mise self-update --yes
 mise plugins update --yes
-mise upgrade --bump --yes
+
+# The workstation toolchain; the project's pins don't load from $HOME.
+mise --cd "$HOME" upgrade --yes
+
+# The project's tools, at the versions its lockfile records.
+mise install --yes
 
 # System packages declared in [bootstrap.packages] (poured Homebrew bottles).
 mise bootstrap packages upgrade --yes
