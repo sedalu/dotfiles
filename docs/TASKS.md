@@ -123,6 +123,12 @@ List every reference checkout
 
 Update dotfiles
 
+## `update:bump`
+
+- **Usage:** `update:bump`
+
+Bump the hk pipeline's pinned tools, check the tree, commit, and push
+
 ## `worktree:branch`
 
 Create a worktree for a new or existing remote branch

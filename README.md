@@ -50,9 +50,10 @@ Open a new shell afterwards to pick up the environment.
 On an already-configured machine, use mise tasks:
 
 ```sh
-mise run install   # install mise, system packages, symlinks, zsh plugins
-mise run update    # pull, then update mise, system packages, zsh plugins
-mise run doctor    # run health checks
+mise run install      # install mise, system packages, symlinks, zsh plugins
+mise run update       # pull, then update mise, system packages, zsh plugins
+mise run update:bump  # bump the hk pipeline's pinned tools, check, commit, push
+mise run doctor       # run health checks
 ```
 
 ## Mise Tasks
@@ -61,6 +62,7 @@ mise run doctor    # run health checks
 | ------------------ | ------------------------------------------ |
 | `install` | Install dotfiles (system packages, symlinks, plugins) |
 | `update`  | Update dotfiles (pull, mise, system packages, zsh-plugins)  |
+| `update:bump` | Bump the hk pipeline's pinned tools, check, commit, push |
 | `doctor`  | Run all dotfiles health checks             |
 
 See [`docs/TASKS.md`](docs/TASKS.md) for the complete, auto-generated reference of every task

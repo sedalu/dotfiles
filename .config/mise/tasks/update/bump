@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#MISE description="Bump the hk pipeline's pinned tools, check the tree, commit, and push"
+set -euo pipefail
+
+# --- config -----------------------------
+
+LOCKFILE=.config/mise/mise.lock
+PINS=(.config/mise/config.toml "$LOCKFILE")
+
+# --- preflight --------------------------
+
+if ! git diff --quiet HEAD -- "${PINS[@]}"; then
+	echo "🛑 Error: ${PINS[*]} have uncommitted changes. Commit or discard them first." >&2
+	exit 1
+fi
+
+git pull --ff-only
+
+# --- bump -------------------------------
+
+mise upgrade --bump --local --yes
+
+if git diff --quiet HEAD -- "${PINS[@]}"; then
+	echo "✅ The pipeline's tools are already current."
+	exit 0
+fi
+
+# --- check ------------------------------
+
+if ! mise run check:all; then
+	echo "🛑 Error: the bumped tools fail check:all." >&2
+	echo "Fix the tree, or discard the bump with: git checkout -- ${PINS[*]}" >&2
+	exit 1
+fi
+
+# --- commit -----------------------------
+
+# One line per tool whose locked version moved.
+changes=$(awk '
+	/^\[\[tools\./ { name = $0; gsub(/^\[\[tools\.|\]\]$|"/, "", name) }
+	/^version = / && name != "" {
+		version = $3; gsub(/"/, "", version)
+		if (FNR == NR) was[name] = version
+		else if (was[name] != version) print "- " name " " was[name] " → " version
+		name = ""
+	}
+' <(git show "HEAD:$LOCKFILE") "$LOCKFILE")
+
+git commit -m "chore(deps): bump the hk pipeline toolchain" -m "$changes" -- "${PINS[@]}"
+
+if ! git push; then
+	echo "🛑 Error: the bump is committed, but the push failed. Push it by hand." >&2
+	exit 1
+fi

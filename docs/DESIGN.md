@@ -415,6 +415,8 @@ update               (pulls first: `git pull --ff-only`)
 ├── mise             (also runs `mise bootstrap packages upgrade`)
 ├── macos            (parallel, darwin only)
 └── zsh-plugins      (parallel)
+
+update:bump          (manual: bump the pins, check:all, commit, push)
 ```
 
 `update` runs on every machine, so it never writes to the repo.
@@ -423,6 +425,13 @@ and installs the pipeline's pins at the versions the committed lockfile records.
 If it bumped the pins itself,
 each machine would rewrite the lockfile at a different moment with a different result,
 and the machines and CI would stop agreeing on the versions the lockfile exists to fix.
+
+`update:bump` is the pins' one writer.
+Run on one machine, it bumps them, runs `check:all` against the new tools,
+and commits and pushes the config and lockfile together,
+for every other machine's next `update` to pull.
+Renovate is configured for the same pins (`.forgejo/renovate.json5`) but not yet active;
+once it is, it owns the routine bumps and `update:bump` stays as the manual path.
 
 ### Doctor Dependencies
 
