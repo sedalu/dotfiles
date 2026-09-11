@@ -32,9 +32,11 @@ ref_repo_path() {
 }
 
 # Expand a repo spec into a clone URL.
-# Anything already carrying a scheme, or a colon ahead of the first slash (git's scp-style form),
-# is a clone URL and passes through untouched.
-# A bare `<host>/<owner>/<repo>` is only missing a scheme, so it gains https.
+# A scheme, or a colon ahead of the first slash (git's scp-style form),
+# marks a spec that is already a clone URL:
+# it passes through untouched.
+# A bare `<host>/<owner>/<repo>` is only missing a scheme,
+# so it gains https.
 # The host is never inferred:
 # the checkout path has to say who publishes the code.
 ref_clone_url() {

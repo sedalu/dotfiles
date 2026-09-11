@@ -11,9 +11,36 @@ DEST="$REF_REPOS_DIR/$(ref_repo_path "$URL")"
 
 if [ -d "$DEST/.git" ]; then
 	git -C "$DEST" pull --ff-only --quiet
-else
-	mkdir -p "$(dirname "$DEST")"
-	git clone --quiet "$URL" "$DEST"
+	printf '%s\n' "$DEST"
+	exit 0
 fi
+
+# An empty directory here is a skeleton left by some earlier failure,
+# and is safe to drop.
+# Anything else holding the path is not ours to delete.
+rmdir "$DEST" 2>/dev/null || true
+if [ -e "$DEST" ]; then
+	echo "fatal: '$DEST' exists but is not a checkout — remove it and retry" >&2
+	exit 1
+fi
+
+# Clone into a staging directory beside the tree rather than at the destination,
+# so a failed clone leaves the cache exactly as it found it.
+# Staging inside $REF_REPOS_DIR keeps the move on one filesystem,
+# where it is a rename.
+mkdir -p "$REF_REPOS_DIR"
+STAGE="$(mktemp -d "$REF_REPOS_DIR/.staging.XXXXXX")"
+# A signal handler has to exit rather than fall through,
+# or an interrupted clone would carry on into the move.
+trap 'rm -rf "$STAGE"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+git clone --quiet "$URL" "$STAGE/repo"
+
+# The destination's parents are only worth creating
+# once there is a repo to move into them.
+mkdir -p "$(dirname "$DEST")"
+mv "$STAGE/repo" "$DEST"
 
 printf '%s\n' "$DEST"
