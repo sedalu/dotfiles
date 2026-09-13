@@ -39,9 +39,4 @@ jobs:
           git config --global --add safe.directory "$PWD"
 
       - name: "Run checks"
-        env:
-          # Forgejo injects its own GITHUB_TOKEN,
-          # which the GitHub API rejects outright;
-          # mise reads it when resolving release assets.
-          MISE_GITHUB_TOKEN: "${{ secrets.GH_PAT }}"
         run: "mise run check:all"
