@@ -23,8 +23,8 @@ done < <(mise bootstrap macos-defaults status 2>/dev/null | awk '$NF != "set" { 
 mise bootstrap macos-defaults apply --yes
 
 # --- Step 2: reset-catalog via `defaults delete` ---
-# These keys have no [bootstrap.macos.defaults] equivalent
-# (mise can't express "absent"),
+# These keys have no [bootstrap.macos.defaults] equivalent —
+# mise has no way to say a key should be absent —
 # so they stay as sourced `defaults delete` lines.
 
 # Wrap `defaults` while sourcing the catalog so we report only the keys that actually change —

@@ -107,7 +107,11 @@ that calls `mise/hooks/install-fonts` to move the font files to the user's font 
   Keys you want kept at the macOS default (`defaults delete`)
   and the `killall_targets` restart map stay in `lib/dotfiles/macos-settings.sh`;
   settings with no `defaults` equivalent are documented in `docs/macos-manual.md`.
-  mise can't express absent keys, arrays, or app restarts, so those never go in the TOML.
+  mise can't express absent keys or app restarts,
+  so those never go in the TOML.
+  Arrays and dictionaries it can express,
+  and it converts them recursively;
+  binary plist blobs (the Dock's `persistent-apps`) it still cannot.
 - **Login shell** — declared in `[bootstrap.user].login_shell`
   (`mise/config.macos.toml`; Homebrew zsh, macOS-only since the path is arch-specific).
   Applied by `install:login-shell`

@@ -278,6 +278,8 @@ macOS configuration is split by what mise can express:
   and applied/verified by mise itself — `mise bootstrap macos-defaults apply` and `status --missing`.
 - **Reset-catalog** — keys kept at their macOS default via `defaults delete`, plus the `killall_targets` restart map —
   stays in `lib/dotfiles/macos-settings.sh`, because mise can express neither an absent key nor an app restart.
+  Arrays and dictionaries are not the dividing line —
+  mise has converted those recursively since 2026.9.3.
   It is synced from macos-defaults.com by `catalog:macos`.
 - **Manual-only settings** with no `defaults` equivalent (Tips, Mail, Spotlight categories)
   are documented in `docs/macos-manual.md`.

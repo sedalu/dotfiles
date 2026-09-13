@@ -43,8 +43,11 @@ And in **Mail.app → Settings → Junk Mail**:
 
 ### Spotlight
 
-`EnabledPreferenceRules` is an array —
-set manually via **System Settings → Spotlight → Search Results**.
+Set manually via **System Settings → Spotlight → Search Results**.
+Being an array is no longer the obstacle —
+mise converts those recursively since 2026.9.3.
+What blocks it is that the live state contradicts the capture below,
+so the key that actually changes has not been identified yet.
 
 Disabled categories (all others enabled):
 
@@ -61,8 +64,10 @@ Full category list at time of capture:
 
 ### Dock
 
-`persistent-apps` is an array of dictionaries carrying opaque bookmark blobs and tile GUIDs,
-so it has no `defaults write` form that round-trips —
+`persistent-apps` carries opaque bookmark blobs and tile GUIDs.
+The array itself mise could express;
+the binary plist data inside it has no TOML type,
+so there is no `defaults write` form that round-trips —
 arrange the Dock by hand.
 
 Pinned apps, left to right:
