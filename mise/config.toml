@@ -139,7 +139,6 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 # aqua
 "aqua:artempyanykh/marksman" = "latest"
 "aqua:astral-sh/ruff" = "latest"
-"aqua:docker/compose" = "latest"
 "aqua:mvdan/sh" = "latest"
 # github
 "github:dandavison/delta" = "latest"
@@ -165,6 +164,7 @@ bun = "latest"
 cargo-binstall = "latest"
 claude = "latest"
 difftastic = "latest"
+docker-compose = "latest"
 eza = "latest"
 go = "latest"
 gofumpt = "latest"
