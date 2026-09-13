@@ -166,6 +166,7 @@ claude = "latest"
 difftastic = "latest"
 docker-compose = "latest"
 eza = "latest"
+fnox = "latest"
 go = "latest"
 gofumpt = "latest"
 golangci-lint-langserver = "latest"
@@ -213,10 +214,6 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions --completion {}"
 [tools.fd]
 version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/completions --gen-completions {}"
-
-[tools.fnox]
-version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
 [tools.fzf]
 version = "latest"
