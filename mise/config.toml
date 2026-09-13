@@ -1,4 +1,4 @@
-min_version = "2026.7.15"
+min_version = "2026.9.3"
 
 [settings]
 auto_install = true
@@ -250,7 +250,7 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 [env]
 # Wrappers that fix up a tool's behavior before handing off to the real binary.
 # `_.path` puts them ahead of the tool install dirs.
-_.path = ["${DOTFILES_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/mise/bin"]
+_.path = ["{{ config_source | dirname }}/bin"]
 
 FNOX_AGE_KEY_FILE = "~/.config/fnox/age.txt"
 
