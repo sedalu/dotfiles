@@ -1,6 +1,10 @@
 [settings]
 lockfile = true
 
+# An entry with no lockfile URL for this platform fails the install.
+[tool_config]
+locked = true
+
 [env]
 # Runs the git hooks under `mise x`,
 # so they resolve this config's tools even in a shell that has not activated mise.
