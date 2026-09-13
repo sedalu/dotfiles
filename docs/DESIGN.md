@@ -266,7 +266,6 @@ This ensures install tasks create exactly what doctor tasks verify — same defi
 | ------------------- | ------------------------------------------- | ---------------------------------------- |
 | `dirs.sh`           | XDG directories to create/verify            | install:dirs, doctor:dirs                |
 | `hostname.sh`       | `get_hostname`, `normalize_hostname`        | machine, doctor:machine                  |
-| `zsh-plugins.sh`    | Plugin `name:url` pairs, `ZSH_PLUGINS_DIR` | install:zsh-plugins, doctor:zsh-plugins  |
 
 Go's environment file, formerly defined here via `go.sh` and written by `go env -w`,
 is now a declarative `[dotfiles]` template (§8) —

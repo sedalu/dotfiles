@@ -26,6 +26,24 @@ package_manager = "bun"
 "brew:openssl@3" = "latest"  # required by Python (ssl module) and networking Rust crates
 "brew:pkgconf" = "latest"  # helps compilers locate openssl and other libs when building from source
 
+# Zsh plugins, cloned by `mise bootstrap repos apply` (wired into `install:zsh-plugins`).
+# Keys expand only a leading `~/` —
+# no env vars, no templates.
+[bootstrap.repos."~/.local/share/zsh/plugins/fzf-tab"]
+url = "https://github.com/Aloxaf/fzf-tab.git"
+
+[bootstrap.repos."~/.local/share/zsh/plugins/zsh-autosuggestions"]
+url = "https://github.com/zsh-users/zsh-autosuggestions.git"
+
+[bootstrap.repos."~/.local/share/zsh/plugins/zsh-completions"]
+url = "https://github.com/zsh-users/zsh-completions.git"
+
+[bootstrap.repos."~/.local/share/zsh/plugins/zsh-fast-syntax-highlighting"]
+url = "https://github.com/zdharma-continuum/fast-syntax-highlighting.git"
+
+[bootstrap.repos."~/.local/share/zsh/plugins/zsh-history-substring-search"]
+url = "https://github.com/zsh-users/zsh-history-substring-search.git"
+
 # Scalar macOS `defaults write` preferences,
 # applied by `mise bootstrap macos-defaults apply` (wired into `install:macos`).
 # Per-machine entries live in config.<machine>.toml and union via MISE_ENV (see miserc.toml).

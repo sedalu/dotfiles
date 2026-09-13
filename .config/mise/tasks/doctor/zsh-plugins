@@ -4,22 +4,16 @@
 #MISE hide=true
 set -euo pipefail
 
-# shellcheck source=SCRIPTDIR/../../../../lib/dotfiles/zsh-plugins.sh
-. "$DOTFILES_DIR/lib/dotfiles/zsh-plugins.sh"
+# [bootstrap.repos] hardcodes the XDG default;
+# catch XDG_DATA_HOME drifting away from it.
+declared="$HOME/.local/share/zsh/plugins"
+sourced="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+if [[ "$sourced" != "$declared" ]]; then
+	echo "⚠️ .zshrc loads plugins from $sourced, but [bootstrap.repos] clones to $declared"
+fi
 
-missing=0
-for pair in "${dotfiles_zsh_plugins[@]}"; do
-	plugin="${pair%%:*}"
-	if [[ -d "$ZSH_PLUGINS_DIR/$plugin" ]]; then
-		echo "✅ $plugin"
-	else
-		echo "⚠️ $plugin not found"
-		((missing++)) || true
-	fi
-done
-
-if ((missing > 0)); then
-	echo "⚠️ $missing plugin(s) missing — run mise run install:zsh-plugins"
+if ! mise bootstrap repos status --missing; then
+	echo "⚠️ plugin(s) not in their declared state — run mise run install:zsh-plugins"
 fi
 
 exit 0
