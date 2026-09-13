@@ -12,6 +12,26 @@
 #   $ZDOTDIR/.zlogout     user      login, on exit
 #   /etc/zlogout          system    login, on exit
 
+# --- Completions ------------------------
+
+ZSH_PLUGINS_DIR="${XDG_DATA_HOME}/zsh/plugins"
+
+fpath=(
+    $XDG_DATA_HOME/zsh/site-functions
+    $ZSH_PLUGINS_DIR/zsh-completions/src
+    ${HOMEBREW_PREFIX}/share/zsh/site-functions
+    $fpath
+)
+# compinit — must run before mise activates,
+# whose hook otherwise runs its own compinit and dumps into $ZDOTDIR.
+autoload -Uz compinit
+export ZSH_COMPDUMP="$XDG_CACHE_HOME/zsh/compdump"
+if [[ -n ${ZSH_COMPDUMP}(#qN.mh+24) ]]; then
+    compinit -d "$ZSH_COMPDUMP"
+else
+    compinit -C -d "$ZSH_COMPDUMP"
+fi
+
 # --- Activations ------------------------
 
 if command -v mise &>/dev/null; then
@@ -53,25 +73,9 @@ setopt HIST_REDUCE_BLANKS
 setopt SHARE_HISTORY
 # setopt INC_APPEND_HISTORY  # conflicts with SHARE_HISTORY
 
-# --- Completions & Plugins --------------
+# --- Plugins ----------------------------
 
-ZSH_PLUGINS_DIR="${XDG_DATA_HOME}/zsh/plugins"
-
-fpath=(
-    $XDG_DATA_HOME/zsh/site-functions
-    $ZSH_PLUGINS_DIR/zsh-completions/src
-    ${HOMEBREW_PREFIX}/share/zsh/site-functions
-    $fpath
-)
-autoload -Uz compinit
-export ZSH_COMPDUMP="$XDG_CACHE_HOME/zsh/compdump"
-if [[ -n ${ZSH_COMPDUMP}(#qN.mh+24) ]]; then
-    compinit -d "$ZSH_COMPDUMP"
-else
-    compinit -C -d "$ZSH_COMPDUMP"
-fi
-
-# fzf-tab — must load immediately after compinit, before any other plugins.
+# fzf-tab — must load after compinit, before any other plugins.
 [[ -f "$ZSH_PLUGINS_DIR/fzf-tab/fzf-tab.plugin.zsh" ]] &&
     source "$ZSH_PLUGINS_DIR/fzf-tab/fzf-tab.plugin.zsh"
 
