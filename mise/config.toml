@@ -216,10 +216,7 @@ postinstall = "$DOTFILES_DIR/mise/hooks/completions --gen-completions {}"
 
 [tools.fnox]
 version = "latest"
-postinstall = """
-$DOTFILES_DIR/mise/hooks/completions completion {}
-rm -f ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init/fnox.zsh ${XDG_CACHE_HOME:-$HOME/.cache}/bash/init/fnox.bash
-"""
+postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
 
 [tools.fzf]
 version = "latest"
