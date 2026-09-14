@@ -32,6 +32,8 @@ mise, and any manager like it.
 - Pin at least to a major version, and prefer a minor. Never `latest`.
   The config pin states the policy —
   which upgrades are acceptable without anyone making a decision.
+  It is the lockfile beside it, not this line, that satisfies the patch rule below;
+  a config entry with no lock is subject to that rule like any other lone pin.
 - **The lockfile owns the real pin, and it pins the patch.**
   It records the version that actually installs,
   so it is the one that has to be committed and moved deliberately.
@@ -102,6 +104,12 @@ A container image tag, and anything else a manager records in one place only.
 - This is the rule the lockfile enforces automatically elsewhere.
   Nothing enforces it here, which is the reason to state it:
   a compose file is the one place a floating version looks deliberate.
+- **Renovate will not add the precision for you.**
+  It mirrors whatever precision the pin already has,
+  so `alpine:3.20` yields a proposal of `3.24` — another line tag, and still not a pin.
+  Making a pin patch-precise is a one-time manual edit;
+  Renovate maintains it from then on.
+  A repo that adopts this rule has to go through its existing tags once.
 
 A note rather than a rule:
 an exact tag is still a mutable reference.
@@ -111,6 +119,16 @@ The digest is the only form that cannot be moved —
 Worth considering wherever an image reaches production
 and the tag belongs to someone else,
 weighed against a digest-only pull request per image every time one is rebuilt.
+
+### The one exception
+
+A personal global mise config — `~/.config/mise/config.toml` — is a developer's own toolchain,
+not an input to anyone's build,
+and its declared versions stay at the minor line on purpose.
+Nothing is reproduced from it and no second machine has to agree with it.
+
+Every other pin is in scope, including a repo's own `mise.toml`,
+whose lockfile is what makes it exact.
 
 Task conventions are in [tasks.md](tasks.md);
 what keeps tool versions moving is in [dependencies.md](dependencies.md).
