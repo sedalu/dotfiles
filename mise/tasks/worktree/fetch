@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-#MISE description="Fetch all branches from origin"
+#MISE description="Fetch all branches from origin and prune deleted ones"
 set -euo pipefail
 # shellcheck source=SCRIPTDIR/_repo_root
 source "$(dirname "$0")/_repo_root"
 
-git -C "$MAIN" fetch origin
+git -C "$MAIN" fetch --prune origin
