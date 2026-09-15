@@ -20,10 +20,20 @@ git -C "$MAIN" worktree remove "$ROOT/$NAME"
 # A detached worktree (pr/) has no branch to delete.
 [ -n "$BRANCH" ] || exit 0
 
-# A squash-merged branch is no ancestor of the default branch, so `branch -d` refuses it;
-# it is merged when merging it into the default branch would leave the tree unchanged.
 BASE="origin/$(default_branch "$MAIN")"
-if [ "$(git -C "$MAIN" merge-tree --write-tree "$BASE" "$BRANCH" 2>/dev/null)" = "$(git -C "$MAIN" rev-parse "$BASE^{tree}")" ]; then
+
+merged() {
+	git -C "$MAIN" merge-base --is-ancestor "$BRANCH" "$BASE" && return 0
+	# A squash merge is no ancestor, so `branch -d` refuses it;
+	# instead find the one commit on the default branch that carries the branch's whole diff.
+	local fork id
+	fork=$(git -C "$MAIN" merge-base "$BASE" "$BRANCH") || return 1
+	id=$(git -C "$MAIN" diff "$fork" "$BRANCH" | git patch-id --stable | cut -d' ' -f1)
+	[ -n "$id" ] || return 1
+	git -C "$MAIN" log -p "$fork..$BASE" | git patch-id --stable | cut -d' ' -f1 | grep -xF "$id" >/dev/null
+}
+
+if merged; then
 	git -C "$MAIN" branch -D "$BRANCH"
 else
 	echo "Kept branch $BRANCH: not merged into $BASE"
