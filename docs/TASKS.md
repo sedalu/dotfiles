@@ -155,7 +155,7 @@ List remote branches
 
 - **Usage:** `worktree:fetch`
 
-Fetch all branches from origin
+Fetch all branches from origin and prune deleted ones
 
 ## `worktree:init`
 
@@ -181,8 +181,10 @@ Prune stale worktree references
 
 ## `worktree:remove`
 
-Remove a worktree and prune stale references
+Remove a worktree, and its branch once merged
 
+
+- Depends: worktree:fetch
 
 - **Usage:** `worktree:remove <name>`
 

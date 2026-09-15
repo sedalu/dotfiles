@@ -1,13 +1,30 @@
 #!/usr/bin/env bash
-#MISE description="Remove a worktree and prune stale references"
+#MISE description="Remove a worktree, and its branch once merged"
+#MISE depends=["worktree:fetch"]
 #MISE depends_post=["worktree:prune"]
 #USAGE arg "<name>" help="Worktree directory name, or the branch name it was created from"
 # shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
 # shellcheck source=SCRIPTDIR/_repo_root
 source "$(dirname "$0")/_repo_root"
+# shellcheck source=SCRIPTDIR/_default_branch
+source "$(dirname "$0")/_default_branch"
 
 # Accept a branch name too, sanitized the same way worktree:branch names the directory.
 NAME="${usage_name//\//-}"
 
+BRANCH=$(git -C "$ROOT/$NAME" branch --show-current)
+
 git -C "$MAIN" worktree remove "$ROOT/$NAME"
+
+# A detached worktree (pr/) has no branch to delete.
+[ -n "$BRANCH" ] || exit 0
+
+# A squash-merged branch is no ancestor of the default branch, so `branch -d` refuses it;
+# it is merged when merging it into the default branch would leave the tree unchanged.
+BASE="origin/$(default_branch "$MAIN")"
+if [ "$(git -C "$MAIN" merge-tree --write-tree "$BASE" "$BRANCH" 2>/dev/null)" = "$(git -C "$MAIN" rev-parse "$BASE^{tree}")" ]; then
+	git -C "$MAIN" branch -D "$BRANCH"
+else
+	echo "Kept branch $BRANCH: not merged into $BASE"
+fi
