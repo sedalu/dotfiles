@@ -48,29 +48,75 @@ The forge has to enforce the same thing on its own side.
 Where a repo takes its changes through pull requests,
 its default branch carries a protection rule:
 
-- **No direct push.** Every change arrives as a pull request.
-- **Status checks required**, naming the check from [ci.md](ci.md) explicitly.
-  Turning the toggle on is not sufficient:
-  a rule with status checks enabled and no context listed matches nothing and passes everything.
-  On Forgejo a context is `<workflow> / <job> (<event>)`,
-  so the `ci` workflow's `ci` job reports as `ci / ci (pull_request)`.
-  A required context that has not reported yet reads as pending and blocks the merge,
-  so a renamed workflow fails closed rather than opening the gate.
-- **Merge blocked on an outdated branch**,
-  so a check that passed is a check that passed against the tree being merged.
+| Setting                           | Value                 | Why                                                             |
+| --------------------------------- | --------------------- | --------------------------------------------------------------- |
+| Direct push                       | blocked, no allowlist | Every change arrives as a pull request                          |
+| Apply to admins                   | on                    | A rule that exempts admins binds nobody on a single-owner forge |
+| Required status checks            | on, contexts named    | Nothing else makes a check binding — see below                  |
+| Block on outdated branch          | on                    | A check that passed, passed against the tree being merged       |
+| Update branch by rebase           | allowed               | A branch blockable for being behind has to be movable           |
+| Block on rejected reviews         | on                    | Costs nothing until someone reviews, correct on the day they do |
+| Block on official review requests | on                    | Same                                                            |
+| Dismiss stale approvals           | on                    | A push invalidates the approval that predates it                |
+| Required approvals                | **0**                 | An author cannot approve their own pull request                 |
 
-Status checks are the half that gets left off,
-because nothing looks wrong while a person is clicking every merge button.
+Everything not listed stays at its default.
+Required approvals is the one entry that is off rather than on:
+on a solo repo any other value is a deadlock rather than a stricter rule,
+and it is the first line to revisit when a repo gains a second person.
+
+#### Naming the check
+
+A context is `<workflow> / <job> (<event>)`,
+so the `ci` workflow's `ci` job from [ci.md](ci.md) reports as `ci / ci (pull_request)`.
+Contexts are compiled as globs rather than compared as strings,
+so a check name containing `*`, `?`, `[`, or `{` will not mean what it reads as.
+
+The toggle and the context list fail in opposite directions,
+so neither is a safe default for the other:
+
+| Toggle | Contexts             | Result                                                                |
+| ------ | -------------------- | --------------------------------------------------------------------- |
+| off    | —                    | Every status advisory; the merge gate returns true before reading any |
+| on     | empty                | The worst of whatever posted — and no statuses at all is unmergeable  |
+| on     | named, never reports | Pending forever, and pending is not success                           |
+| on     | named, reporting     | The rule                                                              |
+
+Enable the toggle only once the workflow it names already runs on the repo.
+Row 3 is what a repo with no CI gets, and the pull request page does not explain it.
+That same row is why a *renamed* workflow fails closed rather than opening the gate,
+which is worth having — in that order.
+
+#### Why the check is the half that matters
+
+Nothing looks wrong while a person is clicking every merge button,
+so this is the setting that gets left off.
 It stops being invisible the moment something merges unattended.
 [dependencies.md](dependencies.md) allows automerge for tooling updates,
 and Renovate arms the forge's own "merge when checks succeed" as it opens the pull request —
 before any check has reported.
-With no required context there is nothing to wait for, and it merges immediately.
+On row 1 there is nothing to wait for, and it merges immediately.
 
 The exception above is the same exception here.
 A checkout granted `defaultBranch.allowDirectCommits` commits to its default branch by design,
 so protecting that branch on the forge denies the thing the exception permits.
 They are two halves of one decision about a repo, not two independent settings.
+
+### Merge method
+
+| Setting                                                | Value |
+| ------------------------------------------------------ | ----- |
+| Squash                                                 | on    |
+| Merge, rebase, rebase-merge, fast-forward-only, manual | off   |
+| Delete branch after merge                              | on    |
+
+A pull request lands as exactly one commit on the default branch.
+
+The consequence to know before it looks like a problem:
+a squash-merged branch is not an ancestor of the default branch,
+so `git branch -d` refuses it as unmerged.
+An empty `git diff <branch> <the squash commit>` is the proof that it merged,
+and `-D` is then the correct deletion rather than a force.
 
 ### Worktree layout
 
