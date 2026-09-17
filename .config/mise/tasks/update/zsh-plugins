@@ -5,4 +5,12 @@
 set -euo pipefail
 
 # Declared in [bootstrap.repos] (mise/config.toml).
-mise bootstrap repos update --skip-dirty --yes
+# mise runs git fetch and pull without -q,
+# so keep only the lines that report a change.
+if ! output=$(mise bootstrap repos update --skip-dirty --yes 2>&1); then
+	printf '%s\n' "$output" >&2
+	exit 1
+fi
+printf '%s\n' "$output" |
+	grep -Ev '^(From |[[:space:]]+\* (branch|\[new tag\]) |Already up to date\.$)' ||
+	true
