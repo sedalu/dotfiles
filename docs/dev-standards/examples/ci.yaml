@@ -1,18 +1,25 @@
 # Reference workflow for ci.md.
-# The whole point is the single run step: CI enters through the same task a hook does.
+# The whole point is the single run step:
+# CI enters through the same task a hook does.
+#
+# `name:` is what the required-status context is built from — see git.md.
+# A workflow left without one is identified by its file path instead,
+# so the context stops matching what branch protection was told to require.
+name: "ci"
 "on":
   pull_request:
   push:
     branches: ["main"]
 concurrency:
-  group: "check-${{ github.ref }}"
+  group: "ci-${{ github.ref }}"
   cancel-in-progress: true
 jobs:
-  check:
+  ci:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v5"
-      # The only provisioning step. Every tool arrives pinned, from the lockfile.
+      # The only provisioning step.
+      # Every tool arrives pinned, from the lockfile.
       # A language-specific setup action would install a version nobody pinned.
       - uses: "jdx/mise-action@v3"
       - run: "mise run check:all"
