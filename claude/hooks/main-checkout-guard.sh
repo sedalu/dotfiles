@@ -27,9 +27,21 @@
 # They change content or where a branch points,
 # never which branch the checkout is on.
 #
+# The Bash branch reads git invocations, which is the most it can do.
+# A write reaches the filesystem through `sed -i`, a redirect,
+# or a heredoc fed to any interpreter,
+# and no amount of parsing a command line enumerates those.
+# So prevention stops at the commands that can be named,
+# and PostToolUse is the half with full coverage:
+# it reads the checkout rather than the command,
+# and sees the write whatever made it.
+# It cannot deny, because by then the write has happened —
+# it makes sure the agent and the human are told while git can still undo it.
+#
 # Events handled:
 #   PreToolUse / Write, Edit, NotebookEdit — deny an edit to a file in the main checkout
 #   PreToolUse / Bash                      — deny a command that moves its HEAD or commits in it
+#   PostToolUse / Bash                     — report a main checkout left dirty or off its branch
 #   SessionStart, CwdChanged               — report the main checkout's state
 
 # No `-e`: a probe that fails must let the tool call through rather than block on a hook bug.
@@ -141,6 +153,27 @@ moves_head() {
 	printf "would move HEAD onto '%s'\n" "$first"
 }
 
+# Describes how the main checkout at $1 has left its resting state, or returns 1.
+# Resting is the default branch, with nothing uncommitted.
+main_checkout_fault() {
+	local top=$1 db current
+	db=$(default_branch "$top")
+	current=$(git -C "$top" branch --show-current 2>/dev/null)
+	if [ -z "$current" ]; then
+		printf "It is on a detached HEAD rather than '%s'; restore it with 'git switch %s'." "$db" "$db"
+		return 0
+	fi
+	if [ "$current" != "$db" ]; then
+		printf "It is on '%s' rather than '%s'; restore it with 'git switch %s'." "$current" "$db" "$db"
+		return 0
+	fi
+	if [ -n "$(git -C "$top" status --porcelain 2>/dev/null)" ]; then
+		printf "It has uncommitted changes; move them out with 'git stash', then 'git stash pop' in the sibling."
+		return 0
+	fi
+	return 1
+}
+
 case "$event" in
 PreToolUse)
 	case "$tool" in
@@ -175,20 +208,21 @@ PreToolUse)
 		;;
 	esac
 	;;
+PostToolUse)
+	# Judged from the session cwd rather than the command,
+	# so a sibling worktree reaches the same main checkout and a write from anywhere in the project is seen.
+	[ "$tool" = Bash ] || exit 0
+	[ -n "$cwd" ] && [ -d "$cwd" ] || exit 0
+	top=$(project_main_checkout "$cwd") || exit 0
+	fault=$(main_checkout_fault "$top") || exit 0
+	warn "'$top' is a worktree project's main checkout and is never worked in, but it is not in its resting state. $fault $remedy"
+	;;
 SessionStart | CwdChanged)
 	[ -n "$cwd" ] && [ -d "$cwd" ] || exit 0
 	top=$(main_checkout "$cwd") || exit 0
-	db=$(default_branch "$top")
-	current=$(git -C "$top" branch --show-current 2>/dev/null)
-	if [ -z "$current" ]; then
-		printf "%s is a worktree project's main checkout on a detached HEAD; it must stay on '%s'.\n" "$top" "$db"
-		printf "Restore it with 'git switch %s'. Work belongs in a sibling worktree: mise run worktree:branch <branch>\n" "$db"
-	elif [ "$current" != "$db" ]; then
-		printf "%s is a worktree project's main checkout but is on '%s' rather than '%s'.\n" "$top" "$current" "$db"
-		printf "Restore it with 'git switch %s'. Work belongs in a sibling worktree: mise run worktree:branch <branch>\n" "$db"
-	elif [ -n "$(git -C "$top" status --porcelain 2>/dev/null)" ]; then
-		printf "%s is a worktree project's main checkout and is kept clean, but has uncommitted changes.\n" "$top"
-		printf "Move them out: git stash, then mise run worktree:branch <branch>, then git stash pop in the sibling.\n"
+	if fault=$(main_checkout_fault "$top"); then
+		printf "%s is this worktree project's main checkout, and is not in its resting state.\n" "$top"
+		printf "%s %s\n" "$fault" "$remedy"
 	else
 		printf "%s is this worktree project's main checkout: it holds the git directory and is not worked in. Start work with 'mise run worktree:branch <branch>'.\n" "$top"
 	fi

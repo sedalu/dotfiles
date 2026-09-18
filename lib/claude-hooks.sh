@@ -34,6 +34,20 @@ ask() {
 	exit 0
 }
 
+# Reports a violation that has already happened.
+# PostToolUse runs once the command has written,
+# so there is nothing left to deny:
+# the block decision is how the finding reaches the agent,
+# and systemMessage is how it reaches the human who would otherwise never see it.
+warn() {
+	jq -n --arg reason "$1" '{
+		decision: "block",
+		reason: $reason,
+		systemMessage: $reason
+	}'
+	exit 0
+}
+
 # Prints the default branch of the repo at $1 (default: the cwd).
 # origin/HEAD is authoritative; the rest are for a clone that has never had it set.
 default_branch() {
@@ -65,6 +79,24 @@ main_checkout() {
 	[ "${top##*/}" = main ] || return 1
 	[ -d "$top/.git" ] || return 1
 	printf '%s\n' "$top"
+}
+
+# Prints the main checkout of the worktree project containing $1, or returns 1.
+# Walks up for a `main` whose .git is a directory,
+# the discriminator lib/worktree.sh uses,
+# so a sibling worktree reaches the project's main checkout as readily as main itself does.
+# The walk is stat-only, so a directory in no worktree project costs nothing.
+project_main_checkout() {
+	local dir
+	dir=$(cd "$1" 2>/dev/null && pwd -P) || return 1
+	while [ -n "$dir" ]; do
+		if [ -d "$dir/main/.git" ]; then
+			printf '%s\n' "$dir/main"
+			return 0
+		fi
+		dir=${dir%/*}
+	done
+	return 1
 }
 
 # Walks each git invocation in a command line and reports the directory it acts on,

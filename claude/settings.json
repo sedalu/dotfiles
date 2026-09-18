@@ -67,6 +67,21 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/main-checkout-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "/Users/seth/.claude/hooks/default-branch-guard.sh"
+          }
+        ]
+      }
     ]
   },
   "worktree": {

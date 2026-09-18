@@ -14,9 +14,17 @@
 # leaving the default branch there is the violation rather than the remedy,
 # so main-checkout-guard.sh owns that directory and this one defers.
 #
+# The Bash branch reads git invocations,
+# so a write made by `sed -i`, a redirect, or a heredoc fed to an interpreter
+# reaches the default branch unseen.
+# PostToolUse closes that by reading the checkout rather than the command.
+# It cannot deny, because the write has happened —
+# it makes sure the change is noticed while it is still one `git switch -c` from being correct.
+#
 # Events handled:
 #   PreToolUse / Write, Edit, NotebookEdit — deny an edit that would dirty the default branch
 #   PreToolUse / Bash                      — deny a git command that would lock changes onto it
+#   PostToolUse / Bash                     — report a default branch a command has dirtied
 #   SessionStart, CwdChanged               — report a default branch that is already dirty
 
 # No `-e`: a probe that fails must let the tool call through rather than block on a hook bug.
@@ -107,6 +115,11 @@ PreToolUse)
 		[ -n "$sub" ] && deny "'git $sub' would lock changes onto the default branch '$current'. $remedy"
 		;;
 	esac
+	;;
+PostToolUse)
+	[ "$tool" = Bash ] || exit 0
+	[ -n "$(git status --porcelain 2>/dev/null)" ] || exit 0
+	warn "The default branch '$current' now has uncommitted changes, and work does not happen on it. Move them onto a branch — 'git switch -c <branch>' carries them over. Exempting this checkout instead is the human's call, not yours: ask them for it rather than configuring it."
 	;;
 SessionStart | CwdChanged)
 	if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
