@@ -2,9 +2,9 @@
 # The whole point is the single run step:
 # CI enters through the same task a hook does.
 #
-# `name:` is what the required-status context is built from — see git.md.
-# A workflow left without one is identified by its file path instead,
-# so the context stops matching what branch protection was told to require.
+# `name:` is what the required-status context is built from — see ci.md.
+# Nothing supplies one when the key is absent,
+# so the status posts as `/ ci (pull_request)` and matches no rule.
 name: "ci"
 "on":
   pull_request:

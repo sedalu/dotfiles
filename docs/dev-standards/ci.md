@@ -14,6 +14,25 @@ Every tool arrives pinned, from the lockfile, exactly as it does on a workstatio
 A runner that provisions a language toolchain through the forge's own setup action
 is running a version no one pinned.
 
+## Naming
+
+The workflow is `ci` and its only job is `ci`.
+Deploys are a separate workflow named `cd` — see [deployment.md](deployment.md).
+CI runs the checks, CD runs the deploys,
+and every repo names the same thing the same way,
+which is what lets one protection rule be copied to the next repo unchanged.
+
+The task it runs being `check:all` is not a conflict:
+`ci` is where it runs, `check` is what it does.
+
+`name:` is set explicitly, always.
+The context is built as `<workflow> / <job> (<event>)`,
+and its workflow half is read from `name:` alone.
+Nothing supplies one when the key is absent —
+the status posts as `/ ci (pull_request)`, leading separator and all,
+which is not the context [git.md](git.md) had the protection rule require.
+The file is named for the workflow it holds, so `ci` lives in `ci.yaml`.
+
 ## Triggers and gating
 
 - Every pull request runs `check:all`, and it is a required check.
