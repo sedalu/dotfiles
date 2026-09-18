@@ -1,4 +1,4 @@
-name: "check"
+name: "ci"
 
 "on":
   pull_request:
@@ -7,11 +7,11 @@ name: "check"
 
 # A superseded check run is wasted work.
 concurrency:
-  group: "check-${{ github.ref }}"
+  group: "ci-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
-  check:
+  ci:
     runs-on: "docker"
     container:
       # Debian rather than Alpine: the pipeline's tools ship glibc binaries.
