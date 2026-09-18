@@ -2,26 +2,31 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  // main takes direct commits, so it carries no protection rule
+  // main takes direct commits,
+  // so it carries no protection rule
   // and names no required context.
-  // Forgejo's native auto-merge would have nothing to wait on
-  // and would merge each branch as Renovate opened it, before ci ever reported.
+  // Forgejo's native auto-merge would have nothing to wait on,
+  // and would merge each branch as Renovate opened it,
+  // before ci ever reported.
   // Renovate merging the branch itself is gated on a green branch status,
-  // and a branch no status has posted against reads as `unknown`, which is yellow,
+  // and a branch no status has posted against reads as yellow,
   // so an absent check holds the branch rather than releasing it.
   platformAutomerge: false,
   // No `labels:` anywhere below, deliberately.
   // Renovate's Forgejo platform resolves label names to IDs against the repo
   // and silently drops whatever it cannot find,
-  // so an entry naming a label that does not exist is a no-op that reads like a working rule.
+  // so an entry naming a label that does not exist is a no-op
+  // that reads like a working rule.
   // This forge defines none, on this repo or the org.
   packageRules: [
     {
       // mise/ is the workstation toolchain this repo ships —
-      // it installs to $XDG_CONFIG_HOME/mise/ and is the artifact, not tooling for the artifact.
+      // it installs to $XDG_CONFIG_HOME/mise/,
+      // and is the artifact rather than tooling for the artifact.
       // Renovate's default patterns match it on path shape alone,
       // and every entry in it tracks `latest` by design.
-      // Left enabled, each one reaches a datasource lookup that can never produce a bump.
+      // Left enabled, each one reaches a datasource lookup
+      // that can never produce a bump.
       matchFileNames: ["mise/config*.toml"],
       enabled: false,
     },
