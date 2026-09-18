@@ -75,19 +75,40 @@ main_checkout() {
 # it names the directory the invocation acts on, which is not always the cwd.
 # Repeated -C compose the way git composes them, each relative to the last.
 #
+# A `cd` segment moves every segment after it,
+# so the directory it names is carried forward and a later invocation is judged against it.
+# Without that, `cd <worktree> && git commit` reads as a commit in the session cwd,
+# which is the main checkout the command was leaving.
+#
 # Split a line with `invocation_dir` and `invocation_cmd`, never with `IFS=$'\t' read`:
 # tab is IFS whitespace, so read would swallow the empty directory field
 # and shift the subcommand into it.
 git_invocations() {
-	local cmd=$1 segment cdir i n
+	local cmd=$1 segment cdir here="" i n
 	local -a tok
 	while IFS= read -r segment; do
 		read -r -a tok <<<"$segment"
+		if [ "${tok[0]:-}" = cd ]; then
+			# A directive binds to the whole case, never to one branch.
+			# shellcheck disable=SC2088  # a literal ~ is the point: the tool passes the command unexpanded
+			case "${tok[1]:-}" in
+			# `cd` alone is HOME.
+			# `cd -` names a directory only the live shell knows,
+			# so it gives up and lets the session cwd answer.
+			"") here=$HOME ;;
+			-) here="" ;;
+			"~") here=$HOME ;;
+			"~/"*) here="$HOME/${tok[1]#\~/}" ;;
+			/*) here=${tok[1]} ;;
+			*) here="${here:+$here/}${tok[1]}" ;;
+			esac
+			continue
+		fi
 		i=0
 		n=${#tok[@]}
 		while [ "$i" -lt "$n" ]; do
 			if [ "${tok[i]}" = "git" ]; then
-				cdir=""
+				cdir=$here
 				i=$((i + 1))
 				while [ "$i" -lt "$n" ]; do
 					case "${tok[i]}" in
