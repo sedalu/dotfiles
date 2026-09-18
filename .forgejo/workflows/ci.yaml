@@ -23,7 +23,7 @@ jobs:
           apt-get install -y --no-install-recommends curl ca-certificates git nodejs
           rm -rf /var/lib/apt/lists/*
 
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v7"
 
       # The only provisioning step: every tool arrives pinned, from the lockfile.
       - name: "Install mise"
