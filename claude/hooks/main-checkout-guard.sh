@@ -38,11 +38,15 @@
 # It cannot deny, because by then the write has happened —
 # it makes sure the agent and the human are told while git can still undo it.
 #
+# Which checkout it reads is taken from the command rather than from the session cwd.
+# A command reaches any tree on the disk,
+# so the project the session happens to be sitting in is not the one that was necessarily written to.
+#
 # Events handled:
-#   PreToolUse / Write, Edit, NotebookEdit — deny an edit to a file in the main checkout
-#   PreToolUse / Bash                      — deny a command that moves its HEAD or commits in it
-#   PostToolUse / Bash                     — report a main checkout left dirty or off its branch
-#   SessionStart, CwdChanged               — report the main checkout's state
+#   PreToolUse / Write, Edit, NotebookEdit — deny an edit to a file in a main checkout
+#   PreToolUse / Bash                      — deny a command that moves a main checkout's HEAD or commits in it
+#   PostToolUse / Bash                     — report any main checkout the command left dirty or off its branch
+#   SessionStart, CwdChanged               — report the state of the main checkout of the project the cwd is in
 
 # No `-e`: a probe that fails must let the tool call through rather than block on a hook bug.
 set -uo pipefail
@@ -57,17 +61,9 @@ payload=$(cat)
 event=$(field '.hook_event_name // ""')
 tool=$(field '.tool_name // ""')
 cwd=$(field '.cwd // ""')
+command=$(field '.tool_input.command // ""')
 
 remedy="Run 'mise run worktree:branch <branch>' and work in the sibling worktree it creates."
-
-# Resolves an invocation's -C operand against the session cwd.
-resolve_dir() {
-	case "$1" in
-	"") printf '%s\n' "$cwd" ;;
-	/*) printf '%s\n' "$1" ;;
-	*) printf '%s\n' "$cwd/$1" ;;
-	esac
-}
 
 # Describes how an invocation would take the checkout off its default branch, or returns 1.
 # $1 the checkout,
@@ -186,10 +182,9 @@ PreToolUse)
 		deny "'$top' is a worktree project's main checkout: it holds the git directory and is never worked in. $remedy"
 		;;
 	Bash)
-		command=$(field '.tool_input.command // ""')
 		[ -n "$command" ] || exit 0
 		while IFS= read -r line; do
-			dir=$(resolve_dir "$(invocation_dir "$line")")
+			dir=$(resolve_dir "$(invocation_dir "$line")" "$cwd")
 			[ -d "$dir" ] || continue
 			top=$(main_checkout "$dir") || continue
 			invocation=$(invocation_cmd "$line")
@@ -209,21 +204,28 @@ PreToolUse)
 	esac
 	;;
 PostToolUse)
-	# Judged from the session cwd rather than the command,
-	# so a sibling worktree reaches the same main checkout and a write from anywhere in the project is seen.
+	# Judged against every directory the command named, not against the session cwd,
+	# so a write into a project the session never stood in is seen too.
+	# Each directory reaches its project's main checkout from anywhere inside the project,
+	# since a sibling worktree is where that write most often comes from.
 	[ "$tool" = Bash ] || exit 0
-	[ -n "$cwd" ] && [ -d "$cwd" ] || exit 0
-	top=$(project_main_checkout "$cwd") || exit 0
-	fault=$(main_checkout_fault "$top") || exit 0
-	warn "'$top' is a worktree project's main checkout and is never worked in, but it is not in its resting state. $fault $remedy"
+	seen=""
+	while IFS= read -r dir; do
+		top=$(project_main_checkout "$dir") || continue
+		case "$seen" in *"|$top|"*) continue ;; esac
+		seen="$seen|$top|"
+		fault=$(main_checkout_fault "$top") || continue
+		warn "'$top' is a worktree project's main checkout and is never worked in, but it is not in its resting state. $fault $remedy"
+	done < <(command_dirs "$command" "$cwd")
 	;;
 SessionStart | CwdChanged)
+	# A fault is worth reporting from anywhere in the project;
+	# the reassurance is only worth printing to someone standing in the main checkout itself.
 	[ -n "$cwd" ] && [ -d "$cwd" ] || exit 0
-	top=$(main_checkout "$cwd") || exit 0
-	if fault=$(main_checkout_fault "$top"); then
+	if top=$(project_main_checkout "$cwd") && fault=$(main_checkout_fault "$top"); then
 		printf "%s is this worktree project's main checkout, and is not in its resting state.\n" "$top"
 		printf "%s %s\n" "$fault" "$remedy"
-	else
+	elif top=$(main_checkout "$cwd"); then
 		printf "%s is this worktree project's main checkout: it holds the git directory and is not worked in. Start work with 'mise run worktree:branch <branch>'.\n" "$top"
 	fi
 	;;

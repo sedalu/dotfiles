@@ -99,6 +99,83 @@ project_main_checkout() {
 	return 1
 }
 
+# Applies a `cd` segment to the directory a command line is standing in,
+# and prints where it lands.
+# It prints nothing for `cd -`,
+# which names a directory only the live shell knows,
+# leaving the caller to fall back to the session cwd.
+apply_cd() {
+	local here=$1 arg=$2
+	# A directive binds to the whole case, never to one branch.
+	# shellcheck disable=SC2088  # a literal ~ is the point: the tool passes the command unexpanded
+	case "$arg" in
+	# `cd` alone is HOME.
+	"" | "~") printf '%s\n' "$HOME" ;;
+	-) ;;
+	"~/"*) printf '%s\n' "$HOME/${arg#\~/}" ;;
+	/*) printf '%s\n' "$arg" ;;
+	*) printf '%s\n' "${here:+$here/}$arg" ;;
+	esac
+}
+
+# Resolves a directory named by a command line, $1, against the session cwd, $2.
+resolve_dir() {
+	case "$1" in
+	"") printf '%s\n' "$2" ;;
+	/*) printf '%s\n' "$1" ;;
+	*) printf '%s\n' "$2/$1" ;;
+	esac
+}
+
+# Prints every existing directory the command line $1 could have written in,
+# deduplicated,
+# starting from the session cwd $2.
+#
+# The cwd is where a command starts, not where it stays:
+# `cd` moves it,
+# and an argument can name a tree anywhere on disk,
+# so a write into a repo the session never stood in still has to be judged against that repo.
+#
+# Paths are recognized by shape rather than by position.
+# The writes that motivate this are `sed -i`,
+# a redirect,
+# and a heredoc fed to an interpreter,
+# where the path is not a shell token at all
+# and no parse reaches it.
+# So anything holding a slash is a candidate,
+# which takes in sed expressions and URLs as well;
+# those resolve to nothing on disk and drop out here.
+# A candidate that is not itself a directory contributes its parent,
+# which is where the write lands.
+command_dirs() {
+	local cmd=$1 cwd=$2 segment here=$2 path
+	local -a tok
+	{
+		printf '%s\n' "$cwd"
+		while IFS= read -r segment; do
+			read -r -a tok <<<"$segment"
+			if [ "${tok[0]:-}" = cd ]; then
+				here=$(apply_cd "$here" "${tok[1]:-}")
+				[ -n "$here" ] || here=$cwd
+				printf '%s\n' "$here"
+				continue
+			fi
+			while IFS= read -r path; do
+				# A directive binds to the whole case, never to one branch.
+				# shellcheck disable=SC2088  # a literal ~ is the point: the tool passes the command unexpanded
+				case "$path" in
+				"~/"*) path="$HOME/${path#\~/}" ;;
+				/*) ;;
+				*) path="$here/$path" ;;
+				esac
+				[ -d "$path" ] || path=${path%/*}
+				[ -d "$path" ] || continue
+				printf '%s\n' "$path"
+			done < <(printf '%s\n' "$segment" | grep -oE '[A-Za-z0-9._~@+-]*(/[A-Za-z0-9._~@+-]*)+')
+		done < <(printf '%s\n' "$cmd" | tr ';|&' '\n')
+	} | sort -u
+}
+
 # Walks each git invocation in a command line and reports the directory it acts on,
 # a tab, then its subcommand and arguments.
 # Splitting on shell separators keeps the invocations in a compound command apart,
@@ -121,19 +198,7 @@ git_invocations() {
 	while IFS= read -r segment; do
 		read -r -a tok <<<"$segment"
 		if [ "${tok[0]:-}" = cd ]; then
-			# A directive binds to the whole case, never to one branch.
-			# shellcheck disable=SC2088  # a literal ~ is the point: the tool passes the command unexpanded
-			case "${tok[1]:-}" in
-			# `cd` alone is HOME.
-			# `cd -` names a directory only the live shell knows,
-			# so it gives up and lets the session cwd answer.
-			"") here=$HOME ;;
-			-) here="" ;;
-			"~") here=$HOME ;;
-			"~/"*) here="$HOME/${tok[1]#\~/}" ;;
-			/*) here=${tok[1]} ;;
-			*) here="${here:+$here/}${tok[1]}" ;;
-			esac
+			here=$(apply_cd "$here" "${tok[1]:-}")
 			continue
 		fi
 		i=0

@@ -21,11 +21,18 @@
 # It cannot deny, because the write has happened —
 # it makes sure the change is noticed while it is still one `git switch -c` from being correct.
 #
+# Every event judges the checkout that is actually being touched:
+# the repo holding an edit's target file,
+# the directory each git invocation acts on,
+# and, after a command runs, every repo any path in it reached.
+# The session cwd is only the starting point,
+# never the thing being judged on its own.
+#
 # Events handled:
-#   PreToolUse / Write, Edit, NotebookEdit — deny an edit that would dirty the default branch
-#   PreToolUse / Bash                      — deny a git command that would lock changes onto it
-#   PostToolUse / Bash                     — report a default branch a command has dirtied
-#   SessionStart, CwdChanged               — report a default branch that is already dirty
+#   PreToolUse / Write, Edit, NotebookEdit — deny an edit that would dirty a default branch
+#   PreToolUse / Bash                      — deny a git command that would lock changes onto one
+#   PostToolUse / Bash                     — report a default branch the command dirtied
+#   SessionStart, CwdChanged               — report the cwd's default branch if it is already dirty
 
 # No `-e`: a probe that fails must let the tool call through rather than block on a hook bug.
 set -uo pipefail
@@ -42,6 +49,7 @@ payload=$(cat)
 event=$(field '.hook_event_name // ""')
 tool=$(field '.tool_name // ""')
 cwd=$(field '.cwd // ""')
+command=$(field '.tool_input.command // ""')
 
 # True when a command would write the opt-out key.
 # Reading it and removing it are both fine — only granting the exception is gated.
@@ -68,62 +76,86 @@ sets_exception_key() {
 # The exception gate is checked before anything else,
 # so it holds outside a repo and in a checkout that already has the key set.
 if [ "$event" = PreToolUse ] && [ "$tool" = Bash ]; then
-	command=$(field '.tool_input.command // ""')
 	if sets_exception_key "$command"; then
 		deny "Setting $KEY exempts a checkout from the branching standard, which is a human's decision. Do not run it. Ask them to run it themselves, and say which checkout and why."
 	fi
 fi
 
-# An edit is judged against the repo holding the target file, which need not be the cwd.
-target=$(field '.tool_input.file_path // ""')
-if [ -n "$target" ]; then
-	dir=$(dirname -- "$target")
-else
-	dir="$cwd"
-fi
-[ -d "$dir" ] || dir="$cwd"
-[ -d "$dir" ] || exit 0
-
-cd "$dir" 2>/dev/null || exit 0
-git rev-parse --git-dir >/dev/null 2>&1 || exit 0
-
-# A worktree project's main checkout belongs to main-checkout-guard.sh, on every event.
-# That hook pins the branch and seals the checkout,
-# and its remedy is `worktree:branch` rather than the `git switch -c` this one prints.
-main_checkout . >/dev/null 2>&1 && exit 0
-
-# `--bool` normalizes every spelling git accepts for true.
-allowed=$(git config --bool --get "$KEY" 2>/dev/null)
-[ "$allowed" = "true" ] && exit 0
-
-# A detached HEAD is not the default branch, and a commit there lands on no branch at all.
-current=$(git branch --show-current 2>/dev/null)
-[ -n "$current" ] || exit 0
-
-[ "$current" = "$(default_branch)" ] || exit 0
-
 remedy="Run 'git switch -c <branch>' first — uncommitted changes carry over — then retry. Exempting this checkout instead is the human's call, not yours: ask them for it rather than configuring it."
+
+# Prints the toplevel when $1 sits in a checkout this hook guards, else returns 1.
+# Guarded means a repo that is not a worktree project's main checkout,
+# has not been granted the local exception,
+# and is standing on its default branch.
+guarded_checkout() {
+	local dir=$1 top allowed current
+	top=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || return 1
+	[ -n "$top" ] || return 1
+
+	# A worktree project's main checkout belongs to main-checkout-guard.sh, on every event.
+	# That hook pins the branch and seals the checkout,
+	# and its remedy is `worktree:branch` rather than the `git switch -c` this one prints.
+	main_checkout "$top" >/dev/null 2>&1 && return 1
+
+	# `--bool` normalizes every spelling git accepts for true.
+	allowed=$(git -C "$top" config --bool --get "$KEY" 2>/dev/null)
+	[ "$allowed" = "true" ] && return 1
+
+	# A detached HEAD is not the default branch, and a commit there lands on no branch at all.
+	current=$(git -C "$top" branch --show-current 2>/dev/null)
+	[ -n "$current" ] || return 1
+	[ "$current" = "$(default_branch "$top")" ] || return 1
+
+	printf '%s\n' "$top"
+}
 
 case "$event" in
 PreToolUse)
 	case "$tool" in
 	Write | Edit | NotebookEdit)
-		deny "Editing on the default branch '$current' is not permitted. $remedy"
+		# An edit is judged against the repo holding the target file, which need not be the cwd.
+		target=$(field '.tool_input.file_path // ""')
+		if [ -n "$target" ]; then
+			dir=$(dirname -- "$target")
+		else
+			dir="$cwd"
+		fi
+		[ -d "$dir" ] || dir="$cwd"
+		[ -d "$dir" ] || exit 0
+		top=$(guarded_checkout "$dir") || exit 0
+		deny "Editing on the default branch '$(default_branch "$top")' in '$top' is not permitted. $remedy"
 		;;
 	Bash)
-		sub=$(first_locking_subcommand "$command")
-		[ -n "$sub" ] && deny "'git $sub' would lock changes onto the default branch '$current'. $remedy"
+		# Each invocation is judged against the directory it acts on,
+		# so a `git -C`, or a `cd` into another repo, is judged against that repo rather than the cwd.
+		while IFS= read -r line; do
+			sub=$(locking_subcommand "$(invocation_cmd "$line")") || continue
+			dir=$(resolve_dir "$(invocation_dir "$line")" "$cwd")
+			[ -d "$dir" ] || continue
+			top=$(guarded_checkout "$dir") || continue
+			deny "'git $sub' would lock changes onto the default branch '$(default_branch "$top")' in '$top'. $remedy"
+		done < <(git_invocations "$command")
 		;;
 	esac
 	;;
 PostToolUse)
+	# Judged against every directory the command named, not against the session cwd,
+	# so a write into a repo the session never stood in is seen too.
 	[ "$tool" = Bash ] || exit 0
-	[ -n "$(git status --porcelain 2>/dev/null)" ] || exit 0
-	warn "The default branch '$current' now has uncommitted changes, and work does not happen on it. Move them onto a branch — 'git switch -c <branch>' carries them over. Exempting this checkout instead is the human's call, not yours: ask them for it rather than configuring it."
+	seen=""
+	while IFS= read -r dir; do
+		top=$(guarded_checkout "$dir") || continue
+		case "$seen" in *"|$top|"*) continue ;; esac
+		seen="$seen|$top|"
+		[ -n "$(git -C "$top" status --porcelain 2>/dev/null)" ] || continue
+		warn "The default branch '$(default_branch "$top")' in '$top' now has uncommitted changes, and work does not happen on it. Move them onto a branch — 'git switch -c <branch>' carries them over. Exempting this checkout instead is the human's call, not yours: ask them for it rather than configuring it."
+	done < <(command_dirs "$command" "$cwd")
 	;;
 SessionStart | CwdChanged)
-	if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-		printf "%s has uncommitted changes on its default branch '%s'.\n" "$PWD" "$current"
+	[ -n "$cwd" ] && [ -d "$cwd" ] || exit 0
+	top=$(guarded_checkout "$cwd") || exit 0
+	if [ -n "$(git -C "$top" status --porcelain 2>/dev/null)" ]; then
+		printf "%s has uncommitted changes on its default branch '%s'.\n" "$top" "$(default_branch "$top")"
 		printf 'Move them onto a branch before going further: git switch -c <branch>\n'
 	fi
 	;;
