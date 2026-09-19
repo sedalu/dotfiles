@@ -13,3 +13,7 @@
 
 !skills/
 !skills/**
+
+# Claude Code downloads claude.ai account skills into these and overwrites them.
+skills/synced/
+skills/.trash/
