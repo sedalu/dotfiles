@@ -2,16 +2,15 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  // main takes direct commits,
-  // so it carries no protection rule
-  // and names no required context.
-  // Forgejo's native auto-merge would have nothing to wait on,
-  // and would merge each branch as Renovate opened it,
-  // before ci ever reported.
-  // Renovate merging the branch itself is gated on a green branch status,
-  // and a branch no status has posted against reads as yellow,
-  // so an absent check holds the branch rather than releasing it.
-  platformAutomerge: false,
+  // main requires `ci / ci (pull_request)`,
+  // so the forge has a check to wait on
+  // and merges when ci reports rather than when Renovate next runs.
+  //
+  // Renovate merges under its own account,
+  // allowed only because the rule enables no merge whitelist
+  // (models/git/protected_branch.go, IsUserMergeWhitelisted falls back to write permission).
+  // Adding one without `renovate` on it leaves every pull request green and unmerged.
+  platformAutomerge: true,
   // No `labels:` anywhere below, deliberately.
   // Renovate's Forgejo platform resolves label names to IDs against the repo
   // and silently drops whatever it cannot find,
