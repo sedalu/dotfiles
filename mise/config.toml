@@ -146,6 +146,7 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 "github:jesseduffield/lazygit" = "latest"
 "github:noworrieseh/macdisp" = "latest"
 "github:rtk-ai/rtk" = "latest"
+"github:Wilfred/difftastic" = "latest"
 # cargo
 "cargo:forgejo-cli" = "latest"
 # go
@@ -163,7 +164,6 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 bun = "latest"
 cargo-binstall = "latest"
 claude = "latest"
-difftastic = "latest"
 docker-compose = "latest"
 eza = "latest"
 fnox = "latest"
