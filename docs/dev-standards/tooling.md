@@ -62,7 +62,20 @@ mise, and any manager like it.
   ```
 
   No formatter enforces this.
-  TOML in general never uses inline tables — write `[table]` and `[parent.child]` sections.
+  The rule is about mise configs,
+  whose `[tools]` entries are heterogeneous:
+  a file that mixes `colima = { version = "0.9.2", depends = "lima" }` with plain version strings reads as two conventions for one list,
+  and an entry that gains an option has to be rewritten rather than extended.
+  Write `[table]` and `[parent.child]` sections instead.
+
+  This does not govern TOML generally.
+  A file of many homogeneous records — a data file rather than a config —
+  is better served by an array of inline tables,
+  one record per line,
+  which holds a diff to the record that actually changed.
+  Choose the form from the shape of the file:
+  sections where entries differ from each other,
+  inline tables where they repeat.
 - A language toolchain is pinned in `[tools]` like every other tool.
   Never resolve it from the language's own manifest:
   a manifest's language-version directive states the minimum version the module requires,
