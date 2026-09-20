@@ -43,8 +43,20 @@ A generated document is produced by a task and never edited by hand.
 It carries no warning comment asking the reader not to edit it —
 the task name is the fact worth recording, so state that instead.
 
-Every generated document is excluded from formatters and linters,
-or the pipeline and the generator rewrite each other's output indefinitely.
+Whether it is linted turns on who owns the generator, not on its being generated.
+
+A document produced by a generator this repo owns is not excluded.
+It is held to the same standard as one written by hand:
+if a formatter wants to rewrite it,
+the generator is emitting the wrong bytes,
+and the generator is what gets fixed.
+Excluding it instead hides the defect
+and lets the output drift from house style.
+
+A document produced by a vendor's generator is excluded,
+like an app-managed file.
+Its shape is the vendor's to choose and not ours to correct,
+so a formatter pointed at it reformats bytes the vendor re-emits unchanged.
 That exclusion belongs in the hk config's shared exclude list — see [linting.md](linting.md).
 
 ## Style

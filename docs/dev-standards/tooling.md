@@ -29,16 +29,31 @@ What holds that exact version depends on whether the manager keeps a lockfile.
 
 mise, and any manager like it.
 
-- Pin at least to a major version, and prefer a minor. Never `latest`.
-  The config pin states the policy —
-  which upgrades are acceptable without anyone making a decision.
-  It is the lockfile beside it, not this line, that satisfies the patch rule below;
-  a config entry with no lock is subject to that rule like any other lone pin.
-- **The lockfile owns the real pin, and it pins the patch.**
-  It records the version that actually installs,
-  so it is the one that has to be committed and moved deliberately.
-  `hk = "1.57"` resolves to whatever patch was current the first time it was locked,
-  and stays there for everyone until the lock moves.
+- **Pin the exact patch in the config, not a `major.minor` prefix.**
+  Never `latest`.
+  A partial pin reads like a policy —
+  which upgrades are acceptable without anyone making a decision —
+  but the updater reads it as a range,
+  and clamps the tool inside it forever.
+  Renovate's mise manager, finding a partial selector with a lockfile beside it,
+  marks the dependency `isLockfileOnly`
+  and derives `allowedVersions` from the pin
+  (`lib/modules/manager/mise/extract.ts`, `getSelectorConfig`).
+  `hk = "1.58"` then collects patch bumps inside 1.58,
+  and is never offered 1.59 or 2.0.
+  Neither `isLockfileOnly` nor the derived clamp is a configurable option,
+  so no rule in the Renovate config can lift it.
+  The freeze is silent in the worst way:
+  the lockfile keeps moving,
+  so every tool reports the newest patch of a minor that stopped being current long ago.
+  `hk = "2.0.1"` fails the partial-selector test,
+  and updates like anything else.
+  State the policy once in the Renovate config,
+  where it applies to every tool — see [dependencies.md](dependencies.md).
+- **The lockfile still owns what installs.**
+  It records the version that actually resolves,
+  so it is committed and moved together with the pin,
+  never on its own.
   A config entry with no lockfile beside it is not a pin at all:
   it resolves independently on every machine, and two workstations silently disagree.
   Set `lockfile = true` so mise creates and maintains `mise.lock`,

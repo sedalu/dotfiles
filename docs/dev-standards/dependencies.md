@@ -21,6 +21,37 @@ Its defaults already cover every layout these standards allow,
 The option replaces the defaults rather than extending them,
 so setting it means a config that moves later silently stops being seen.
 
+## A version no manager reads
+
+A version embedded in a literal string is invisible to every manager.
+The case that keeps recurring is a config that names its own schema by URL:
+an hk pipeline amends a pkl package,
+and `amends` and `import` each need a literal,
+so the version cannot be declared once and referenced.
+Nothing bumps it,
+and it drifts until something fails to evaluate.
+
+Reach for a `customManagers` regex entry.
+Read its templates out of the real manager rather than inferring them from the tool:
+`depName`, `packageName`, `datasource`, and `extractVersion` all have to agree,
+and the value that looks obvious is often the wrong one.
+Renovate matches a known tool name against a static table of its own
+before it ever reaches the registry the tool manager resolves against,
+so the backend a tool installs from need not be the source Renovate watches.
+Two halves of one pin that disagree track different version streams.
+
+Where a version appears more than once, one match string per occurrence is enough.
+Renovate confirms a replacement by the dependency's extracted index,
+so it walks to the occurrence belonging to the upgrade in hand
+rather than rewriting the first match and stopping.
+
+**Two files holding one version move in one pull request.**
+Group them by `depName`.
+Split across two, they deadlock:
+whichever merges first breaks the check the other one needs to pass.
+
+[examples/renovate.json5](examples/renovate.json5) is a working config.
+
 ## What a Renovate PR must do
 
 - **Update the pin and the lockfile together.**

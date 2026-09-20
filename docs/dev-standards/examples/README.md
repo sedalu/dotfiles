@@ -11,6 +11,7 @@ not copied from a real repo, so read them alongside the file that links here.
 | [hk.pkl](hk.pkl)                           | `.config/hk.pkl`               | [linting.md](../linting.md) |
 | [mise-config.toml](mise-config.toml)       | `.config/mise/config.toml`     | [tooling.md](../tooling.md) |
 | [mise-task-check-all](mise-task-check-all) | `.config/mise/tasks/check/all` | [tasks.md](../tasks.md)     |
+| [renovate.json5](renovate.json5)           | `.forgejo/renovate.json5`      | [dependencies.md](../dependencies.md) |
 | [ci.yaml](ci.yaml)                         | `.github/workflows/ci.yaml`    | [ci.md](../ci.md)           |
 
 Destination paths follow [repo-layout.md](../repo-layout.md).

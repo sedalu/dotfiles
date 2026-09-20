@@ -13,8 +13,36 @@ local rumdl = (Builtins.rumdl) {
 }
 ```
 
+A builtin that offers a choice takes it in that same block,
+beside the generic step properties,
+rather than through a separate named variant:
+
+```pkl
+local gitleaks = (Builtins.gitleaks) { scan = "staged" }
+```
+
 The pipeline's meaning is in how those steps compose into hooks,
 which a fragment cannot show — [examples/hk.pkl](examples/hk.pkl) is a working one.
+
+Declaring steps at the top level is optional.
+It creates `check`, `fix`, and `pre-commit` from one list,
+which suits a pipeline where all three run the same steps.
+Hooks that differ from each other — a `pre-push` that only scans for secrets,
+a `pre-commit` that fixes where `check` reports — are declared as hooks instead.
+No other hook name is ever created implicitly.
+
+## Staging
+
+Only `pre-commit` stages what it fixed.
+Every other hook leaves its fixes in the working tree,
+and a step's own `stage` globs filter what gets staged,
+rather than enabling it.
+
+Prefer that default to restoring the old one with `stage = true`.
+A fix that stages itself puts bytes into a commit that nobody read,
+which is the same objection that makes `stage = false` worth setting on `pre-commit` too:
+the pipeline reports and repairs,
+and a human decides what is committed.
 
 ## Tool assignments
 
@@ -31,6 +59,7 @@ One tool owns each concern.
 | JS/TS/GraphQL | biome               | `.config/biome.json`   |
 | Spelling     | typos                | `.config/typos.toml`   |
 | Secrets      | gitleaks             | —                      |
+| Task specs   | usage lint           | —                      |
 | pkl, mise    | hk builtins          | —                      |
 
 Structural builtins (`check_merge_conflict`, `check_case_conflict`, `check_symlinks`,
@@ -56,15 +85,25 @@ Structural builtins (`check_merge_conflict`, `check_case_conflict`, `check_symli
 ## Scope
 
 Formatters and linters run only on files the repo owns.
-Exclude app-managed and generated files —
-credential stores, tool-written settings, generated catalogs —
-so the pipeline does not fight the owning app or churn generated output.
+Exclude app-managed files — credential stores, tool-written settings —
+so the pipeline does not fight the owning app.
+
+Generated files divide by who owns the generator.
+Output from a generator this repo owns stays on the list of files to lint:
+a formatter that wants to rewrite it is reporting a bug in the generator,
+and the generator is what gets fixed — see [documentation.md](documentation.md).
+Output from a vendor's generator is excluded alongside the app-managed files,
+for the same reason:
+the bytes belong to a program this repo does not control.
 
 That list is declared once and applied to every owned step,
 so a newly excluded path cannot be missed at one call site:
 
 ```pkl
-local notOurs = List("gh/hosts.yml", "docs/TASKS.md")
+local notOurs = List(
+  "claude/settings.json",  // app-managed: Claude writes it
+  "docs/TASKS.md"          // vendor-generated: `mise generate task-docs` emits it
+)
 local tombi = (Builtins.tombi) { exclude = notOurs }
 ```
 
