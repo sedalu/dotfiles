@@ -16,7 +16,8 @@ local notOurs = List(
   "docs/TASKS.md"           // `mise generate task-docs` emits this; catalog:tasks only injects it
 )
 
-// Extensionless task and hook scripts are shell too, so the builtin globs are widened.
+// The extensionless task and hook scripts the builtins' type clause would catch,
+// named here because the single selector below replaces that clause.
 // zsh is absent: shfmt and shellcheck cannot parse it.
 local shellGlob = List(
   "**/*.sh",
