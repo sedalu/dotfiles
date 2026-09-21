@@ -9,7 +9,6 @@ A step is a builtin with the parts this repo overrides, and nothing more:
 ```pkl
 local rumdl = (Builtins.rumdl) {
   exclude = notOurs
-  fix = "rumdl check --config .config/rumdl.toml --fix {{ files }}"
 }
 ```
 

@@ -75,7 +75,46 @@ Three tools are worth naming:
   which fnox maps only for the bare filenames.
 - **Renovate** — its repository-config list is fixed and has no `.config/` entry,
   so it lands on rule 4: `renovate.json5` under the forge directory, `.forgejo/` or `.github/`.
-  Set `managerFilePatterns` explicitly for the mise manager so it finds the moved config.
+  Do not set `managerFilePatterns` for the mise manager to compensate:
+  its defaults already cover `.config/mise/config.toml`,
+  and the option replaces them rather than extending them —
+  see [dependencies.md](dependencies.md).
+
+### Which rung each tool lands on
+
+Verified against each tool's source or its own resolution output, not from memory.
+A tool that gains `.config/` support moves up a rung and loses its wrapper,
+so re-check a row before trusting it — ryl was a rung 3 here until it grew rung 1.
+
+| Tool          | Rung | How it reaches `.config/`                       |
+| ------------- | ---- | ----------------------------------------------- |
+| mise          | 1    | `.config/mise/config.toml`, natively            |
+| hk            | 1    | searches `.config/hk.pkl`                       |
+| rumdl         | 1    | searches `.config/rumdl.toml`                   |
+| ryl           | 1    | searches `.config/ryl.toml`                     |
+| tombi         | 1    | searches `.config/tombi.toml`                   |
+| shellcheck    | 2    | `SHELLCHECK_OPTS=--rcfile=…`                    |
+| biome         | 2    | `BIOME_CONFIG_PATH`                             |
+| gitleaks      | 2    | `GITLEAKS_CONFIG`                               |
+| typos         | 3    | wrapper: `--config`                             |
+| yamlfmt       | 3    | wrapper: `-conf`                                |
+| prettier      | 3    | wrapper: `--config`                             |
+| golangci-lint | 3    | wrapper: `--config`                             |
+| gosec         | 3    | wrapper: `-conf`                                |
+| fnox          | 3    | wrapper: `--config`                             |
+| Renovate      | 4    | `.forgejo/renovate.json5`; its list is fixed    |
+| shfmt         | —    | no config file; EditorConfig only               |
+| jq            | —    | no config file                                  |
+| usage         | —    | no config file                                  |
+
+Rung 1 is a per-file upward search in every case here,
+so a config under `.config/` governs the whole tree beneath its parent
+and a monorepo can hold more than one.
+
+The two rungs a tool can sit on at once are 2 and 3,
+and the environment variable wins:
+it needs no wrapper, no `mise which`, and no `PROJECT_ROOT`.
+biome and gitleaks both take a flag as well, and neither gets a wrapper.
 
 A linter whose config is not found does not fail — it silently uses the tool's defaults.
 Verify a moved config by asserting a rule the project *disables*:

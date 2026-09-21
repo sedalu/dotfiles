@@ -1,7 +1,12 @@
 // Reference pipeline for linting.md.
-// Reduced to the shape: two owned steps, one all-files step, and the hooks they compose into.
+// Reduced to the shape: an overridden step, a builtin used bare, one all-files step,
+// and the hooks they compose into.
 amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Builtins.pkl"
+
+// No step names a config on the command line.
+// Each tool reaches its config under .config/ by the ladder in repo-layout.md,
+// so a flag here would fix only hk's call sites and leave an interactive run on defaults.
 
 // Files the repo does not own — app-managed, or emitted by a vendor's generator.
 // Output from a generator the repo owns is absent:
@@ -12,20 +17,8 @@ local notOurs = List(
   "docs/TASKS.md"     // `mise generate task-docs` emits this
 )
 
-// Extensionless task and hook scripts are shell too,
-// so the builtin's "**/*.sh" glob is widened rather than accepted.
-local shellGlob = List("**/*.sh", ".config/mise/tasks/**")
-
-local shellcheck = (Builtins.shellcheck) {
-  glob = shellGlob
-  exclude = notOurs
-  check = "shellcheck --rcfile .config/shellcheckrc {{ files }}"
-}
-
 local rumdl = (Builtins.rumdl) {
   exclude = notOurs
-  check_diff = "rumdl check --config .config/rumdl.toml --diff {{ files }}"
-  fix = "rumdl check --config .config/rumdl.toml --fix {{ files }}"
 }
 
 // Secret scanning takes no exclude list: it must see every committed line.
@@ -40,7 +33,10 @@ local formatters = new Mapping<String, Step> {
 }
 
 local linters = new Mapping<String, Step> {
-  ["shellcheck"] = shellcheck
+  // No override: SHELLCHECK_OPTS carries the rcfile, and the builtin already
+  // matches an extensionless script by its shebang, so neither the config nor
+  // the glob needs restating here.
+  ["shellcheck"] = Builtins.shellcheck
 }
 
 // Hooks compose the same mappings rather than relisting steps,
