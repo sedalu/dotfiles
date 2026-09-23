@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
-#MISE description="Remove a worktree, and its branch once merged"
-#MISE depends=["worktree:fetch"]
+#MISE description="Remove a worktree and delete its branch"
 #MISE depends_post=["worktree:prune"]
 #USAGE arg "<name>" help="Worktree directory name, or the branch name it was created from"
 # shellcheck disable=SC2154  # usage_* vars are injected by mise from the #USAGE specs above
 set -euo pipefail
 # shellcheck source=SCRIPTDIR/_repo_root
 source "$(dirname "$0")/_repo_root"
-# shellcheck source=SCRIPTDIR/_default_branch
-source "$(dirname "$0")/_default_branch"
 
 # Accept a branch name too, sanitized the same way worktree:branch names the directory.
 NAME="${usage_name//\//-}"
@@ -20,21 +17,4 @@ git -C "$MAIN" worktree remove "$ROOT/$NAME"
 # A detached worktree (pr/) has no branch to delete.
 [ -n "$BRANCH" ] || exit 0
 
-BASE="origin/$(default_branch "$MAIN")"
-
-merged() {
-	git -C "$MAIN" merge-base --is-ancestor "$BRANCH" "$BASE" && return 0
-	# A squash merge is no ancestor, so `branch -d` refuses it;
-	# instead find the one commit on the default branch that carries the branch's whole diff.
-	local fork id
-	fork=$(git -C "$MAIN" merge-base "$BASE" "$BRANCH") || return 1
-	id=$(git -C "$MAIN" diff "$fork" "$BRANCH" | git patch-id --stable | cut -d' ' -f1)
-	[ -n "$id" ] || return 1
-	git -C "$MAIN" log -p "$fork..$BASE" | git patch-id --stable | cut -d' ' -f1 | grep -xF "$id" >/dev/null
-}
-
-if merged; then
-	git -C "$MAIN" branch -D "$BRANCH"
-else
-	echo "Kept branch $BRANCH: not merged into $BASE"
-fi
+git -C "$MAIN" branch -D "$BRANCH"

@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # Defines: default_branch <repo-dir>, which prints the remote's default branch.
-# Sourced by worktree:branch, worktree:init, and worktree:remove — not a standalone task.
+# Sourced by worktree:branch — not a standalone task.
 
 default_branch() {
 	local ref

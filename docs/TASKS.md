@@ -181,10 +181,8 @@ Prune stale worktree references
 
 ## `worktree:remove`
 
-Remove a worktree, and its branch once merged
+Remove a worktree and delete its branch
 
-
-- Depends: worktree:fetch
 
 - **Usage:** `worktree:remove <name>`
 

@@ -102,7 +102,7 @@ holding the git directory, and each branch is a linked worktree beside it.
 - `worktree:init [url]` — Clone a repo into that layout, or convert the checkout you are in
 - `worktree:branch <branch>` — Create a worktree for a new or existing remote branch
 - `worktree:review <branch>` — Check a branch out, detached, in the `pr/` worktree
-- `worktree:remove <name>` — Remove a worktree, and delete its branch once merged (squash merges included)
+- `worktree:remove <name>` — Remove a worktree and delete its branch outright (no merge check)
 - `worktree:status` — Monitor all worktrees for dirty state and ahead/behind remote
 - `worktree:sync` — Fetch origin and fast-forward every worktree
 - `worktree:fetch` — Fetch origin, pruning branches deleted on the remote
