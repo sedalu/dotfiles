@@ -17,7 +17,11 @@ Tests are written before the implementation, and implementation proceeds until t
   }
   ```
 
-- At most one test function per target function or method.
+- Every function and method, exported or not,
+  has exactly one test function covering at least one case.
+  A target never has a second one,
+  and a helper is not left to its caller's test.
+  A binary's entry point is the exception: the end-to-end tier covers it.
 - A test is named after its target, following the language's test-discovery convention.
   A test with no single target — one driving a binary end to end — is named for the behavior it asserts.
 - Every test and subtest runs in parallel.
@@ -25,6 +29,9 @@ Tests are written before the implementation, and implementation proceeds until t
   so a test exercises exactly the one thing it names.
   A language whose own convention places them elsewhere overrides this;
   a project's preference does not.
+- A unit test builds its own fixtures.
+  It never reads the repo's own data or config,
+  which change for reasons of their own.
 
 ## Dependencies
 

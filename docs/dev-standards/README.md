@@ -50,10 +50,10 @@ Every repo.
 
 ## Languages
 
-| File                 | Covers                                                     |
-| -------------------- | ---------------------------------------------------------- |
-| [go/](go/README.md)  | Layout, API boundaries, style, errors, logging, toolchain  |
-| [shell.md](shell.md) | Bash scripts and shell configuration                       |
+| File                 | Covers                                                             |
+| -------------------- | ------------------------------------------------------------------ |
+| [go/](go/README.md)  | Layout, API boundaries, style, errors, logging, testing, toolchain |
+| [shell.md](shell.md) | Bash scripts and shell configuration                               |
 
 Add a language file when there is real code to derive it from, not before.
 
@@ -61,9 +61,9 @@ Add a language file when there is real code to derive it from, not before.
 
 Each names its situation in its first line.
 
-| File                                   | Covers                                     |
-| -------------------------------------- | ------------------------------------------ |
-| [database.md](database.md)             | Query access, schema, migrations           |
-| [local-services.md](local-services.md) | Container runtime and local daemons        |
-| [deployment.md](deployment.md)         | Deploy workflows and their failure modes   |
-| [releases.md](releases.md)             | Tags, changelogs, and published artifacts  |
+| File                                   | Covers                                    |
+| -------------------------------------- | ----------------------------------------- |
+| [database.md](database.md)             | Query access, schema, migrations          |
+| [local-services.md](local-services.md) | Container runtime and local daemons       |
+| [deployment.md](deployment.md)         | Deploy workflows and their failure modes  |
+| [releases.md](releases.md)             | Tags, changelogs, and published artifacts |

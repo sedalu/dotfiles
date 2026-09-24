@@ -47,19 +47,19 @@ and a human decides what is committed.
 
 One tool owns each concern.
 
-| Concern      | Tool                 | Sidecar                |
-| ------------ | -------------------- | ---------------------- |
-| Markdown     | rumdl                | `.config/rumdl.toml`   |
-| YAML lint    | ryl                  | `.config/ryl.toml`     |
-| YAML format  | yamlfmt              | `.config/yamlfmt.yaml` |
-| TOML         | tombi                | `.config/tombi.toml`   |
-| Shell        | shellcheck + shfmt   | `.config/shellcheckrc` |
-| JSON         | jq                   | —                      |
-| JS/TS/GraphQL | biome               | `.config/biome.json`   |
-| Spelling     | typos                | `.config/typos.toml`   |
-| Secrets      | gitleaks             | —                      |
-| Task specs   | usage lint           | —                      |
-| pkl, mise    | hk builtins          | —                      |
+| Concern       | Tool               | Sidecar                |
+| ------------- | ------------------ | ---------------------- |
+| Markdown      | rumdl              | `.config/rumdl.toml`   |
+| YAML lint     | ryl                | `.config/ryl.toml`     |
+| YAML format   | yamlfmt            | `.config/yamlfmt.yaml` |
+| TOML          | tombi              | `.config/tombi.toml`   |
+| Shell         | shellcheck + shfmt | `.config/shellcheckrc` |
+| JSON          | jq                 | —                      |
+| JS/TS/GraphQL | biome              | `.config/biome.json`   |
+| Spelling      | typos              | `.config/typos.toml`   |
+| Secrets       | gitleaks           | —                      |
+| Task specs    | usage lint         | —                      |
+| pkl, mise     | hk builtins        | —                      |
 
 Structural builtins (`check_merge_conflict`, `check_case_conflict`, `check_symlinks`,
 `check_executables_have_shebangs`, `detect_private_key`, `trailing_whitespace`,
@@ -74,6 +74,11 @@ Structural builtins (`check_merge_conflict`, `check_case_conflict`, `check_symli
 - **Align formatter and linter where they disagree.**
   yamlfmt strips the `---` document start,
   so `ryl.toml` must set `document-start present = false`.
+  hk's jq builtin checks against `jq .` but fixes with `jq -S .`, which sorts keys,
+  so its `fix` is overridden to run `jq .` and keep keys in written order.
+- **Pin the spelling locale.**
+  `typos.toml` sets `locale = "en-us"` under `[default]`,
+  which is what enforces the rule in [prose.md](prose.md).
 - **Allow-list the token `typos` *reports*, never the word you see in the file.**
   It splits an identifier before checking —
   a plural acronym becomes its uppercase run plus a trailing lowercase fragment,

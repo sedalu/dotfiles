@@ -57,6 +57,12 @@ never a bare toolchain build command that drops output in the current directory.
 The pipeline gates drift rather than regenerating —
 a check that rewrites the tree to make itself pass is not a check.
 
+A generator the repo owns fails on input it cannot model,
+naming the input it stopped on,
+rather than dropping it from the output.
+Its output is read as complete,
+so a silent omission is indistinguishable from the source not having said it.
+
 A task file declares its interface in its header:
 
 ```bash

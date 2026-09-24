@@ -25,6 +25,12 @@ A two-line comment breaks at its clause boundary like any other.
 Before finishing any prose or comment,
 re-read it and confirm each line ends at a clause boundary rather than a wrap point.
 
+## Spelling
+
+American English, in prose, comments, and identifiers alike —
+`behavior`, `labeled`, `modeled`.
+typos enforces it — see [linting.md](linting.md).
+
 ## What a comment is for
 
 A comment states a constraint the code cannot show —

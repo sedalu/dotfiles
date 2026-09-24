@@ -1,0 +1,34 @@
+# Reference config for go/toolchain.md.
+# Reached by a wrapper passing `--config` — golangci-lint is rung 3 in repo-layout.md.
+#
+# The set is named rather than inherited:
+# with `default: "none"` a linter runs only by appearing below,
+# so a golangci-lint release that adds or regroups one
+# cannot change what this repo checks.
+version: "2"
+linters:
+  default: "none"
+  enable:
+    - "errcheck"
+    - "govet"
+    - "ineffassign"
+    - "staticcheck"
+    - "unused"
+  settings:
+    errcheck:
+      # An error assigned to `_` is an unhandled error.
+      check-blank: true
+      check-type-assertions: true
+    govet:
+      enable:
+        - "nilness"
+        - "shadow"
+      settings:
+        shadow:
+          strict: true
+  exclusions:
+    # Output from a generator this repo owns is linted like anything else,
+    # so the default generated-file exclusion is off — see linting.md.
+    generated: "disable"
+    presets:
+      - "common-false-positives"

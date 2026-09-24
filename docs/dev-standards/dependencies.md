@@ -57,6 +57,13 @@ whichever merges first breaks the check the other one needs to pass.
 - **Update the pin and the lockfile together.**
   A PR that moves one and not the other produces the state
   [tooling.md](tooling.md) warns about, where the declared version is not the resolved one.
+  A manager that writes the lockfile does not necessarily tidy it.
+  Renovate's gomod manager applies a bump with `go get`,
+  which adds the new version's hashes to `go.sum` and leaves the superseded ones in place,
+  so a repository whose pipeline runs `go mod tidy -diff` needs `postUpdateOptions: ["gomodTidy"]`.
+  Correct it in the Renovate config rather than by pushing to the branch:
+  a commit from anyone else marks the PR edited,
+  and Renovate stops managing it, automerge included.
 - **Pass the same required checks as any other PR.**
   This is the entire safety argument for automating updates:
   the pipeline in [ci.md](ci.md) is what makes an unattended bump acceptable.
@@ -80,6 +87,28 @@ Both are silent, and both were met before Renovate ever opened a pull request he
 A run that did nothing and a run with nothing to do look identical from the outside.
 Read `Repository finished` in the log and require `result: done` —
 a green check is not evidence that anything was examined.
+
+## One commit convention across managers
+
+Renovate types a commit by what the manager reports, not by what the repository prefers.
+`config:recommended` maps a production dependency to `fix` and everything else to `chore`,
+and gomod reports its modules as `require`, which is on that list,
+so a mise or github-actions bump arrives as `chore(deps):`
+and a module the binary compiles in arrives as `fix(deps):`.
+Where the repository has one convention, set `commitMessagePrefix` per manager.
+
+Setting it changes more than the prefix.
+`compileCommitMessage` derives a semantic prefix only when none is configured,
+and that same branch is the only thing that sets `toLowerCase`,
+so a configured prefix also leaves the subject's capitalization alone.
+Setting it for some managers and not others is what produces a history
+holding both `Update module ...` and `update module ...`.
+
+Labels are resolved to ids against the repository's own label list, and its organization's.
+On the Forgejo platform a name matching neither
+is dropped from the create call by `labels.filter(isNumber)`,
+with nothing above debug level to say so.
+Create the label in the forge, or the rule is decoration.
 
 ## Grouping and merge policy
 

@@ -158,5 +158,20 @@ Nothing is reproduced from it and no second machine has to agree with it.
 Every other pin is in scope, including a repo's own `mise.toml`,
 whose lockfile is what makes it exact.
 
+The exception covers versions, not settings.
+A setting that changes what the project's lockfile records is an input to the build,
+so it is set in the project's config and never inherited from a global one.
+`npm.package_manager` is one.
+Of the npm package managers mise can use,
+only its embedded aube records a tool's transitive dependency graph,
+and no other installer can replay a graph aube recorded,
+so the project sets the value itself
+rather than inheriting whatever a developer's global config holds:
+`"auto"` resolves to the embedded aube, and `"aube"` names it outright.
+The graph lands in a sidecar directory following the lockfile's own layout —
+`.mise/locks/npm-<package>/<version>/` beside `.mise/mise.lock` —
+which `mise.lock` references by relative path and sha256 digest.
+Commit it: it is part of the lock.
+
 Task conventions are in [tasks.md](tasks.md);
 what keeps tool versions moving is in [dependencies.md](dependencies.md).

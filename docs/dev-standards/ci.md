@@ -14,6 +14,16 @@ Every tool arrives pinned, from the lockfile, exactly as it does on a workstatio
 A runner that provisions a language toolchain through the forge's own setup action
 is running a version no one pinned.
 
+The one exception is an OS package no mise tool supplies.
+It arises on a container job,
+since a hosted runner image already carries the usual ones,
+and it is installed with the container's own package manager,
+with a comment naming what needs it:
+`nodejs`, because `actions/checkout` is a JavaScript action
+and a bare image has nothing to run it on.
+Where a language's own toolchain needs one, that language's file names it:
+Go's race detector in [go/testing.md](go/testing.md).
+
 ## Naming
 
 The workflow is `ci` and its only job is `ci`.
