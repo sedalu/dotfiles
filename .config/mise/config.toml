@@ -23,7 +23,7 @@ SHELLCHECK_OPTS = "--rcfile={{config_root}}/.config/shellcheckrc"
 [tools]
 "aqua:owenlamont/ryl" = "0.22.0"
 gitleaks = "8.30.1"
-hk = "2.1.0"
+hk = "2.2.0"
 jq = "1.8.2"
 rumdl = "v0.2.77"
 shellcheck = "0.11.0"
