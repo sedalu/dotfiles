@@ -76,6 +76,14 @@ Structural builtins (`check_merge_conflict`, `check_case_conflict`, `check_symli
   so `ryl.toml` must set `document-start present = false`.
   hk's jq builtin checks against `jq .` but fixes with `jq -S .`, which sorts keys,
   so its `fix` is overridden to run `jq .` and keep keys in written order.
+- **An overridden command overrides one command, not the step.**
+  A builtin carries up to four — `check`, `check_diff`, `check_list_files`, `fix` —
+  and `check_after_diff` reruns `check` once the diff is applied.
+  Override one to add a flag and the others still run without it,
+  on default rules and without an error.
+  Restate every command the step keeps,
+  and set `check_after_diff = false` when dropping `check_diff`,
+  or hk refuses to load the config.
 - **Pin the spelling locale.**
   `typos.toml` sets `locale = "en-us"` under `[default]`,
   which is what enforces the rule in [prose.md](prose.md).
