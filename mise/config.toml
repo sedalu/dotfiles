@@ -93,23 +93,23 @@ NSAutomaticPeriodSubstitutionEnabled = true
 # all [dotfiles] tables union across loaded files (see miserc.toml).
 # The install task backs up any conflicting non-symlink target to .bak first,
 # since `apply --force` overwrites without a backup of its own.
-[dotfiles."~/.claude"]
+[dotfiles."~/.claude"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/.config/claude"
 mode = "symlink"
 
-[dotfiles."~/.bash_profile"]
+[dotfiles."~/.bash_profile"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/.config/shell/bash/.bash_profile"
 mode = "symlink"
 
-[dotfiles."~/.bashrc"]
+[dotfiles."~/.bashrc"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/.config/shell/bash/.bashrc"
 mode = "symlink"
 
-[dotfiles."~/.zshenv"]
+[dotfiles."~/.zshenv"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/.config/shell/zsh/.zshenv"
 mode = "symlink"
 
-[dotfiles."~/.ssh/config"]
+[dotfiles."~/.ssh/config"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/.config/ssh/config"
 mode = "symlink"
 
@@ -118,7 +118,7 @@ mode = "symlink"
 # `go` reads this file natively in every context (interactive or not, mise or not),
 # which a mise [env] block — scoped to mise-activated shells only — would miss.
 # template mode (not symlink) so a stray `go env -w` can't write back into the repo.
-[dotfiles."~/.config/go/env"]
+[dotfiles."~/.config/go/env"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/.config/go/env.tmpl"
 mode = "template"
 

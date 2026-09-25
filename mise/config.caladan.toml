@@ -52,6 +52,6 @@ ShowDevelopMenu = true
 # The ~/Downloads redirect targets a non-repo source (iCloud Drive);
 # the install task's ACL-aware backup-preflight clears the deny-delete ACL on a fresh ~/Downloads
 # before `apply` replaces it with the symlink.
-[dotfiles."~/Downloads"]
+[dotfiles."~/Downloads"]  # tombi: lint.rules.one-of-multiple-match.disabled = true
 source = "~/Library/Mobile Documents/com~apple~CloudDocs/Downloads"
 mode = "symlink"
