@@ -11,9 +11,6 @@ verbose = false
 [settings.github]
 credential_command = 'gh auth token --hostname "$MISE_CREDENTIAL_HOST"'
 
-[settings.npm]
-package_manager = "bun"
-
 # Machine-global system packages (shared libs and bootstrap tools),
 # poured by mise's built-in Homebrew bottle installer — no `brew` required.
 # Install with `mise bootstrap packages install`; see `install:mise:system-packages`.
@@ -161,7 +158,6 @@ llt = "eza --all --icons=always --group-directories-first --git --long --tree --
 # ubi
 # "ubi:jstemmer/go-junit-report" = "latest"
 # bare
-bun = "latest"
 cargo-binstall = "latest"
 claude = "latest"
 docker-compose = "latest"

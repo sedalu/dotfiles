@@ -127,9 +127,8 @@ export DOCKER_CONFIG="$XDG_STATE_HOME/docker"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 # Silence npm's update-notifier banner.
-# npm is only a mise backend helper here (bun does the installs;
-# mise still shells out to `npm view` for version resolution),
-# so its self-update nag during `mise run update` is pure noise.
+# mise installs npm tools with its embedded aube,
+# so npm's self-update nag is pure noise.
 export NO_UPDATE_NOTIFIER=1
 
 # Vim — relocate viminfo to state (helix is $EDITOR; no vimrc in use).
