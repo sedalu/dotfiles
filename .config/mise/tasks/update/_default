@@ -4,6 +4,10 @@ set -euo pipefail
 
 # --- sync -------------------------------
 
+# The pull's post-merge hook installs any newly pinned hk through `mise x`,
+# which trusts cached GitHub release data however old it is.
+mise cache clear --quiet github
+
 # Pull first, so the subtasks run against the latest config.
 if ! git pull --ff-only; then
 	echo "⚠️ Could not fast-forward $DOTFILES_DIR; updating from the local checkout." >&2
