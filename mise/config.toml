@@ -197,11 +197,11 @@ yamlfmt = "latest"
 # ryl — the YAML rule linter (layout drift is yamlfmt's -lint; see hk.pkl).
 [tools."aqua:owenlamont/ryl"]
 version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions --generate-completions {}"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --tool ryl --generate-completions {}"
 
 [tools."go:github.com/go-delve/delve/cmd/dlv"]
 version = "latest"
-postinstall = "$DOTFILES_DIR/mise/hooks/completions completion {}"
+postinstall = "$DOTFILES_DIR/mise/hooks/completions --tool dlv completion {}"
 
 [tools.bat]
 version = "latest"
