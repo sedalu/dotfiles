@@ -21,7 +21,7 @@ SHELLCHECK_OPTS = "--rcfile={{config_root}}/.config/shellcheckrc"
 
 # The toolchain the hk pipeline runs on.
 [tools]
-"aqua:owenlamont/ryl" = "0.23.0"
+"aqua:owenlamont/ryl" = "0.24.0"
 gitleaks = "8.30.1"
 hk = "2.5.0"
 jq = "1.8.2"
