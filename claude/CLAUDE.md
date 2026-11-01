@@ -52,13 +52,11 @@ Read them through its reference checkout, never its worktrees under `~/Projects/
 which can be on any branch:
 
 ```sh
-mise run ref:get ssh://git@forge.taildfeaeb.ts.net/boldlygo/standards.git
+mise run ref:get forge.taildfeaeb.ts.net/boldlygo/standards
 ```
 
 That fast-forwards the checkout and prints its path,
 `$REF_REPOS_DIR/forge.taildfeaeb.ts.net/boldlygo/standards`.
-The repo is private, so it takes the SSH URL;
-a bare `<host>/<owner>/<repo>` would clone over HTTPS.
 The standards apply to every project, and `README.md` there is the index:
 it carries the short version and a table per group —
 foundations, practices, languages, and the situational files —
