@@ -28,8 +28,7 @@ local shellGlob = List(
   "mise/tasks/**",
   "mise/hooks/**",
   "mise/bin/**",
-  "shell/bash/**",
-  "docs/dev-standards/examples/mise-task-check-all"
+  "shell/bash/**"
 )
 
 // One selector, so the builtins' detected-type clause cannot pull zsh back in.

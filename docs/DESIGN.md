@@ -379,8 +379,8 @@ It carries only `mas` and `cmux`, and keeping the pipeline's tools out of it kee
 
 ### Worktree Projects
 
-The `worktree:*` tasks build and drive the sibling-checkout layout in
-[`dev-standards/git.md`](dev-standards/git.md): `main/` is a normal clone holding the git directory,
+The `worktree:*` tasks build and drive the sibling-checkout layout
+that the standards repo's [`git.md`](https://forge.taildfeaeb.ts.net/boldlygo/standards/src/branch/main/git.md) describes: `main/` is a normal clone holding the git directory,
 and each branch is a linked worktree beside it.
 
 The layout is load-bearing. mise shares trust across a repo's worktrees —
@@ -400,7 +400,7 @@ and offers its worktrees, and everywhere else it hands straight off to the real 
 This tree is not one of those projects.
 `$DOTFILES_DIR` is a live installation at a path its consumers hardcode,
 so it cannot move aside to make room for a `main/` sibling,
-and `dev-standards/git.md` carves out that case.
+and `git.md` in the standards repo carves out that case.
 Its git directory is `dotfiles.git` rather than `.git`, so it shares no trust either way.
 
 ### Install Dependencies
@@ -488,7 +488,7 @@ and is a different thing entirely.
 
 No step passes its config as a flag.
 Each sidecar reaches its tool by the highest rung it supports on the ladder in
-[`repo-layout.md`](dev-standards/repo-layout.md#where-a-config-file-goes):
+[`repo-layout.md`](https://forge.taildfeaeb.ts.net/boldlygo/standards/src/branch/main/repo-layout.md#where-a-config-file-goes):
 
 | Sidecar                                    | Rung | How the tool finds it                                                  |
 | ------------------------------------------ | ---- | ---------------------------------------------------------------------- |

@@ -47,12 +47,15 @@
 
 ## Engineering Standards
 
-Cross-project conventions live in `$DOTFILES_DIR/docs/dev-standards/`
-(`~/.config/docs/dev-standards/`).
+Cross-project conventions live in the `standards` repo
+(`ssh://git@forge.taildfeaeb.ts.net/boldlygo/standards.git`),
+checked out at `~/Projects/boldlygo/standards/main/`.
 They apply to every project, and `README.md` there is the index:
 it carries the short version and a table per group —
 foundations, practices, languages, and the situational files —
 each pointing to one file per topic.
+Its own `.config/` tree holds the starting configs a new repo copies,
+and `setup.md` there says which.
 
 Read the file for the topic at hand before setting up a new repo,
 or before changing how an existing one is laid out, linted, configured, tested, or deployed.
