@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#USAGE about "Move a running container system service onto a freshly installed container version."
+#USAGE flag "--path <path>" help="Install directory of the new version (default: $MISE_TOOL_INSTALL_PATH)."
+set -euo pipefail
+
+# --- config -----------------------------
+
+# Install directory of the new version, resolved from --path flag or $MISE_TOOL_INSTALL_PATH.
+path=""
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--path)
+		path="${2:?--path requires a value}"
+		shift 2
+		;;
+	*)
+		echo "🛑 Error: unknown argument: $1" >&2
+		exit 1
+		;;
+	esac
+done
+
+path="${path:-${MISE_TOOL_INSTALL_PATH:-}}"
+
+if [[ -z "$path" ]]; then
+	echo "🛑 Error: --path or \$MISE_TOOL_INSTALL_PATH must be set." >&2
+	exit 1
+fi
+
+# The pkg payload keeps bin/ and libexec/ side by side under Payload/.
+new_bin="$(realpath "$path")/Payload/bin"
+label="com.apple.container.apiserver"
+
+# --- detect -----------------------------
+
+# Program path of the loaded apiserver agent, or nothing when it isn't loaded.
+# `container system start` registers it in gui/ from a desktop session, user/ from a background one.
+program=""
+for domain in "gui/$(id -u)" "user/$(id -u)"; do
+	if info="$(launchctl print "$domain/$label" 2>/dev/null)"; then
+		program="$(sed -n 's/^[[:space:]]*program = //p' <<<"$info" | head -n 1)"
+		break
+	fi
+done
+
+if [[ -z "$program" ]]; then
+	exit 0
+fi
+
+if [[ "$program" == "$new_bin/container-apiserver" ]]; then
+	exit 0
+fi
+
+# Stop with the CLI that matches the running service;
+# fall back to the new one if the old install is already gone.
+old_cli="$(dirname "$program")/container"
+if [[ ! -x "$old_cli" ]]; then
+	old_cli="$new_bin/container"
+fi
+
+# --- restart ----------------------------
+
+# A restart stops every container,
+# so leave a busy service alone rather than kill workloads from an unattended upgrade.
+running="$("$old_cli" list --quiet 2>/dev/null || true)"
+if [[ -n "$running" ]]; then
+	echo "⚠️ container system service is still on $program with containers running." >&2
+	echo "→ Restart it before mise prunes that version (upgrade.prune_after):" >&2
+	echo "→ container system stop && container system start" >&2
+	exit 0
+fi
+
+echo "🔄 Restarting container system service on $new_bin..."
+
+# --disable-kernel-install: the kernel is already configured,
+# and its install prompt would block a non-interactive hook.
+"$old_cli" system stop
+"$new_bin/container" system start --disable-kernel-install
+
+echo "✅ container system service restarted."

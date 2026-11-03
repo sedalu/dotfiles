@@ -9,6 +9,13 @@ version = "latest"
 postinstall = "$DOTFILES_DIR/mise/hooks/install-app"
 platforms.macos-arm64.asset_pattern = "cmux-macos.dmg"
 
+# Apple container — Linux containers in per-container VMs.
+# The container-service hook moves a running system service onto the new version,
+# since its launchd agent runs from the versioned install that mise later prunes.
+[tools.container]
+version = "latest"
+postinstall = "$DOTFILES_DIR/mise/hooks/container-service && $DOTFILES_DIR/mise/hooks/completions --tool container --generate-completion-script {}"
+
 # macOS-only system packages, loaded automatically via auto_env (see miserc.toml).
 # mise pours Homebrew formulae directly into /opt/homebrew — no `brew` needed.
 [bootstrap.packages]
