@@ -1,5 +1,6 @@
-# `name:` is what the required-status context is built from:
-# `pipeline / check (pull_request)`.
+# CI enters through the same task a hook does — see ci.md.
+# `name:` is what the required-status context is built from;
+# without it the status posts as `/ check (pull_request)` and matches no rule.
 name: "pipeline"
 
 "on":
@@ -7,20 +8,22 @@ name: "pipeline"
   push:
     branches: ["main"]
 
-# A superseded check run is wasted work.
+# A superseded pull request check is wasted work,
+# but a push to main may be releasing, and a release cancelled halfway has published part of itself,
+# so pushes queue instead.
 concurrency:
   group: "ci-${{ github.ref }}"
-  cancel-in-progress: true
+  cancel-in-progress: "${{ github.event_name == 'pull_request' }}"
 
 jobs:
   check:
     runs-on: "docker"
     container:
-      # The shared image carries mise and what a job needs before mise can run.
+      # The shared image carries mise and what a job needs before mise can run — see ci.md.
       # Every other tool arrives pinned, from the lockfile.
       image: "forge.taildfeaeb.ts.net/boldlygo/runner:0.1.1"
     steps:
-      - uses: "actions/checkout@v7"
+      - uses: "actions/checkout@v7.0.1"
 
       - name: "Trust the workspace"
         # actions/checkout marks the workspace safe under a temporary HOME
@@ -28,6 +31,10 @@ jobs:
         # so libgit2 meets a repository it considers foreign-owned and refuses to open.
         run: |
           git config --global --add safe.directory "$PWD"
+
+      - name: "Install the project's OS packages"
+        # Each language fragment declares its own in [bootstrap.packages].
+        run: "mise bootstrap packages apply --yes"
 
       - name: "Run checks"
         env:
