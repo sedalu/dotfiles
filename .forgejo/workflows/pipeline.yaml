@@ -1,4 +1,6 @@
-name: "ci"
+# `name:` is what the required-status context is built from:
+# `pipeline / check (pull_request)`.
+name: "pipeline"
 
 "on":
   pull_request:
@@ -11,25 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  check:
     runs-on: "docker"
     container:
-      # Debian rather than Alpine: the pipeline's tools ship glibc binaries.
-      image: "debian:stable-slim"
+      # The shared image carries mise and what a job needs before mise can run.
+      # Every other tool arrives pinned, from the lockfile.
+      image: "forge.taildfeaeb.ts.net/boldlygo/runner:0.1.1"
     steps:
-      - name: "Install dependencies"
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends curl ca-certificates git nodejs
-          rm -rf /var/lib/apt/lists/*
-
       - uses: "actions/checkout@v7"
-
-      # The only provisioning step: every tool arrives pinned, from the lockfile.
-      - name: "Install mise"
-        run: |
-          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location https://mise.run | bash
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: "Trust the workspace"
         # actions/checkout marks the workspace safe under a temporary HOME

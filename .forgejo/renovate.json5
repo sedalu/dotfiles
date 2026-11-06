@@ -2,9 +2,9 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  // main requires `ci / ci (pull_request)`,
+  // main requires `pipeline / check (pull_request)`,
   // so the forge has a check to wait on
-  // and merges when ci reports rather than when Renovate next runs.
+  // and merges when the check reports rather than when Renovate next runs.
   //
   // Renovate merges under its own account,
   // allowed only because the rule enables no merge whitelist
