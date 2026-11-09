@@ -13,7 +13,7 @@
 [files]
 yaml = ["*.yaml", "*.yml", ".yamllint"]
 
-[rules]
+[lint.rules]
 braces = "enable"
 brackets = "enable"
 colons = "enable"
@@ -23,19 +23,19 @@ hyphens = "enable"
 new-line-at-end-of-file = "enable"
 trailing-spaces = "enable"
 
-[rules.document-start]
+[lint.rules.document-start]
 present = false  # yamlfmt removes `---`
 
-[rules.comments]
+[lint.rules.comments]
 min-spaces-from-content = 1  # yamlfmt uses one space before inline comments
 
-[rules.new-lines]
+[lint.rules.new-lines]
 type = "unix"
 
-[rules.empty-lines]
+[lint.rules.empty-lines]
 max = 2
 
-[rules.indentation]
+[lint.rules.indentation]
 spaces = 2
 indent-sequences = true
 
@@ -43,9 +43,9 @@ indent-sequences = true
 # YAML's optional quoting is a footgun, so we make it mandatory.
 # yamlfmt preserves quotes (and force_quote_style backstops the style),
 # so the two don't fight.
-[rules.quoted-strings]
+[lint.rules.quoted-strings]
 required = true
 quote-type = "double"
 
-[rules.line-length]
+[lint.rules.line-length]
 max = 120
