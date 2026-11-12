@@ -21,7 +21,7 @@ jobs:
     container:
       # The shared image carries mise and what a job needs before mise can run — see ci.md.
       # Every other tool arrives pinned, from the lockfile.
-      image: "forge.taildfeaeb.ts.net/boldlygo/runner:0.1.4"
+      image: "forge.taildfeaeb.ts.net/boldlygo/runner:0.1.5"
     steps:
       - uses: "actions/checkout@v7.0.1"
 
