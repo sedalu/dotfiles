@@ -18,7 +18,7 @@ git pull --ff-only
 
 # --- bump -------------------------------
 
-mise upgrade --bump --local --yes
+mise upgrade --bump --no-global --yes
 
 if git diff --quiet HEAD -- "${PINS[@]}"; then
 	echo "✅ The pipeline's tools are already current."

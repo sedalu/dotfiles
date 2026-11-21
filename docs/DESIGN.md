@@ -429,8 +429,14 @@ update:bump          (manual: bump the pins, check:all, commit, push)
 ```
 
 `update` runs on every machine, so it never writes to the repo.
-It pulls, upgrades the workstation toolchain from `$HOME` — where the project config does not load —
+It pulls, upgrades the workstation toolchain with `mise upgrade --global` —
+which runs as if outside any project, so the project's config and lockfile are neither read nor changed —
 and installs the pipeline's pins at the versions the committed lockfile records.
+That install sets `MISE_IGNORED_CONFIG_PATHS` to the global config dir:
+`mise install` has no scope flag,
+and run from the worktree it would otherwise install the global tools too,
+under the project's `lockfile = true`,
+which can leave global lockfiles (`mise/mise.lock`, `mise/locks/`) behind.
 If it bumped the pins itself,
 each machine would rewrite the lockfile at a different moment with a different result,
 and the machines and CI would stop agreeing on the versions the lockfile exists to fix.
