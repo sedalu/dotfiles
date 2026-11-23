@@ -5,3 +5,8 @@ type = "keychain"
 service = "fnox"
 
 [secrets]
+
+[profiles]
+[profiles.forge]
+[profiles.forge.secrets]
+FORGEJO_TOKEN = { provider = "keychain", value = "FORGEJO_TOKEN", description = "Forgejo token for fnox push; write:repository", url = "https://forge.taildfeaeb.ts.net/user/settings/applications" }
