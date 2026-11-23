@@ -570,7 +570,7 @@ Then, by hand:
 1. Log in to Tailscale.
 2. Register the machine's SSH key with the forge and with GitHub.
 3. Point `origin` at the forge:
-   `git -C ~/.local/share/dotfiles remote set-url origin ssh://git@forge.taildfeaeb.ts.net/seth/dotfiles.git`.
+   `git -C ~/.local/share/dotfiles remote set-url origin ssh://git@forge.cloud.boldlygo.dev/seth/dotfiles.git`.
 4. Grant the checkout its direct-commit exception (§3).
 5. Run `dotfiles:doctor`.
 
@@ -691,7 +691,7 @@ The pipeline is the standards' base with the Markdown, YAML, TOML, JSON, and she
 - **Secrets.** gitleaks runs in `git` mode, over every committed blob.
 - **CI.** `.forgejo/workflows/pipeline.yaml` is the standards' file, copied unchanged:
   the `pipeline` workflow, whose one job, `check`, runs `check:all`
-  in the shared `forge.taildfeaeb.ts.net/boldlygo/runner` image.
+  in the shared `forge.cloud.boldlygo.dev/boldlygo/runner` image.
   Every tool arrives from the lockfile, and Renovate bumps the image's tag.
   The repo releases nothing, so it has no `release` job.
   `test:e2e` stays off the runner:

@@ -380,7 +380,7 @@ It carries only `mas` and `cmux`, and keeping the pipeline's tools out of it kee
 ### Worktree Projects
 
 The `worktree:*` tasks build and drive the sibling-checkout layout
-that the standards repo's [`git.md`](https://forge.taildfeaeb.ts.net/boldlygo/standards/src/branch/main/git.md) describes: `main/` is a normal clone holding the git directory,
+that the standards repo's [`git.md`](https://forge.cloud.boldlygo.dev/boldlygo/standards/src/branch/main/git.md) describes: `main/` is a normal clone holding the git directory,
 and each branch is a linked worktree beside it.
 
 The layout is load-bearing. mise shares trust across a repo's worktrees —
@@ -494,7 +494,7 @@ and is a different thing entirely.
 
 No step passes its config as a flag.
 Each sidecar reaches its tool by the highest rung it supports on the ladder in
-[`repo-layout.md`](https://forge.taildfeaeb.ts.net/boldlygo/standards/src/branch/main/repo-layout.md#where-a-config-file-goes):
+[`repo-layout.md`](https://forge.cloud.boldlygo.dev/boldlygo/standards/src/branch/main/repo-layout.md#where-a-config-file-goes):
 
 | Sidecar                                    | Rung | How the tool finds it                                                  |
 | ------------------------------------------ | ---- | ---------------------------------------------------------------------- |

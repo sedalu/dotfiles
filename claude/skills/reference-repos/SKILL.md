@@ -57,7 +57,7 @@ There is no inventory to update and nothing to ask permission for.
 ## Searching large checkouts
 
 Some of these repos are hundreds of megabytes,
-and a few hold generated artifacts (`forge.taildfeaeb.ts.net/seth/iso20022` is a six-figure-line XMI dump).
+and a few hold generated artifacts (`forge.cloud.boldlygo.dev/seth/iso20022` is a six-figure-line XMI dump).
 Search before reading:
 `rg` for the symbol, flag, or error string,
 then open only the file and range that matched.
